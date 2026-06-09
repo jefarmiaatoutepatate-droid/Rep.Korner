@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>À Propos — LUXE BRAND | Notre histoire, nos valeurs</title>
+  <meta name="description" content="Découvrez l'histoire de LUXE BRAND, notre engagement pour l'authenticité et nos valeurs. La boutique de référence pour les amateurs de mode premium.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .about-hero {
+      background: var(--black);
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      margin-top: var(--nav-height);
+    }
+    .about-hero-bg {
+      position: absolute; inset: 0;
+    }
+    .about-hero-bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.3; }
+    .about-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.9) 40%, rgba(0,0,0,0.3)); }
+    .about-hero-content { position: relative; z-index: 1; color: var(--white); max-width: 700px; }
+    .about-hero-content h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); color: var(--white); margin-bottom: 20px; }
+    .about-hero-content p { color: rgba(255,255,255,0.65); font-size: 1.1rem; line-height: 1.8; }
+
+    .timeline { position: relative; padding: 20px 0; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: var(--gray-200);
+      transform: translateX(-50%);
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 1fr 60px 1fr;
+      gap: 0;
+      margin-bottom: 60px;
+      align-items: center;
+    }
+    .timeline-item:nth-child(odd) .timeline-content { grid-column: 1; text-align: right; padding-right: 40px; }
+    .timeline-item:nth-child(odd) .timeline-empty { grid-column: 3; }
+    .timeline-item:nth-child(even) .timeline-content { grid-column: 3; text-align: left; padding-left: 40px; }
+    .timeline-item:nth-child(even) .timeline-empty { grid-column: 1; }
+    .timeline-dot {
+      grid-column: 2;
+      width: 48px;
+      height: 48px;
+      background: var(--white);
+      border: 2px solid var(--gray-200);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      margin: 0 auto;
+      z-index: 1;
+      position: relative;
+      transition: var(--transition);
+    }
+    .timeline-item:hover .timeline-dot { background: var(--black); border-color: var(--black); color: var(--white); transform: scale(1.1); }
+    .timeline-year { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .timeline-title { font-family: var(--font-primary); font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .timeline-text { font-size: 0.875rem; color: var(--gray-500); line-height: 1.7; }
+
+    .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+    .team-card { text-align: center; }
+    .team-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: var(--gray-100);
+      margin: 0 auto 20px;
+      overflow: hidden;
+      font-size: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      border: 3px solid transparent;
+    }
+    .team-card:hover .team-avatar { border-color: var(--accent); transform: scale(1.05); }
+    .team-name { font-family: var(--font-primary); font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .team-role { font-size: 0.8rem; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .team-bio { font-size: 0.8rem; color: var(--gray-500); line-height: 1.6; }
+
+    .values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .value-card {
+      padding: 40px 32px;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      transition: var(--transition);
+    }
+    .value-card:hover { border-color: var(--accent); box-shadow: var(--shadow-md); transform: translateY(-4px); }
+    .value-icon { font-size: 2rem; margin-bottom: 20px; }
+    .value-title { font-family: var(--font-primary); font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; }
+    .value-text { font-size: 0.875rem; color: var(--gray-500); line-height: 1.7; }
+
+    @media (max-width: 1024px) { .timeline::before { display: none; } .timeline-item { grid-template-columns: 1fr; } .timeline-item .timeline-empty { display: none; } .timeline-item:nth-child(odd) .timeline-content, .timeline-item:nth-child(even) .timeline-content { grid-column: 1; text-align: left; padding: 0 0 0 20px; border-left: 2px solid var(--gray-200); } .timeline-dot { display: none; } .team-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .values-grid { grid-template-columns: 1fr; } .team-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <div class="announcement-bar">🎁 Livraison offerte dès 150€ &nbsp;|&nbsp; Retours gratuits 30 jours</div>
+
+  <nav id="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo">LUXE<span>.</span></a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="boutique.html" class="nav-link">Boutique</a>
+        <a href="marques.html" class="nav-link">Marques</a>
+        <a href="a-propos.html" class="nav-link active">À Propos</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="nav-icon-btn" id="search-btn" aria-label="Rechercher"><i class="fas fa-search"></i></button>
+        <button class="nav-icon-btn" id="wishlist-btn" aria-label="Favoris"><i class="far fa-heart"></i><span class="nav-badge" id="wishlist-count" style="display:none">0</span></button>
+        <button class="nav-icon-btn" id="cart-btn" aria-label="Panier"><i class="fas fa-shopping-bag"></i><span class="nav-badge" id="cart-count">0</span></button>
+        <button class="nav-icon-btn" aria-label="Compte"><i class="far fa-user"></i></button>
+        <button class="hamburger" id="hamburger-btn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="mobile-menu">
+    <a href="index.html" class="mobile-nav-link">Accueil</a>
+    <a href="boutique.html" class="mobile-nav-link">Boutique</a>
+    <a href="marques.html" class="mobile-nav-link">Marques</a>
+    <a href="a-propos.html" class="mobile-nav-link">À Propos</a>
+    <a href="contact.html" class="mobile-nav-link">Contact</a>
+  </div>
+
+  <!-- Hero -->
+  <header class="about-hero">
+    <div class="about-hero-bg">
+      <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920&q=60" alt="LUXE BRAND" loading="eager">
+    </div>
+    <div class="about-hero-overlay"></div>
+    <div class="container">
+      <div class="about-hero-content">
+        <span class="section-eyebrow reveal">Notre histoire</span>
+        <h1 class="reveal">Passionnés de mode,<br><em>obsédés</em> d'authenticité.</h1>
+        <p class="reveal reveal-delay-1">LUXE BRAND est né d'une conviction simple : chaque personne mérite d'accéder aux meilleures marques, avec la certitude absolue d'acheter un produit authentique.</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Intro -->
+    <section class="section">
+      <div class="container">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;" class="reveal">
+          <div>
+            <span class="section-eyebrow">2020 — Aujourd'hui</span>
+            <h2 class="section-title">Une boutique née de la passion</h2>
+            <p style="color:var(--gray-600);line-height:1.8;margin-bottom:20px;">
+              Tout a commencé en 2020 dans un petit bureau parisien. Trois passionnés de sneakers et de streetwear, frustrés par les faux produits qui inondaient le marché, décidèrent de créer une alternative : une boutique où chaque produit serait certifié authentique, sourcé directement auprès des distributeurs officiels.
+            </p>
+            <p style="color:var(--gray-600);line-height:1.8;margin-bottom:32px;">
+              Aujourd'hui, LUXE BRAND compte plus de 12 000 clients satisfaits, un catalogue de 500+ produits et des partenariats officiels avec les plus grandes marques mondiales. Notre mission reste la même : vous offrir l'excellence, sans compromis.
+            </p>
+            <div style="display:flex;gap:32px;">
+              <div>
+                <div style="font-size:2rem;font-weight:800;font-family:var(--font-display);">12K<span style="color:var(--accent);">+</span></div>
+                <div style="font-size:0.78rem;color:var(--gray-400);text-transform:uppercase;letter-spacing:.1em;">Clients</div>
+              </div>
+              <div>
+                <div style="font-size:2rem;font-weight:800;font-family:var(--font-display);">500<span style="color:var(--accent);">+</span></div>
+                <div style="font-size:0.78rem;color:var(--gray-400);text-transform:uppercase;letter-spacing:.1em;">Produits</div>
+              </div>
+              <div>
+                <div style="font-size:2rem;font-weight:800;font-family:var(--font-display);">4.9<span style="color:var(--accent);">★</span></div>
+                <div style="font-size:0.78rem;color:var(--gray-400);text-transform:uppercase;letter-spacing:.1em;">Note moyenne</div>
+              </div>
+            </div>
+          </div>
+          <div style="border-radius:var(--radius-xl);overflow:hidden;aspect-ratio:4/3;">
+            <img src="https://images.unsplash.com/photo-1556906781-9a412961a28c?w=800&q=80" alt="Notre boutique" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Timeline -->
+    <section class="section" style="background:var(--gray-50);" aria-label="Notre histoire chronologique">
+      <div class="container">
+        <div class="section-header centered reveal">
+          <span class="section-eyebrow">Chronologie</span>
+          <h2 class="section-title">Notre parcours</h2>
+        </div>
+        <div class="timeline reveal">
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <div class="timeline-year">2020</div>
+              <div class="timeline-title">La naissance de LUXE BRAND</div>
+              <p class="timeline-text">Fondation de la boutique par trois passionnés. Lancement avec une sélection de 50 produits Nike et Adidas, 100% authentiques.</p>
+            </div>
+            <div class="timeline-dot">🚀</div>
+            <div class="timeline-empty"></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-empty"></div>
+            <div class="timeline-dot">🤝</div>
+            <div class="timeline-content">
+              <div class="timeline-year">2021</div>
+              <div class="timeline-title">Premiers partenariats officiels</div>
+              <p class="timeline-text">Obtention de nos premiers accords de distribution officiels avec Nike et Adidas. Expansion du catalogue à 150 produits.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <div class="timeline-year">2022</div>
+              <div class="timeline-title">1 000 clients</div>
+              <p class="timeline-text">Franchissement du cap des 1 000 clients satisfaits. Ajout de New Balance et Birkenstock à notre catalogue. Lancement du programme fidélité.</p>
+            </div>
+            <div class="timeline-dot">🎯</div>
+            <div class="timeline-empty"></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-empty"></div>
+            <div class="timeline-dot">📦</div>
+            <div class="timeline-content">
+              <div class="timeline-year">2023</div>
+              <div class="timeline-title">Nouveau entrepôt & logistique</div>
+              <p class="timeline-text">Ouverture d'un entrepôt de 1 200m² en région parisienne. Livraison express 24-48h disponible sur tout le territoire français.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <div class="timeline-year">2024</div>
+              <div class="timeline-title">5 000 clients & expansion marques</div>
+              <p class="timeline-text">Ajout de Carhartt WIP, Converse, Vans et Puma. Lancement de la liste de souhaits et du chat en direct. Note de 4,9/5 maintenue.</p>
+            </div>
+            <div class="timeline-dot">⭐</div>
+            <div class="timeline-empty"></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-empty"></div>
+            <div class="timeline-dot">🏆</div>
+            <div class="timeline-content">
+              <div class="timeline-year">2025–2026</div>
+              <div class="timeline-title">12 000 clients & relancement premium</div>
+              <p class="timeline-text">Refonte complète du site avec une expérience premium. 12 000 clients, 500+ produits, cap vers la marketplace multi-marques européenne.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Values -->
+    <section class="section" id="valeurs" aria-label="Nos valeurs">
+      <div class="container">
+        <div class="section-header centered reveal">
+          <span class="section-eyebrow">Ce qui nous définit</span>
+          <h2 class="section-title">Nos valeurs</h2>
+          <p class="section-subtitle">Chaque décision que nous prenons est guidée par ces principes fondamentaux.</p>
+        </div>
+        <div class="values-grid">
+          <div class="value-card reveal">
+            <div class="value-icon">🛡️</div>
+            <div class="value-title">Authenticité absolue</div>
+            <p class="value-text">Jamais de compromis sur l'authenticité. Chaque produit est sourcé auprès de distributeurs officiels agréés et vérifié par notre équipe avant expédition.</p>
+          </div>
+          <div class="value-card reveal reveal-delay-1">
+            <div class="value-icon">💎</div>
+            <div class="value-title">Excellence du service</div>
+            <p class="value-text">De la navigation sur le site à la réception de votre colis, chaque point de contact est conçu pour vous offrir une expérience exceptionnelle.</p>
+          </div>
+          <div class="value-card reveal reveal-delay-2">
+            <div class="value-icon">🌱</div>
+            <div class="value-title">Engagement durable</div>
+            <p class="value-text">Nous travaillons activement à réduire notre empreinte carbone : emballages recyclables, optimisation des livraisons, partenaires éco-responsables.</p>
+          </div>
+          <div class="value-card reveal">
+            <div class="value-icon">🤝</div>
+            <div class="value-title">Respect des marques</div>
+            <p class="value-text">Nous opérons dans le strict respect des droits de propriété intellectuelle. Notre activité est légale, éthique et transparente vis-à-vis de nos partenaires marques.</p>
+          </div>
+          <div class="value-card reveal reveal-delay-1">
+            <div class="value-icon">❤️</div>
+            <div class="value-title">Communauté & passion</div>
+            <p class="value-text">Nous sommes avant tout des passionnés. Notre communauté de sneakerheads et de fashion lovers est au cœur de tout ce que nous faisons.</p>
+          </div>
+          <div class="value-card reveal reveal-delay-2">
+            <div class="value-icon">🔒</div>
+            <div class="value-title">Confiance & sécurité</div>
+            <p class="value-text">Paiements chiffrés, données protégées, transactions sécurisées. Votre confiance est notre bien le plus précieux — et nous la méritons chaque jour.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section class="section" style="background:var(--gray-50);" aria-label="Notre équipe">
+      <div class="container">
+        <div class="section-header centered reveal">
+          <span class="section-eyebrow">Les humains derrière la marque</span>
+          <h2 class="section-title">Notre équipe</h2>
+        </div>
+        <div class="team-grid">
+          <div class="team-card reveal">
+            <div class="team-avatar">👨‍💼</div>
+            <div class="team-name">Alexandre Martin</div>
+            <div class="team-role">Co-fondateur & CEO</div>
+            <p class="team-bio">Passionné de sneakers depuis 20 ans, Alexandre a fondé LUXE BRAND avec la vision de créer la référence française du retail premium.</p>
+          </div>
+          <div class="team-card reveal reveal-delay-1">
+            <div class="team-avatar">👩‍💻</div>
+            <div class="team-name">Sophie Renard</div>
+            <div class="team-role">Co-fondatrice & CMO</div>
+            <p class="team-bio">Ancienne de l'industrie de la mode, Sophie apporte son expertise en marketing digital et en relations avec les marques.</p>
+          </div>
+          <div class="team-card reveal reveal-delay-2">
+            <div class="team-avatar">🧑‍🎨</div>
+            <div class="team-name">Lucas Petit</div>
+            <div class="team-role">Directeur Créatif</div>
+            <p class="team-bio">Designer de formation, Lucas crée l'identité visuelle de LUXE BRAND et supervise l'expérience utilisateur sur toutes nos plateformes.</p>
+          </div>
+          <div class="team-card reveal reveal-delay-3">
+            <div class="team-avatar">👩‍🔬</div>
+            <div class="team-name">Amandine Dubois</div>
+            <div class="team-role">Responsable Authenticité</div>
+            <p class="team-bio">Experte en vérification de produits, Amandine supervise notre processus d'authentification. Aucun produit n'échappe à son regard acéré.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="newsletter-section" aria-label="Rejoignez-nous">
+      <div class="container" style="text-align:center;">
+        <span class="section-eyebrow reveal">Rejoignez l'aventure</span>
+        <h2 class="reveal" style="color:var(--white);font-size:clamp(2rem,4vw,3rem);margin:16px 0;">
+          Prêt à découvrir <em style="color:var(--accent-light);">le meilleur</em><br>de la mode premium ?
+        </h2>
+        <p class="reveal" style="color:rgba(255,255,255,0.55);max-width:480px;margin:0 auto 40px;line-height:1.7;">
+          Rejoignez plus de 12 000 passionnés qui font confiance à LUXE BRAND pour leur style quotidien.
+        </p>
+        <div class="reveal" style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+          <a href="boutique.html" class="btn btn-white btn-lg"><i class="fas fa-shopping-bag"></i> Découvrir la boutique</a>
+          <a href="contact.html" class="btn btn-secondary btn-lg" style="border-color:rgba(255,255,255,0.4);color:var(--white);">Nous contacter</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-main" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr;">
+        <div class="footer-brand"><a href="index.html" class="nav-logo" style="display:block;color:var(--white);margin-bottom:12px;">LUXE<span>.</span></a><p>Produits 100% authentiques, livraison rapide, service client premium.</p><div class="footer-socials" style="margin-top:20px;"><a href="#" class="social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a><a href="#" class="social-btn" aria-label="TikTok"><i class="fab fa-tiktok"></i></a><a href="#" class="social-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a></div></div>
+        <div class="footer-col"><h4>Boutique</h4><nav class="footer-links"><a href="boutique.html?category=sneakers">Sneakers</a><a href="boutique.html?category=vetements">Vêtements</a><a href="boutique.html?filter=sale">Soldes</a></nav></div>
+        <div class="footer-col"><h4>Marques</h4><nav class="footer-links"><a href="marques.html#nike">Nike</a><a href="marques.html#adidas">Adidas</a><a href="marques.html">Toutes</a></nav></div>
+        <div class="footer-col"><h4>Service</h4><nav class="footer-links"><a href="contact.html">Contact</a><a href="contact.html#faq">FAQ</a></nav></div>
+        <div class="footer-col"><h4>À propos</h4><nav class="footer-links"><a href="a-propos.html">Notre histoire</a><a href="#valeurs">Valeurs</a></nav></div>
+      </div>
+      <div class="footer-bottom"><span>© 2026 LUXE BRAND</span><div class="footer-payment-methods"><span class="payment-icon">VISA</span><span class="payment-icon">MC</span><span class="payment-icon">PayPal</span></div></div>
+    </div>
+  </footer>
+
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Panier" role="dialog">
+    <div class="cart-header"><div class="cart-header-info"><h3>Mon Panier</h3><span id="cart-item-label">0 article</span></div><button class="cart-close" id="cart-close"><i class="fas fa-times"></i></button></div>
+    <div class="cart-items" id="cart-items-container"><div class="cart-empty" id="cart-empty-state"><i class="fas fa-shopping-bag"></i><h4>Panier vide</h4><p>Ajoutez des produits</p></div></div>
+    <div id="cart-promo-section" class="cart-promo" style="display:none;"><div class="cart-promo-inner"><input type="text" placeholder="Code promo" id="promo-input"><button id="apply-promo">Appliquer</button></div></div>
+    <div class="cart-footer" id="cart-footer" style="display:none;"><div class="cart-totals"><div class="cart-total-row total"><span>Total</span><span id="cart-total">0,00 €</span></div></div><div class="cart-free-shipping" id="cart-shipping-msg"><i class="fas fa-truck"></i><span id="cart-shipping-text">Livraison offerte dès 150€</span></div><button class="cart-checkout-btn"><i class="fas fa-lock"></i> Commander</button><a class="cart-continue" id="cart-close-link">Continuer</a></div>
+  </aside>
+  <div class="search-overlay" id="search-overlay"><div class="search-inner"><div class="search-input-wrap"><i class="fas fa-search"></i><input type="search" id="search-input" placeholder="Rechercher..." autocomplete="off"><button class="search-close" id="search-close"><i class="fas fa-times"></i></button></div><div class="search-suggestions"><h4>Populaires</h4><div class="search-tags"><span class="search-tag" onclick="doSearch('Nike')">Nike</span></div></div></div></div>
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+  <div id="cart-subtotal" style="display:none"></div><div id="cart-shipping" style="display:none"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact & FAQ — LUXE BRAND</title>
+  <meta name="description" content="Contactez l'équipe LUXE BRAND. FAQ, formulaire de contact, réseaux sociaux. Support disponible du lundi au samedi 9h-19h.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .contact-hero { background: var(--black); padding: 80px 0 60px; margin-top: var(--nav-height); }
+    .contact-hero h1 { color: var(--white); font-size: clamp(2.5rem,5vw,4rem); margin-bottom: 12px; }
+    .contact-hero p { color: rgba(255,255,255,0.55); font-size: 1rem; }
+
+    .contact-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; padding: 80px 0; }
+
+    /* Contact info */
+    .contact-channels { display: flex; flex-direction: column; gap: 20px; }
+    .contact-channel {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 24px;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .contact-channel:hover { border-color: var(--black); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .contact-channel-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gray-100);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      transition: var(--transition-fast);
+    }
+    .contact-channel:hover .contact-channel-icon { background: var(--black); color: var(--white); }
+    .contact-channel-body h3 { font-family: var(--font-primary); font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .contact-channel-body p { font-size: 0.875rem; color: var(--gray-500); line-height: 1.6; }
+    .contact-channel-body a { color: var(--black); font-weight: 600; text-decoration: underline; text-decoration-color: transparent; transition: var(--transition-fast); }
+    .contact-channel-body a:hover { text-decoration-color: var(--black); }
+    .contact-channel-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--success); margin-top: 6px; }
+
+    /* Form */
+    .contact-form-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-xl);
+      padding: 48px;
+      box-shadow: var(--shadow-md);
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-600); margin-bottom: 8px; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition-fast);
+      color: var(--black);
+      background: var(--white);
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--black); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+    .form-textarea { resize: vertical; min-height: 140px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-error { font-size: 0.78rem; color: var(--danger); margin-top: 4px; display: none; }
+    .form-group.error .form-input, .form-group.error .form-textarea { border-color: var(--danger); }
+    .form-group.error .form-error { display: block; }
+
+    /* Socials */
+    .socials-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 32px; }
+    .social-contact-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      transition: var(--transition-fast);
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--black);
+    }
+    .social-contact-card:hover { border-color: var(--black); background: var(--black); color: var(--white); }
+    .social-contact-card i { font-size: 1.1rem; width: 20px; text-align: center; }
+    .social-contact-card span { font-size: 0.875rem; font-weight: 600; }
+
+    /* FAQ */
+    .faq-section { background: var(--gray-50); padding: 100px 0; }
+    .faq-layout { display: grid; grid-template-columns: 280px 1fr; gap: 64px; }
+    .faq-sidebar { position: sticky; top: calc(var(--nav-height) + 24px); height: fit-content; }
+    .faq-categories { display: flex; flex-direction: column; gap: 4px; }
+    .faq-category-btn {
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      text-align: left;
+      background: transparent;
+      color: var(--gray-600);
+    }
+    .faq-category-btn:hover { background: var(--gray-200); color: var(--black); }
+    .faq-category-btn.active { background: var(--black); color: var(--white); }
+
+    .faq-list {}
+    .faq-item {
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+      overflow: hidden;
+      background: var(--white);
+      transition: var(--transition);
+    }
+    .faq-item:hover { border-color: var(--gray-300); }
+    .faq-question {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      gap: 16px;
+    }
+    .faq-question i { font-size: 0.875rem; color: var(--gray-400); transition: transform 0.3s ease; flex-shrink: 0; }
+    .faq-item.open .faq-question i { transform: rotate(45deg); color: var(--black); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s ease;
+      padding: 0 24px;
+    }
+    .faq-item.open .faq-answer { max-height: 400px; padding: 0 24px 24px; }
+    .faq-answer p { font-size: 0.875rem; color: var(--gray-600); line-height: 1.8; }
+    .faq-answer a { color: var(--black); font-weight: 600; text-decoration: underline; }
+
+    @media (max-width: 1024px) { .contact-layout { grid-template-columns: 1fr; } .faq-layout { grid-template-columns: 1fr; } .faq-sidebar { position: static; } .faq-categories { flex-direction: row; flex-wrap: wrap; } }
+    @media (max-width: 640px) { .contact-form-card { padding: 28px 20px; } .form-row { grid-template-columns: 1fr; } .socials-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <div class="announcement-bar">🎁 Livraison offerte dès 150€ &nbsp;|&nbsp; Retours gratuits 30 jours</div>
+
+  <nav id="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo">LUXE<span>.</span></a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="boutique.html" class="nav-link">Boutique</a>
+        <a href="marques.html" class="nav-link">Marques</a>
+        <a href="a-propos.html" class="nav-link">À Propos</a>
+        <a href="contact.html" class="nav-link active">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="nav-icon-btn" id="search-btn" aria-label="Rechercher"><i class="fas fa-search"></i></button>
+        <button class="nav-icon-btn" id="wishlist-btn" aria-label="Favoris"><i class="far fa-heart"></i><span class="nav-badge" id="wishlist-count" style="display:none">0</span></button>
+        <button class="nav-icon-btn" id="cart-btn" aria-label="Panier"><i class="fas fa-shopping-bag"></i><span class="nav-badge" id="cart-count">0</span></button>
+        <button class="nav-icon-btn" aria-label="Compte"><i class="far fa-user"></i></button>
+        <button class="hamburger" id="hamburger-btn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="mobile-menu">
+    <a href="index.html" class="mobile-nav-link">Accueil</a>
+    <a href="boutique.html" class="mobile-nav-link">Boutique</a>
+    <a href="marques.html" class="mobile-nav-link">Marques</a>
+    <a href="a-propos.html" class="mobile-nav-link">À Propos</a>
+    <a href="contact.html" class="mobile-nav-link">Contact</a>
+  </div>
+
+  <!-- Hero -->
+  <header class="contact-hero">
+    <div class="container">
+      <nav style="display:flex;align-items:center;gap:8px;font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:24px;" aria-label="Fil d'Ariane">
+        <a href="index.html" style="color:rgba(255,255,255,.55);">Accueil</a>
+        <i class="fas fa-chevron-right" style="font-size:.6rem;"></i>
+        <span>Contact</span>
+      </nav>
+      <h1 class="reveal">Parlons-nous.</h1>
+      <p class="reveal">Notre équipe est disponible pour répondre à toutes vos questions. Nous vous répondons en moins de 2h.</p>
+    </div>
+  </header>
+
+  <main>
+    <!-- Contact Section -->
+    <section aria-label="Formulaire de contact">
+      <div class="container">
+        <div class="contact-layout">
+          <!-- Left: Info -->
+          <div class="reveal">
+            <h2 class="section-title" style="margin-bottom:32px;">Nos canaux<br>de support</h2>
+
+            <div class="contact-channels">
+              <div class="contact-channel" onclick="showToast('Chat disponible Lun-Sam, 9h-19h','info')">
+                <div class="contact-channel-icon"><i class="fas fa-comment-dots" aria-hidden="true"></i></div>
+                <div class="contact-channel-body">
+                  <h3>Chat en direct</h3>
+                  <p>Réponse instantanée pour toutes vos questions urgentes.</p>
+                  <div class="contact-channel-tag"><i class="fas fa-circle" style="font-size:.5rem;"></i> En ligne maintenant</div>
+                </div>
+              </div>
+
+              <div class="contact-channel" onclick="window.open('mailto:contact@luxebrand.fr')">
+                <div class="contact-channel-icon"><i class="fas fa-envelope" aria-hidden="true"></i></div>
+                <div class="contact-channel-body">
+                  <h3>Email</h3>
+                  <p>Réponse sous 2h en jours ouvrés.</p>
+                  <a href="mailto:contact@luxebrand.fr">contact@luxebrand.fr</a>
+                </div>
+              </div>
+
+              <div class="contact-channel" onclick="showToast('Lun-Ven: 09h-18h | Sam: 10h-17h','info')">
+                <div class="contact-channel-icon"><i class="fas fa-phone-alt" aria-hidden="true"></i></div>
+                <div class="contact-channel-body">
+                  <h3>Téléphone</h3>
+                  <p>Du lundi au vendredi, 9h à 18h.</p>
+                  <a href="tel:+33183000000">+33 (0)1 83 00 00 00</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Social Networks -->
+            <div style="margin-top:40px;">
+              <h3 style="font-family:var(--font-primary);font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-500);margin-bottom:16px;">Réseaux sociaux</h3>
+              <div class="socials-grid">
+                <a href="#" class="social-contact-card" aria-label="Instagram LUXE BRAND">
+                  <i class="fab fa-instagram"></i>
+                  <span>@luxebrand_fr</span>
+                </a>
+                <a href="#" class="social-contact-card" aria-label="TikTok LUXE BRAND">
+                  <i class="fab fa-tiktok"></i>
+                  <span>@luxebrand</span>
+                </a>
+                <a href="#" class="social-contact-card" aria-label="Facebook LUXE BRAND">
+                  <i class="fab fa-facebook-f"></i>
+                  <span>LUXE BRAND</span>
+                </a>
+                <a href="#" class="social-contact-card" aria-label="Pinterest LUXE BRAND">
+                  <i class="fab fa-pinterest-p"></i>
+                  <span>luxebrand</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Form -->
+          <div class="contact-form-card reveal reveal-delay-2">
+            <h3 style="font-family:var(--font-primary);font-size:1.25rem;font-weight:700;margin-bottom:8px;">Envoyer un message</h3>
+            <p style="color:var(--gray-400);font-size:.875rem;margin-bottom:32px;">Remplissez ce formulaire et nous vous répondrons dans les meilleurs délais.</p>
+
+            <form id="contact-form" novalidate>
+              <div class="form-row">
+                <div class="form-group" id="fg-firstname">
+                  <label class="form-label" for="firstname">Prénom *</label>
+                  <input type="text" class="form-input" id="firstname" placeholder="Votre prénom" required autocomplete="given-name">
+                  <span class="form-error">Ce champ est requis</span>
+                </div>
+                <div class="form-group" id="fg-lastname">
+                  <label class="form-label" for="lastname">Nom *</label>
+                  <input type="text" class="form-input" id="lastname" placeholder="Votre nom" required autocomplete="family-name">
+                  <span class="form-error">Ce champ est requis</span>
+                </div>
+              </div>
+
+              <div class="form-group" id="fg-email">
+                <label class="form-label" for="contact-email">Email *</label>
+                <input type="email" class="form-input" id="contact-email" placeholder="votre@email.com" required autocomplete="email">
+                <span class="form-error">Veuillez entrer un email valide</span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="order-number">N° de commande (optionnel)</label>
+                <input type="text" class="form-input" id="order-number" placeholder="LB-XXXXXXXX">
+              </div>
+
+              <div class="form-group" id="fg-subject">
+                <label class="form-label" for="subject">Sujet *</label>
+                <select class="form-select" id="subject" required>
+                  <option value="">Choisissez un sujet…</option>
+                  <option value="commande">Question sur une commande</option>
+                  <option value="produit">Demande sur un produit</option>
+                  <option value="livraison">Livraison & suivi</option>
+                  <option value="retour">Retour & remboursement</option>
+                  <option value="authenticite">Certificat d'authenticité</option>
+                  <option value="partenariat">Partenariat & presse</option>
+                  <option value="autre">Autre question</option>
+                </select>
+                <span class="form-error">Veuillez choisir un sujet</span>
+              </div>
+
+              <div class="form-group" id="fg-message">
+                <label class="form-label" for="message">Message *</label>
+                <textarea class="form-textarea" id="message" placeholder="Décrivez votre demande en détail…" required aria-label="Votre message"></textarea>
+                <span class="form-error">Veuillez entrer votre message</span>
+              </div>
+
+              <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:24px;">
+                <input type="checkbox" id="consent" required style="margin-top:3px;width:16px;height:16px;accent-color:var(--black);flex-shrink:0;" aria-label="Consentement RGPD">
+                <label for="consent" style="font-size:.8rem;color:var(--gray-500);cursor:pointer;line-height:1.5;">
+                  J'accepte que mes données soient utilisées pour traiter ma demande. <a href="#" style="color:var(--black);text-decoration:underline;">Politique de confidentialité</a>
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">
+                <i class="fas fa-paper-plane"></i> Envoyer le message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section" id="faq" aria-label="Questions fréquentes">
+      <div class="container">
+        <div class="section-header centered reveal">
+          <span class="section-eyebrow">FAQ</span>
+          <h2 class="section-title">Questions fréquentes</h2>
+          <p class="section-subtitle">Trouvez rapidement la réponse à votre question.</p>
+        </div>
+
+        <div class="faq-layout">
+          <!-- Sidebar categories -->
+          <div class="faq-sidebar reveal">
+            <div class="faq-categories" role="tablist" aria-label="Catégories FAQ">
+              <button class="faq-category-btn active" data-category="all" role="tab">Toutes les questions</button>
+              <button class="faq-category-btn" data-category="commandes" role="tab">Commandes</button>
+              <button class="faq-category-btn" data-category="livraison" role="tab">Livraison</button>
+              <button class="faq-category-btn" data-category="retours" role="tab">Retours</button>
+              <button class="faq-category-btn" data-category="authenticite" role="tab">Authenticité</button>
+              <button class="faq-category-btn" data-category="compte" role="tab">Compte & fidélité</button>
+            </div>
+          </div>
+
+          <!-- FAQ items -->
+          <div class="faq-list reveal" id="faq-list">
+            <!-- Commandes -->
+            <div class="faq-item" data-category="commandes">
+              <div class="faq-question">
+                Comment passer une commande sur LUXE BRAND ?
+                <i class="fas fa-plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Parcourez notre boutique, sélectionnez votre produit, choisissez la taille et la couleur désirées puis cliquez sur "Ajouter au panier". Ensuite, validez votre panier et choisissez votre mode de paiement (Visa, Mastercard, PayPal, Apple Pay, Stripe). Vous recevrez un email de confirmation immédiatement après.</p>
+              </div>
+            </div>
+
+            <div class="faq-item" data-category="commandes">
+              <div class="faq-question">
+                Puis-je modifier ou annuler ma commande ?
+                <i class="fas fa-plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Vous pouvez annuler ou modifier votre commande dans les 2 heures suivant la validation, en contactant notre service client par chat ou email. Au-delà, si la commande est déjà en préparation, vous devrez attendre sa réception et effectuer un retour.</p>
+              </div>
+            </div>
+
+            <div class="faq-item" data-category="commandes">
+              <div class="faq-question">
+                Quels moyens de paiement acceptez-vous ?
+                <i class="fas fa-plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Nous acceptons : Carte Visa, Mastercard, American Express, PayPal, Apple Pay, Google Pay et le paiement en 3 fois sans frais via Stripe. Toutes les transactions sont sécurisées par chiffrement SSL 256 bits.</p>
+              </div>
+            </div>
+
+            <!-- Livraison -->
+            <div class="faq-item" data-category="livraison">
+              <div class="faq-question">
+                Quels sont les délais et tarifs de livraison ?
+                <i class="fas fa-plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>La <strong>livraison standard</strong> (Colissimo) est offerte dès 150€ d'achat, sinon 5,99€ — délai 3-5 jours ouvrés.<br>
+                La <strong>livraison express</strong> (Chronopost) est disponible pour 9,99€ — délai 24-48h.<br>
+                Nous livrons en France métropolitaine, DOM-TOM et dans 30 pays européens.</p>
+              </div>
+            </div>
+
+            <div class="faq-item" data-category="livraison">
+              <div class="faq-question">
+                Comment suivre ma commande ?
+                <i class="fas fa-plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Un email de confirmation avec un numéro de suivi vous est envoyé dès l'expédition. Vous pouvez suivre votre colis directement sur notre site dans la section "Suivi de commande", ou directement sur le site du transporteur.</p>
+              </div>
+            </div>
+
+            <!-- Retours -->
+            <div class="faq-item" data-category="retours">
+              <div class="faq-question">
+                Comment effectuer un retour ?
+                <i class="fas fa-plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Vous disposez de <strong>30 jours</strong> pour retourner un article non porté dans son emballage d'origine. Connectez-vous à votre compte, allez dans "Mes commandes" et demandez un retour. Nous vous enverrons une étiquette prépayée. Le remboursement est effectué sous 5-7 jours ouvrés après réception.</p>
+              </div>
+            </div>
+
+            <div class="faq-item" data-category="retours">
+              <div class="faq-question">
+                Puis-je échanger un article contre une autre taille ?
+                <i class="fas fa-plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Oui, les échanges de taille sont gratuits et traités en priorité. Initiez la procédure via votre compte client. L'échange est possible dans les 30 jours suivant la réception, sous réserve de disponibilité de la taille souhaitée.</p>
+              </div>
+            </div>
+
+            <!-- Authenticité -->
+            <div class="faq-item" data-category="authenticite">
+              <div class="faq-question">
+                Comment garantissez-vous l'authenticité des produits ?
+                <i class="fas fa-plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Tous nos produits proviennent exclusivement de distributeurs officiels agréés par les marques. Notre équipe d'experts vérifie chaque article avant expédition :<br>
+                ✓ Vérification des codes-barres et numéros de série<br>
+                ✓ Contrôle des étiquettes, finitions et matières<br>
+                ✓ Certification accompagnant chaque article<br>
+                En cas de doute sur l'authenticité, nous vous remboursons intégralement.</p>
+              </div>
+            </div>
+
+            <div class="faq-item" data-category="authenticite">
+              <div class="faq-question">
+                Vendez-vous des produits de seconde main ?
+                <i class="fas fa-plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Non. LUXE BRAND vend exclusivement des produits <strong>neufs et non portés</strong>, issus de stocks officiels des marques. Nous ne proposons pas de revente entre particuliers ni de produits d'occasion.</p>
+              </div>
+            </div>
+
+            <!-- Compte -->
+            <div class="faq-item" data-category="compte">
+              <div class="faq-question">
+                Comment fonctionne le programme fidélité ?
+                <i class="fas fa-plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Chaque euro dépensé sur LUXE BRAND vous rapporte des <strong>points fidélité</strong>. Ces points sont convertibles en réductions : 100 points = 5€ de remise. Vous gagnez également des points en laissant des avis, en parrainant des amis et lors d'événements spéciaux.</p>
+              </div>
+            </div>
+
+            <div class="faq-item" data-category="compte">
+              <div class="faq-question">
+                Puis-je me connecter avec Google ou Apple ?
+                <i class="fas fa-plus"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Oui, LUXE BRAND supporte la connexion rapide via Google et Apple Sign-In. C'est la méthode la plus sécurisée car aucun mot de passe n'est stocké sur nos serveurs.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Still need help -->
+        <div style="text-align:center;margin-top:64px;padding:48px;background:var(--white);border-radius:var(--radius-xl);border:1px solid var(--gray-200);" class="reveal">
+          <div style="font-size:2rem;margin-bottom:16px;">🤔</div>
+          <h3 style="font-family:var(--font-primary);font-size:1.1rem;font-weight:700;margin-bottom:8px;">Vous n'avez pas trouvé votre réponse ?</h3>
+          <p style="color:var(--gray-500);font-size:.875rem;margin-bottom:24px;">Notre équipe est là pour vous aider. Réponse garantie en moins de 2h.</p>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="showToast('Chat disponible Lun-Sam, 9h-19h','info')">
+              <i class="fas fa-comment-dots"></i> Démarrer un chat
+            </button>
+            <a href="mailto:contact@luxebrand.fr" class="btn btn-secondary">
+              <i class="fas fa-envelope"></i> Envoyer un email
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-main" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr;">
+        <div class="footer-brand"><a href="index.html" class="nav-logo" style="display:block;color:var(--white);margin-bottom:12px;">LUXE<span>.</span></a><p>Produits 100% authentiques, livraison rapide, service client premium.</p><div class="footer-socials" style="margin-top:20px;"><a href="#" class="social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a><a href="#" class="social-btn" aria-label="TikTok"><i class="fab fa-tiktok"></i></a><a href="#" class="social-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a></div></div>
+        <div class="footer-col"><h4>Boutique</h4><nav class="footer-links"><a href="boutique.html?category=sneakers">Sneakers</a><a href="boutique.html?filter=sale">Soldes</a></nav></div>
+        <div class="footer-col"><h4>Marques</h4><nav class="footer-links"><a href="marques.html#nike">Nike</a><a href="marques.html#adidas">Adidas</a></nav></div>
+        <div class="footer-col"><h4>Service</h4><nav class="footer-links"><a href="#faq">FAQ</a><a href="#">Livraison</a><a href="#">Retours</a></nav></div>
+        <div class="footer-col"><h4>À propos</h4><nav class="footer-links"><a href="a-propos.html">Notre histoire</a><a href="#">Fidélité</a></nav></div>
+      </div>
+      <div class="footer-bottom"><span>© 2026 LUXE BRAND</span><div class="footer-payment-methods"><span class="payment-icon">VISA</span><span class="payment-icon">MC</span><span class="payment-icon">PayPal</span></div></div>
+    </div>
+  </footer>
+
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Panier" role="dialog">
+    <div class="cart-header"><div class="cart-header-info"><h3>Mon Panier</h3><span id="cart-item-label">0 article</span></div><button class="cart-close" id="cart-close"><i class="fas fa-times"></i></button></div>
+    <div class="cart-items" id="cart-items-container"><div class="cart-empty" id="cart-empty-state"><i class="fas fa-shopping-bag"></i><h4>Panier vide</h4><p>Ajoutez des produits</p></div></div>
+    <div id="cart-promo-section" class="cart-promo" style="display:none;"><div class="cart-promo-inner"><input type="text" placeholder="Code promo" id="promo-input"><button id="apply-promo">Appliquer</button></div></div>
+    <div class="cart-footer" id="cart-footer" style="display:none;"><div class="cart-totals"><div class="cart-total-row total"><span>Total</span><span id="cart-total">0,00 €</span></div></div><div class="cart-free-shipping" id="cart-shipping-msg"><i class="fas fa-truck"></i><span id="cart-shipping-text">Livraison offerte dès 150€</span></div><button class="cart-checkout-btn"><i class="fas fa-lock"></i> Commander</button><a class="cart-continue" id="cart-close-link">Continuer</a></div>
+  </aside>
+  <div class="search-overlay" id="search-overlay"><div class="search-inner"><div class="search-input-wrap"><i class="fas fa-search"></i><input type="search" id="search-input" placeholder="Rechercher..." autocomplete="off"><button class="search-close" id="search-close"><i class="fas fa-times"></i></button></div><div class="search-suggestions"><h4>Populaires</h4><div class="search-tags"><span class="search-tag" onclick="doSearch('Nike')">Nike</span></div></div></div></div>
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+  <div id="cart-subtotal" style="display:none"></div><div id="cart-shipping" style="display:none"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+  // ── FAQ accordion ──
+  document.querySelectorAll('.faq-question').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.closest('.faq-item');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // ── FAQ categories ──
+  document.querySelectorAll('.faq-category-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.faq-category-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.category;
+      document.querySelectorAll('.faq-item').forEach(item => {
+        const show = cat === 'all' || item.dataset.category === cat;
+        item.style.display = show ? 'block' : 'none';
+      });
+    });
+  });
+
+  // ── Contact form ──
+  document.getElementById('contact-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let valid = true;
+
+    const validate = (id, fgId, check) => {
+      const val = document.getElementById(id)?.value.trim();
+      const fg = document.getElementById(fgId);
+      const ok = check(val);
+      fg?.classList.toggle('error', !ok);
+      if (!ok) valid = false;
+      return ok;
+    };
+
+    validate('firstname', 'fg-firstname', v => v.length > 0);
+    validate('lastname', 'fg-lastname', v => v.length > 0);
+    validate('contact-email', 'fg-email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+    validate('subject', 'fg-subject', v => v.length > 0);
+    validate('message', 'fg-message', v => v.length >= 10);
+
+    const consent = document.getElementById('consent')?.checked;
+    if (!consent) { showToast('Veuillez accepter la politique de confidentialité', 'error'); valid = false; }
+
+    if (valid) {
+      showToast('✅ Message envoyé ! Nous vous répondrons dans les 2 heures.', 'success', 6000);
+      e.target.reset();
+    }
+  });
+  </script>
+</body>
+</html>

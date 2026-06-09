@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin — LUXE BRAND</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #0a0a0a; --white: #ffffff;
+      --gray-50: #f9f9f9; --gray-100: #f2f2f2; --gray-200: #e5e5e5; --gray-300: #d4d4d4;
+      --gray-400: #a3a3a3; --gray-500: #737373; --gray-600: #525252; --gray-800: #262626; --gray-900: #171717;
+      --accent: #c8a96e; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b; --info: #3b82f6;
+      --sidebar-w: 260px;
+      --font: 'Inter', sans-serif;
+    }
+    html, body { height: 100%; }
+    body { font-family: var(--font); background: var(--gray-50); color: var(--black); display: flex; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; border: none; font-family: var(--font); }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--black);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      z-index: 100;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-logo {
+      padding: 28px 24px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      font-family: 'Playfair Display', serif;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      letter-spacing: -0.02em;
+    }
+    .sidebar-logo span { color: var(--accent); }
+    .sidebar-logo small { display: block; font-size: 0.65rem; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-top: 4px; font-family: var(--font); }
+    .sidebar-nav { flex: 1; padding: 20px 0; }
+    .sidebar-section-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      padding: 16px 24px 8px;
+    }
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 24px;
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.6);
+      transition: all 0.15s ease;
+      border-radius: 0;
+      position: relative;
+    }
+    .sidebar-link i { width: 18px; text-align: center; font-size: 0.875rem; }
+    .sidebar-link:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+    .sidebar-link.active { color: var(--white); background: rgba(255,255,255,0.08); }
+    .sidebar-link.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); border-radius: 0 2px 2px 0; }
+    .sidebar-badge { margin-left: auto; background: var(--accent); color: var(--white); font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+    .sidebar-badge.danger { background: var(--danger); }
+    .sidebar-footer {
+      padding: 20px 24px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .admin-avatar {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .admin-info { flex: 1; min-width: 0; }
+    .admin-name { font-size: 0.875rem; font-weight: 600; }
+    .admin-role { font-size: 0.72rem; color: rgba(255,255,255,0.4); }
+
+    /* ── Main ── */
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* ── Top bar ── */
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left h1 { font-size: 1.1rem; font-weight: 700; }
+    .topbar-left p { font-size: 0.78rem; color: var(--gray-500); }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .topbar-btn {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      border: 1.5px solid var(--gray-200);
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      color: var(--gray-500);
+      cursor: pointer;
+      transition: 0.15s ease;
+      position: relative;
+    }
+    .topbar-btn:hover { border-color: var(--black); color: var(--black); }
+    .topbar-notif { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; border: 2px solid var(--white); }
+
+    /* ── Page ── */
+    .page { padding: 32px; flex: 1; }
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    /* ── KPI Cards ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px; }
+    .kpi-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      transition: 0.2s ease;
+    }
+    .kpi-card:hover { border-color: var(--gray-300); box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+    .kpi-info {}
+    .kpi-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 8px; }
+    .kpi-value { font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+    .kpi-change { font-size: 0.78rem; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .kpi-change.up { color: var(--success); }
+    .kpi-change.down { color: var(--danger); }
+    .kpi-icon {
+      width: 48px; height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    /* ── Charts Row ── */
+    .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 28px; }
+    .chart-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .chart-title { font-size: 0.95rem; font-weight: 700; }
+    .chart-subtitle { font-size: 0.78rem; color: var(--gray-400); }
+    .chart-period {
+      display: flex;
+      gap: 4px;
+      background: var(--gray-100);
+      border-radius: 8px;
+      padding: 4px;
+    }
+    .period-btn {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: transparent;
+      color: var(--gray-500);
+      transition: 0.15s ease;
+    }
+    .period-btn.active { background: var(--white); color: var(--black); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+
+    /* ── Table ── */
+    .table-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .table-header h3 { font-size: 0.95rem; font-weight: 700; }
+    .table-actions { display: flex; gap: 8px; }
+    .tbl-search {
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      outline: none;
+      transition: 0.15s;
+      width: 200px;
+    }
+    .tbl-search:focus { border-color: var(--black); }
+    .tbl-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.15s;
+    }
+    .tbl-btn-primary { background: var(--black); color: var(--white); }
+    .tbl-btn-primary:hover { background: var(--gray-800); }
+    .tbl-btn-secondary { background: var(--white); color: var(--black); border: 1.5px solid var(--gray-200); }
+    .tbl-btn-secondary:hover { border-color: var(--black); }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    tbody tr { transition: background 0.1s; }
+    tbody tr:hover { background: var(--gray-50); }
+    tbody td { padding: 14px 16px; font-size: 0.875rem; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+
+    .product-cell { display: flex; align-items: center; gap: 12px; }
+    .product-thumb { width: 44px; height: 44px; border-radius: 8px; background: var(--gray-100); overflow: hidden; flex-shrink: 0; }
+    .product-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .product-cell-name { font-weight: 600; font-size: 0.875rem; margin-bottom: 2px; }
+    .product-cell-brand { font-size: 0.72rem; color: var(--gray-400); }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+    .status-delivered { background: rgba(34,197,94,.1); color: var(--success); }
+    .status-delivered::before { background: var(--success); }
+    .status-processing { background: rgba(59,130,246,.1); color: var(--info); }
+    .status-processing::before { background: var(--info); }
+    .status-pending { background: rgba(245,158,11,.1); color: var(--warning); }
+    .status-pending::before { background: var(--warning); }
+    .status-cancelled { background: rgba(239,68,68,.1); color: var(--danger); }
+    .status-cancelled::before { background: var(--danger); }
+    .status-instock { background: rgba(34,197,94,.1); color: var(--success); }
+    .status-instock::before { background: var(--success); }
+    .status-lowstock { background: rgba(245,158,11,.1); color: var(--warning); }
+    .status-lowstock::before { background: var(--warning); }
+    .status-outstock { background: rgba(239,68,68,.1); color: var(--danger); }
+    .status-outstock::before { background: var(--danger); }
+
+    .action-btn {
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--gray-200);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      color: var(--gray-500);
+      cursor: pointer;
+      transition: 0.15s;
+      background: var(--white);
+    }
+    .action-btn:hover { border-color: var(--black); color: var(--black); }
+    .action-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* ── Recent orders bottom row ── */
+    .bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+
+    /* ── Alerts widget ── */
+    .alert-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--gray-100); }
+    .alert-item:last-child { border-bottom: none; }
+    .alert-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; flex-shrink: 0; }
+    .alert-icon.warning { background: rgba(245,158,11,.1); color: var(--warning); }
+    .alert-icon.danger { background: rgba(239,68,68,.1); color: var(--danger); }
+    .alert-icon.info { background: rgba(59,130,246,.1); color: var(--info); }
+    .alert-body h4 { font-size: 0.875rem; font-weight: 600; margin-bottom: 3px; }
+    .alert-body p { font-size: 0.78rem; color: var(--gray-500); }
+    .alert-time { font-size: 0.72rem; color: var(--gray-300); margin-left: auto; white-space: nowrap; }
+
+    /* ── Top products ── */
+    .top-product { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--gray-50); }
+    .top-product:last-child { border-bottom: none; }
+    .top-rank { font-size: 1.1rem; font-weight: 800; color: var(--gray-200); min-width: 28px; }
+    .top-rank.gold { color: #F4B942; }
+    .top-rank.silver { color: #A8A9AD; }
+    .top-rank.bronze { color: #CD7F32; }
+    .top-product-thumb { width: 40px; height: 40px; border-radius: 6px; background: var(--gray-100); overflow: hidden; flex-shrink: 0; }
+    .top-product-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .top-product-info { flex: 1; }
+    .top-product-name { font-size: 0.8rem; font-weight: 600; margin-bottom: 2px; }
+    .top-product-brand { font-size: 0.7rem; color: var(--gray-400); }
+    .top-product-revenue { font-size: 0.875rem; font-weight: 700; text-align: right; }
+
+    /* ── Progress bar ── */
+    .progress-bar { height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 1s ease; }
+
+    /* ── Tabs in admin ── */
+    .admin-tabs { display: flex; gap: 4px; background: var(--gray-100); border-radius: 10px; padding: 4px; margin-bottom: 24px; width: fit-content; }
+    .admin-tab { padding: 8px 20px; border-radius: 7px; font-size: 0.82rem; font-weight: 600; background: transparent; color: var(--gray-500); transition: 0.15s; }
+    .admin-tab.active { background: var(--white); color: var(--black); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+
+    /* ── Mobile ── */
+    @media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } .charts-row { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: none; } .main { margin-left: 0; } .bottom-row { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .kpi-grid { grid-template-columns: 1fr; } .page { padding: 20px 16px; } }
+  </style>
+</head>
+<body>
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" id="sidebar" aria-label="Navigation administration">
+    <div class="sidebar-logo">
+      LUXE<span>.</span>
+      <small>Administration</small>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="#" class="sidebar-link active" data-section="dashboard" onclick="showSection('dashboard',this)">
+        <i class="fas fa-chart-line"></i> Tableau de bord
+      </a>
+      <a href="#" class="sidebar-link" data-section="orders" onclick="showSection('orders',this)">
+        <i class="fas fa-shopping-bag"></i> Commandes
+        <span class="sidebar-badge danger">12</span>
+      </a>
+      <a href="#" class="sidebar-link" data-section="products" onclick="showSection('products',this)">
+        <i class="fas fa-box"></i> Produits
+      </a>
+      <a href="#" class="sidebar-link" data-section="inventory" onclick="showSection('inventory',this)">
+        <i class="fas fa-warehouse"></i> Stocks
+        <span class="sidebar-badge">3</span>
+      </a>
+      <a href="#" class="sidebar-link" data-section="customers" onclick="showSection('customers',this)">
+        <i class="fas fa-users"></i> Clients
+      </a>
+
+      <div class="sidebar-section-label">Marketing</div>
+      <a href="#" class="sidebar-link" data-section="promotions" onclick="showSection('promotions',this)">
+        <i class="fas fa-tag"></i> Promotions
+      </a>
+      <a href="#" class="sidebar-link" data-section="analytics" onclick="showSection('analytics',this)">
+        <i class="fas fa-chart-bar"></i> Statistiques
+      </a>
+
+      <div class="sidebar-section-label">Configuration</div>
+      <a href="#" class="sidebar-link" onclick="showAdminToast('Paramètres en cours de développement')">
+        <i class="fas fa-cog"></i> Paramètres
+      </a>
+      <a href="index.html" class="sidebar-link" target="_blank">
+        <i class="fas fa-external-link-alt"></i> Voir le site
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-avatar">AM</div>
+      <div class="admin-info">
+        <div class="admin-name">Alexandre Martin</div>
+        <div class="admin-role">Administrateur</div>
+      </div>
+      <button onclick="showAdminToast('Déconnexion...')" style="color:rgba(255,255,255,.4);font-size:.875rem;cursor:pointer;background:none;border:none;" aria-label="Se déconnecter"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 id="page-title-admin">Tableau de bord</h1>
+        <p id="page-subtitle-admin">Bienvenue Alexandre · <span id="current-date"></span></p>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" title="Notifications" onclick="showAdminToast('3 nouvelles commandes reçues')">
+          <i class="fas fa-bell"></i>
+          <span class="topbar-notif"></span>
+        </button>
+        <button class="topbar-btn" title="Messages" onclick="showAdminToast('2 messages non lus')">
+          <i class="fas fa-envelope"></i>
+        </button>
+        <button class="topbar-btn" title="Aide" onclick="showAdminToast('Documentation disponible sur demande')">
+          <i class="fas fa-question-circle"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── PAGE: Dashboard ── -->
+    <div class="page">
+      <div class="page-section active" id="section-dashboard">
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <div class="kpi-label">Chiffre d'affaires</div>
+              <div class="kpi-value">84 320 €</div>
+              <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +18,4% vs mois précédent</div>
+            </div>
+            <div class="kpi-icon" style="background:rgba(34,197,94,.1);color:var(--success);">
+              <i class="fas fa-euro-sign"></i>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <div class="kpi-label">Commandes</div>
+              <div class="kpi-value">1 247</div>
+              <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +12,1% ce mois</div>
+            </div>
+            <div class="kpi-icon" style="background:rgba(59,130,246,.1);color:var(--info);">
+              <i class="fas fa-shopping-bag"></i>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <div class="kpi-label">Nouveaux clients</div>
+              <div class="kpi-value">384</div>
+              <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +9,3% ce mois</div>
+            </div>
+            <div class="kpi-icon" style="background:rgba(200,169,110,.15);color:var(--accent);">
+              <i class="fas fa-user-plus"></i>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <div class="kpi-label">Panier moyen</div>
+              <div class="kpi-value">127 €</div>
+              <div class="kpi-change down"><i class="fas fa-arrow-down"></i> -2,1% ce mois</div>
+            </div>
+            <div class="kpi-icon" style="background:rgba(245,158,11,.1);color:var(--warning);">
+              <i class="fas fa-receipt"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">Évolution des ventes</div>
+                <div class="chart-subtitle">Revenus journaliers · Juin 2026</div>
+              </div>
+              <div class="chart-period">
+                <button class="period-btn active">7J</button>
+                <button class="period-btn" onclick="this.closest('.chart-period').querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">1M</button>
+                <button class="period-btn" onclick="this.closest('.chart-period').querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">3M</button>
+              </div>
+            </div>
+            <div style="height:240px;">
+              <canvas id="salesChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">Ventes par catégorie</div>
+                <div class="chart-subtitle">Ce mois</div>
+              </div>
+            </div>
+            <div style="height:240px;display:flex;align-items:center;justify-content:center;">
+              <canvas id="categoryChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Row: Orders + Alerts -->
+        <div class="bottom-row">
+          <!-- Recent orders -->
+          <div class="table-card">
+            <div class="table-header">
+              <h3>Commandes récentes</h3>
+              <button class="tbl-btn tbl-btn-secondary" onclick="showSection('orders',document.querySelector('[data-section=orders]'))">Voir tout <i class="fas fa-arrow-right"></i></button>
+            </div>
+            <table aria-label="Commandes récentes">
+              <thead><tr><th>Commande</th><th>Client</th><th>Montant</th><th>Statut</th></tr></thead>
+              <tbody>
+                <tr><td><strong>#LB-002847</strong></td><td>Thomas M.</td><td>149,99€</td><td><span class="status-badge status-delivered">Livré</span></td></tr>
+                <tr><td><strong>#LB-002846</strong></td><td>Camille D.</td><td>279,98€</td><td><span class="status-badge status-processing">En cours</span></td></tr>
+                <tr><td><strong>#LB-002845</strong></td><td>Maxime L.</td><td>239,99€</td><td><span class="status-badge status-processing">Expédié</span></td></tr>
+                <tr><td><strong>#LB-002844</strong></td><td>Sarah K.</td><td>119,99€</td><td><span class="status-badge status-pending">En attente</span></td></tr>
+                <tr><td><strong>#LB-002843</strong></td><td>Julie R.</td><td>94,99€</td><td><span class="status-badge status-delivered">Livré</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Alerts & top products -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <div class="chart-card">
+              <div class="chart-header" style="margin-bottom:8px;">
+                <div class="chart-title">Alertes stock</div>
+                <span style="font-size:.72rem;background:rgba(239,68,68,.1);color:var(--danger);padding:3px 8px;border-radius:10px;font-weight:700;">3 alertes</span>
+              </div>
+              <div>
+                <div class="alert-item">
+                  <div class="alert-icon danger"><i class="fas fa-exclamation-triangle"></i></div>
+                  <div class="alert-body">
+                    <h4>Nike Dunk Low "Panda"</h4>
+                    <p>Reste 3 unités en stock</p>
+                  </div>
+                  <span class="alert-time">2h</span>
+                </div>
+                <div class="alert-item">
+                  <div class="alert-icon warning"><i class="fas fa-exclamation"></i></div>
+                  <div class="alert-body">
+                    <h4>NB 1906R Protection Pack</h4>
+                    <p>Reste 4 unités en stock</p>
+                  </div>
+                  <span class="alert-time">5h</span>
+                </div>
+                <div class="alert-item">
+                  <div class="alert-icon info"><i class="fas fa-info"></i></div>
+                  <div class="alert-body">
+                    <h4>Adidas Gazelle Indoor</h4>
+                    <p>Restockage recommandé (7 unités)</p>
+                  </div>
+                  <span class="alert-time">1j</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-header" style="margin-bottom:8px;">
+                <div class="chart-title">Top produits · Juin</div>
+              </div>
+              <div>
+                <div class="top-product">
+                  <span class="top-rank gold">1</span>
+                  <div class="top-product-thumb"><img src="https://images.unsplash.com/photo-1597045566677-8cf032ed6634?w=80&q=60" alt="Dunk Low" loading="lazy"></div>
+                  <div class="top-product-info">
+                    <div class="top-product-name">Nike Dunk Low Panda</div>
+                    <div class="top-product-brand">Nike · 892 avis</div>
+                  </div>
+                  <div class="top-product-revenue">12 480€</div>
+                </div>
+                <div class="top-product">
+                  <span class="top-rank silver">2</span>
+                  <div class="top-product-thumb"><img src="https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?w=80&q=60" alt="Samba" loading="lazy"></div>
+                  <div class="top-product-info">
+                    <div class="top-product-name">Adidas Samba OG</div>
+                    <div class="top-product-brand">Adidas · 654 avis</div>
+                  </div>
+                  <div class="top-product-revenue">9 870€</div>
+                </div>
+                <div class="top-product">
+                  <span class="top-rank bronze">3</span>
+                  <div class="top-product-thumb"><img src="https://images.unsplash.com/photo-1539185441755-769473a23570?w=80&q=60" alt="NB 550" loading="lazy"></div>
+                  <div class="top-product-info">
+                    <div class="top-product-name">New Balance 550</div>
+                    <div class="top-product-brand">New Balance · 521 avis</div>
+                  </div>
+                  <div class="top-product-revenue">7 440€</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE: Orders ── -->
+      <div class="page-section" id="section-orders">
+        <div class="admin-tabs" role="tablist">
+          <button class="admin-tab active" onclick="filterOrders('all',this)">Toutes (1247)</button>
+          <button class="admin-tab" onclick="filterOrders('pending',this)">En attente (48)</button>
+          <button class="admin-tab" onclick="filterOrders('processing',this)">En cours (127)</button>
+          <button class="admin-tab" onclick="filterOrders('delivered',this)">Livrées (1056)</button>
+          <button class="admin-tab" onclick="filterOrders('cancelled',this)">Annulées (16)</button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header">
+            <h3>Toutes les commandes</h3>
+            <div class="table-actions">
+              <input class="tbl-search" type="search" placeholder="Rechercher une commande..." aria-label="Rechercher">
+              <button class="tbl-btn tbl-btn-secondary"><i class="fas fa-download"></i> Exporter</button>
+            </div>
+          </div>
+          <table aria-label="Liste des commandes">
+            <thead>
+              <tr>
+                <th>Commande</th>
+                <th>Date</th>
+                <th>Client</th>
+                <th>Produits</th>
+                <th>Total</th>
+                <th>Paiement</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>#LB-002847</strong></td><td>07/06/2026</td><td>Thomas Martin</td><td>Nike Air Max 90 ×1</td><td><strong>149,99€</strong></td><td>Carte</td><td><span class="status-badge status-delivered">Livré</span></td><td><button class="action-btn" title="Voir" onclick="showAdminToast('Détail commande #LB-002847')"><i class="fas fa-eye"></i></button> <button class="action-btn danger" title="Annuler" onclick="showAdminToast('Action non disponible en démonstration')"><i class="fas fa-ban"></i></button></td></tr>
+              <tr><td><strong>#LB-002846</strong></td><td>07/06/2026</td><td>Camille Dupont</td><td>Birkenstock Arizona ×1, Carhartt Beanie ×1</td><td><strong>169,98€</strong></td><td>PayPal</td><td><span class="status-badge status-processing">Expédié</span></td><td><button class="action-btn" title="Voir" onclick="showAdminToast('Détail commande #LB-002846')"><i class="fas fa-eye"></i></button></td></tr>
+              <tr><td><strong>#LB-002845</strong></td><td>06/06/2026</td><td>Maxime Laurent</td><td>Carhartt Detroit Jacket ×1</td><td><strong>239,99€</strong></td><td>Stripe 3×</td><td><span class="status-badge status-processing">En préparation</span></td><td><button class="action-btn" title="Voir" onclick="showAdminToast('Détail commande #LB-002845')"><i class="fas fa-eye"></i></button></td></tr>
+              <tr><td><strong>#LB-002844</strong></td><td>06/06/2026</td><td>Sarah Karim</td><td>New Balance 550 ×1</td><td><strong>119,99€</strong></td><td>Apple Pay</td><td><span class="status-badge status-pending">En attente paiement</span></td><td><button class="action-btn" title="Voir" onclick="showAdminToast('Détail commande #LB-002844')"><i class="fas fa-eye"></i></button></td></tr>
+              <tr><td><strong>#LB-002843</strong></td><td>05/06/2026</td><td>Antoine Perrier</td><td>Adidas Stan Smith ×1, NB 574 ×1</td><td><strong>199,98€</strong></td><td>Carte</td><td><span class="status-badge status-delivered">Livré</span></td><td><button class="action-btn" title="Voir" onclick="showAdminToast('Détail commande #LB-002843')"><i class="fas fa-eye"></i></button></td></tr>
+              <tr><td><strong>#LB-002842</strong></td><td>05/06/2026</td><td>Julie Rousseau</td><td>Nike Dunk Low "Panda" ×1</td><td><strong>119,99€</strong></td><td>PayPal</td><td><span class="status-badge status-delivered">Livré</span></td><td><button class="action-btn" title="Voir" onclick="showAdminToast('Détail commande #LB-002842')"><i class="fas fa-eye"></i></button></td></tr>
+              <tr><td><strong>#LB-002841</strong></td><td>04/06/2026</td><td>Pierre Bernard</td><td>Nike AF1 ×2</td><td><strong>219,98€</strong></td><td>Carte</td><td><span class="status-badge status-cancelled">Annulée</span></td><td><button class="action-btn" title="Voir" onclick="showAdminToast('Détail commande #LB-002841')"><i class="fas fa-eye"></i></button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PAGE: Products ── -->
+      <div class="page-section" id="section-products">
+        <div class="table-card">
+          <div class="table-header">
+            <h3>Catalogue produits</h3>
+            <div class="table-actions">
+              <input class="tbl-search" type="search" placeholder="Rechercher un produit..." aria-label="Rechercher">
+              <button class="tbl-btn tbl-btn-primary" onclick="showAdminToast('Formulaire d\'ajout produit')"><i class="fas fa-plus"></i> Nouveau produit</button>
+            </div>
+          </div>
+          <table aria-label="Catalogue produits">
+            <thead>
+              <tr><th>Produit</th><th>Marque</th><th>Prix</th><th>Stock</th><th>Ventes</th><th>Note</th><th>Statut</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="products-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PAGE: Inventory ── -->
+      <div class="page-section" id="section-inventory">
+        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="kpi-card">
+            <div class="kpi-info"><div class="kpi-label">Produits en stock</div><div class="kpi-value" style="font-size:1.5rem;">15</div><div class="kpi-change up">100% disponibles</div></div>
+            <div class="kpi-icon" style="background:rgba(34,197,94,.1);color:var(--success);"><i class="fas fa-check-circle"></i></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-info"><div class="kpi-label">Stock limité (≤5)</div><div class="kpi-value" style="font-size:1.5rem;">3</div><div class="kpi-change down">Réapprovisionnement requis</div></div>
+            <div class="kpi-icon" style="background:rgba(245,158,11,.1);color:var(--warning);"><i class="fas fa-exclamation-triangle"></i></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-info"><div class="kpi-label">Total unités</div><div class="kpi-value" style="font-size:1.5rem;">487</div><div class="kpi-change up">Valeur: 64 200€</div></div>
+            <div class="kpi-icon" style="background:rgba(59,130,246,.1);color:var(--info);"><i class="fas fa-warehouse"></i></div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-header"><h3>Gestion des stocks</h3><button class="tbl-btn tbl-btn-secondary" onclick="showAdminToast('Export CSV généré')"><i class="fas fa-download"></i> Exporter</button></div>
+          <table aria-label="Gestion des stocks">
+            <thead><tr><th>Produit</th><th>Marque</th><th>SKU</th><th>Stock</th><th>Seuil d'alerte</th><th>Statut</th><th>Action</th></tr></thead>
+            <tbody id="inventory-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PAGE: Customers ── -->
+      <div class="page-section" id="section-customers">
+        <div class="table-card">
+          <div class="table-header"><h3>Base clients</h3><div class="table-actions"><input class="tbl-search" type="search" placeholder="Rechercher un client..." aria-label="Rechercher"><button class="tbl-btn tbl-btn-secondary"><i class="fas fa-download"></i> Exporter</button></div></div>
+          <table aria-label="Liste des clients">
+            <thead><tr><th>Client</th><th>Email</th><th>Commandes</th><th>Total dépensé</th><th>Points fidélité</th><th>Inscrit le</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><div class="product-cell"><div class="admin-avatar" style="width:36px;height:36px;font-size:.75rem;background:var(--gray-200);color:var(--black);">TM</div><span>Thomas Martin</span></div></td><td>t.martin@email.fr</td><td>8</td><td><strong>1 247€</strong></td><td><span style="color:var(--accent);font-weight:700;">2 840 pts</span></td><td>15/03/2024</td><td><button class="action-btn" onclick="showAdminToast('Profil client Thomas Martin')"><i class="fas fa-eye"></i></button></td></tr>
+              <tr><td><div class="product-cell"><div class="admin-avatar" style="width:36px;height:36px;font-size:.75rem;background:var(--gray-200);color:var(--black);">CD</div><span>Camille Dupont</span></div></td><td>c.dupont@email.fr</td><td>5</td><td><strong>847€</strong></td><td><span style="color:var(--accent);font-weight:700;">1 694 pts</span></td><td>02/06/2024</td><td><button class="action-btn" onclick="showAdminToast('Profil client Camille Dupont')"><i class="fas fa-eye"></i></button></td></tr>
+              <tr><td><div class="product-cell"><div class="admin-avatar" style="width:36px;height:36px;font-size:.75rem;background:var(--gray-200);color:var(--black);">ML</div><span>Maxime Laurent</span></div></td><td>m.laurent@email.fr</td><td>12</td><td><strong>2 160€</strong></td><td><span style="color:var(--accent);font-weight:700;">4 320 pts</span></td><td>08/01/2024</td><td><button class="action-btn" onclick="showAdminToast('Profil client Maxime Laurent')"><i class="fas fa-eye"></i></button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PAGE: Promotions ── -->
+      <div class="page-section" id="section-promotions">
+        <div class="table-card" style="margin-bottom:20px;">
+          <div class="table-header"><h3>Codes promotionnels</h3><button class="tbl-btn tbl-btn-primary" onclick="showAdminToast('Formulaire création code promo')"><i class="fas fa-plus"></i> Nouveau code</button></div>
+          <table aria-label="Codes promotionnels">
+            <thead><tr><th>Code</th><th>Remise</th><th>Utilisations</th><th>Limite</th><th>Expiration</th><th>Statut</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td><code style="background:var(--gray-100);padding:3px 8px;border-radius:4px;font-weight:700;">LUXE10</code></td><td>-10%</td><td>342</td><td>500</td><td>31/12/2026</td><td><span class="status-badge status-delivered">Actif</span></td><td><button class="action-btn" onclick="showAdminToast('Modifier LUXE10')"><i class="fas fa-edit"></i></button></td></tr>
+              <tr><td><code style="background:var(--gray-100);padding:3px 8px;border-radius:4px;font-weight:700;">BIENVENUE</code></td><td>-15%</td><td>1 247</td><td>∞</td><td>31/12/2026</td><td><span class="status-badge status-delivered">Actif</span></td><td><button class="action-btn" onclick="showAdminToast('Modifier BIENVENUE')"><i class="fas fa-edit"></i></button></td></tr>
+              <tr><td><code style="background:var(--gray-100);padding:3px 8px;border-radius:4px;font-weight:700;">SUMMER25</code></td><td>-25%</td><td>87</td><td>200</td><td>30/09/2026</td><td><span class="status-badge status-delivered">Actif</span></td><td><button class="action-btn" onclick="showAdminToast('Modifier SUMMER25')"><i class="fas fa-edit"></i></button></td></tr>
+              <tr><td><code style="background:var(--gray-100);padding:3px 8px;border-radius:4px;font-weight:700;">FLASH50</code></td><td>-50%</td><td>500</td><td>500</td><td>01/06/2026</td><td><span class="status-badge status-cancelled">Expiré</span></td><td><button class="action-btn" onclick="showAdminToast('Modifier FLASH50')"><i class="fas fa-edit"></i></button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PAGE: Analytics ── -->
+      <div class="page-section" id="section-analytics">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="chart-card">
+            <div class="chart-header"><div class="chart-title">Ventes par marque</div></div>
+            <div style="height:260px;"><canvas id="brandChart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header"><div class="chart-title">Sources de trafic</div></div>
+            <div style="height:260px;display:flex;align-items:center;justify-content:center;"><canvas id="trafficChart"></canvas></div>
+          </div>
+        </div>
+        <div class="chart-card" style="margin-top:20px;">
+          <div class="chart-header"><div class="chart-title">Revenus mensuels · 2026</div></div>
+          <div style="height:260px;"><canvas id="monthlyChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="admin-toast" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:none;"></div>
+
+  <script>
+  // ── Section navigation ──
+  function showSection(name, link) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + name)?.classList.add('active');
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    if (link) link.classList.add('active');
+
+    const titles = { dashboard:'Tableau de bord', orders:'Commandes', products:'Catalogue produits', inventory:'Gestion des stocks', customers:'Base clients', promotions:'Promotions & codes', analytics:'Statistiques' };
+    document.getElementById('page-title-admin').textContent = titles[name] || name;
+
+    // Init charts on demand
+    if (name === 'analytics') initAnalyticsCharts();
+  }
+
+  // ── Toast ──
+  function showAdminToast(msg) {
+    const t = document.getElementById('admin-toast');
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#0a0a0a;color:#fff;padding:14px 20px;border-radius:10px;font-size:.875rem;box-shadow:0 20px 60px rgba(0,0,0,.3);display:flex;align-items:center;gap:10px;animation:slideIn .3s ease;';
+    t.innerHTML = `<i class="fas fa-info-circle" style="color:var(--accent)"></i> ${msg}`;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(() => { t.style.cssText='display:none'; }, 300); }, 3500);
+  }
+
+  // ── Current date ──
+  document.getElementById('current-date').textContent = new Date().toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  // ── Sales chart ──
+  const salesCtx = document.getElementById('salesChart')?.getContext('2d');
+  if (salesCtx) {
+    new Chart(salesCtx, {
+      type: 'line',
+      data: {
+        labels: ['1 Juin','2 Juin','3 Juin','4 Juin','5 Juin','6 Juin','7 Juin'],
+        datasets: [{
+          label: 'Revenus (€)',
+          data: [2840, 3120, 2680, 4100, 3890, 5240, 4800],
+          borderColor: '#0a0a0a',
+          backgroundColor: 'rgba(10,10,10,0.05)',
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: '#0a0a0a',
+          pointRadius: 4,
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 11 } } }, y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 11 }, callback: v => v + '€' } } } }
+    });
+  }
+
+  // ── Category chart ──
+  const catCtx = document.getElementById('categoryChart')?.getContext('2d');
+  if (catCtx) {
+    new Chart(catCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Sneakers', 'Vêtements', 'Accessoires'],
+        datasets: [{ data: [68, 22, 10], backgroundColor: ['#0a0a0a', '#c8a96e', '#d4d4d4'], borderWidth: 0 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } } }, cutout: '65%' }
+    });
+  }
+
+  // ── Products table ──
+  function buildProductsTable() {
+    const tbody = document.getElementById('products-table-body');
+    if (!tbody || typeof PRODUCTS === 'undefined') return;
+    PRODUCTS.forEach(p => {
+      const stockStatus = p.stock === 0 ? 'outstock' : p.stock <= 5 ? 'lowstock' : 'instock';
+      const stockLabel = p.stock === 0 ? 'Rupture' : p.stock <= 5 ? `Stock faible (${p.stock})` : `En stock (${p.stock})`;
+      tbody.innerHTML += `
+        <tr>
+          <td><div class="product-cell"><div class="product-thumb"><img src="${p.images[0]}" alt="" loading="lazy"></div><div><div class="product-cell-name">${p.name}</div><div class="product-cell-brand">${p.category}</div></div></div></td>
+          <td>${p.brand}</td>
+          <td><strong>${p.price.toFixed(2)}€</strong>${p.originalPrice ? `<br><small style="color:var(--gray-400);text-decoration:line-through;">${p.originalPrice.toFixed(2)}€</small>` : ''}</td>
+          <td><span class="status-badge status-${stockStatus}">${stockLabel}</span></td>
+          <td>${p.reviews.toLocaleString('fr-FR')}</td>
+          <td>${'★'.repeat(Math.round(p.rating))} ${p.rating}</td>
+          <td><span class="status-badge status-delivered">Actif</span></td>
+          <td>
+            <button class="action-btn" title="Modifier" onclick="showAdminToast('Modification de ${p.name.replace(/'/g,"\\'")}')"><i class="fas fa-edit"></i></button>
+            <button class="action-btn danger" title="Supprimer" onclick="showAdminToast('Suppression de ${p.name.replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>`;
+    });
+  }
+
+  // ── Inventory table ──
+  function buildInventoryTable() {
+    const tbody = document.getElementById('inventory-table-body');
+    if (!tbody || typeof PRODUCTS === 'undefined') return;
+    PRODUCTS.forEach(p => {
+      const stockStatus = p.stock === 0 ? 'outstock' : p.stock <= 5 ? 'lowstock' : 'instock';
+      const stockLabel = p.stock === 0 ? 'Rupture' : p.stock <= 5 ? `Faible (${p.stock})` : `OK (${p.stock})`;
+      const pct = Math.min(100, (p.stock / 30) * 100);
+      tbody.innerHTML += `
+        <tr>
+          <td><div class="product-cell"><div class="product-thumb"><img src="${p.images[0]}" alt="" loading="lazy"></div><span>${p.name}</span></div></td>
+          <td>${p.brand}</td>
+          <td style="font-size:.75rem;color:var(--gray-400);">${p.id.toUpperCase().slice(0,12)}</td>
+          <td><div>${p.stock} unités</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div></td>
+          <td>5 unités</td>
+          <td><span class="status-badge status-${stockStatus}">${stockLabel}</span></td>
+          <td><button class="action-btn tbl-btn-primary" style="background:var(--black);color:#fff;border-color:var(--black);" onclick="showAdminToast('Commande de réapprovisionnement envoyée')"><i class="fas fa-plus"></i></button></td>
+        </tr>`;
+    });
+  }
+
+  // ── Analytics charts ──
+  function initAnalyticsCharts() {
+    if (window._analyticsInited) return;
+    window._analyticsInited = true;
+
+    const brandCtx = document.getElementById('brandChart')?.getContext('2d');
+    if (brandCtx) new Chart(brandCtx, {
+      type: 'bar',
+      data: { labels: ['Nike','Adidas','New Balance','Birkenstock','Carhartt','Converse'], datasets: [{ label: 'Ventes (€)', data: [28400, 19800, 14200, 10600, 8200, 5800], backgroundColor: ['#0a0a0a','#3b82f6','#22c55e','#c8a96e','#f59e0b','#ef4444'] }] },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{ display:false }, ticks:{ font:{ size:11 } } }, y:{ grid:{ color:'rgba(0,0,0,.04)' }, ticks:{ font:{size:11}, callback: v => v + '€' } } } }
+    });
+
+    const trafficCtx = document.getElementById('trafficChart')?.getContext('2d');
+    if (trafficCtx) new Chart(trafficCtx, {
+      type: 'pie',
+      data: { labels: ['Organique','Direct','Réseaux sociaux','Email','Publicité payante'], datasets: [{ data: [38, 24, 22, 10, 6], backgroundColor: ['#0a0a0a','#c8a96e','#3b82f6','#22c55e','#ef4444'], borderWidth: 0 }] },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{ font:{size:11}, boxWidth:12 } } } }
+    });
+
+    const monthlyCtx = document.getElementById('monthlyChart')?.getContext('2d');
+    if (monthlyCtx) new Chart(monthlyCtx, {
+      type: 'bar',
+      data: { labels: ['Jan','Fév','Mar','Avr','Mai','Juin'], datasets: [{ label: 'Revenus 2026', data: [52400, 61800, 58200, 72400, 78600, 84320], backgroundColor: '#0a0a0a', borderRadius: 4 }, { label: 'Revenus 2025', data: [44200, 52100, 49800, 61200, 66400, 71200], backgroundColor: '#e5e5e5', borderRadius: 4 }] },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top', labels:{ font:{size:11}, boxWidth:12 } } }, scales:{ x:{ grid:{ display:false }, ticks:{ font:{size:11} } }, y:{ grid:{ color:'rgba(0,0,0,.04)' }, ticks:{ font:{size:11}, callback: v => v + '€' } }, stacked:false } }
+    });
+  }
+
+  function filterOrders(status, btn) {
+    btn.closest('.admin-tabs').querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    showAdminToast(`Filtrer : ${btn.textContent.trim()}`);
+  }
+
+  // ── Init ──
+  window.addEventListener('DOMContentLoaded', () => {
+    // Load data.js products
+    if (typeof PRODUCTS !== 'undefined') {
+      buildProductsTable();
+      buildInventoryTable();
+    } else {
+      setTimeout(() => {
+        buildProductsTable();
+        buildInventoryTable();
+      }, 500);
+    }
+  });
+  </script>
+  <script src="js/data.js"></script>
+</body>
+</html>

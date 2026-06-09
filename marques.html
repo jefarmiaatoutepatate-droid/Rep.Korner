@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nos Marques — LUXE BRAND | Nike, Adidas, New Balance, Birkenstock, Carhartt</title>
+  <meta name="description" content="Découvrez l'histoire et les collections de toutes nos marques partenaires : Nike, Adidas, New Balance, Birkenstock, Carhartt et bien d'autres.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .brands-hero {
+      background: var(--black);
+      padding: 100px 0 80px;
+      margin-top: var(--nav-height);
+      position: relative;
+      overflow: hidden;
+    }
+    .brands-hero::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(200,169,110,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .brands-hero h1 { color: var(--white); font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 16px; }
+    .brands-hero p { color: rgba(255,255,255,0.55); font-size: 1.05rem; max-width: 560px; line-height: 1.7; }
+    .brands-hero-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 28px; }
+    .brands-hero-breadcrumb a { color: rgba(255,255,255,0.55); transition: var(--transition-fast); }
+    .brands-hero-breadcrumb a:hover { color: var(--white); }
+
+    /* Brand filter tabs */
+    .brand-filter-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 32px 0;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--gray-200);
+      margin-bottom: 64px;
+    }
+    .brand-filter-tabs::-webkit-scrollbar { display: none; }
+    .brand-tab {
+      padding: 10px 22px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-full);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition-fast);
+      background: var(--white);
+    }
+    .brand-tab:hover, .brand-tab.active {
+      background: var(--black);
+      color: var(--white);
+      border-color: var(--black);
+    }
+
+    /* Brand card premium */
+    .brand-full-card {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 64px;
+      align-items: center;
+      padding: 80px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .brand-full-card:last-child { border-bottom: none; }
+    .brand-full-card.reverse { direction: rtl; }
+    .brand-full-card.reverse > * { direction: ltr; }
+
+    .brand-visual {
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      position: relative;
+    }
+    .brand-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--transition-slow);
+    }
+    .brand-full-card:hover .brand-visual img { transform: scale(1.04); }
+
+    .brand-info {}
+    .brand-founded {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-full-name {
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 12px;
+      letter-spacing: -0.04em;
+    }
+    .brand-tagline {
+      font-size: 1rem;
+      color: var(--gray-400);
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+    .brand-description {
+      font-size: 0.95rem;
+      color: var(--gray-600);
+      line-height: 1.8;
+      margin-bottom: 32px;
+    }
+    .brand-stats {
+      display: flex;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    .brand-stat {}
+    .brand-stat-value { font-size: 1.75rem; font-weight: 800; font-family: var(--font-display); margin-bottom: 4px; }
+    .brand-stat-label { font-size: 0.72rem; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; }
+    .brand-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* Brand grid (compact) */
+    .brands-compact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 80px;
+    }
+    .brand-compact-card {
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      display: block;
+      color: var(--black);
+    }
+    .brand-compact-card:hover {
+      border-color: var(--black);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+    }
+    .brand-compact-logo { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+    .brand-compact-count { font-size: 0.78rem; color: var(--gray-400); margin-bottom: 16px; }
+    .brand-compact-arrow { font-size: 0.8rem; color: var(--gray-400); display: flex; align-items: center; justify-content: center; gap: 6px; transition: var(--transition-fast); }
+    .brand-compact-card:hover .brand-compact-arrow { color: var(--black); gap: 10px; }
+
+    /* Products by brand */
+    .brand-products-section {
+      padding: 64px 0;
+      background: var(--gray-50);
+      margin: 40px 0;
+    }
+
+    @media (max-width: 1024px) {
+      .brand-full-card { grid-template-columns: 1fr; gap: 32px; }
+      .brand-full-card.reverse { direction: ltr; }
+      .brands-compact-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .brands-compact-grid { grid-template-columns: 1fr; }
+      .brand-stats { flex-wrap: wrap; gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="announcement-bar">
+    🎁 Livraison offerte dès 150€ &nbsp;|&nbsp; Retours gratuits 30 jours &nbsp;|&nbsp; Paiement 3× sans frais
+  </div>
+
+  <nav id="navbar" aria-label="Navigation principale">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo">LUXE<span>.</span></a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="boutique.html" class="nav-link">Boutique</a>
+        <a href="marques.html" class="nav-link active">Marques</a>
+        <a href="a-propos.html" class="nav-link">À Propos</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="nav-icon-btn" id="search-btn" aria-label="Rechercher"><i class="fas fa-search"></i></button>
+        <button class="nav-icon-btn" id="wishlist-btn" aria-label="Favoris"><i class="far fa-heart"></i><span class="nav-badge" id="wishlist-count" style="display:none">0</span></button>
+        <button class="nav-icon-btn" id="cart-btn" aria-label="Panier"><i class="fas fa-shopping-bag"></i><span class="nav-badge" id="cart-count">0</span></button>
+        <button class="nav-icon-btn" aria-label="Compte"><i class="far fa-user"></i></button>
+        <button class="hamburger" id="hamburger-btn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="mobile-menu">
+    <a href="index.html" class="mobile-nav-link">Accueil</a>
+    <a href="boutique.html" class="mobile-nav-link">Boutique</a>
+    <a href="marques.html" class="mobile-nav-link">Marques</a>
+    <a href="a-propos.html" class="mobile-nav-link">À Propos</a>
+    <a href="contact.html" class="mobile-nav-link">Contact</a>
+  </div>
+
+  <!-- Hero -->
+  <header class="brands-hero">
+    <div class="container">
+      <nav class="brands-hero-breadcrumb" aria-label="Fil d'Ariane">
+        <a href="index.html">Accueil</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>Marques</span>
+      </nav>
+      <h1 class="reveal">Nos Marques <em style="color:var(--accent-light)">Partenaires</em></h1>
+      <p class="reveal reveal-delay-1">Nous collaborons exclusivement avec des distributeurs officiels agréés pour vous proposer des produits 100% authentiques des plus grandes marques mondiales.</p>
+    </div>
+  </header>
+
+  <main>
+    <!-- Filter tabs -->
+    <div class="container">
+      <div class="brand-filter-tabs" role="tablist" aria-label="Filtrer par marque">
+        <button class="brand-tab active" data-filter="all" role="tab">Toutes les marques</button>
+        <button class="brand-tab" data-filter="sneakers" role="tab">Sneakers</button>
+        <button class="brand-tab" data-filter="streetwear" role="tab">Streetwear</button>
+        <button class="brand-tab" data-filter="outdoor" role="tab">Outdoor</button>
+        <button class="brand-tab" data-filter="lifestyle" role="tab">Lifestyle</button>
+      </div>
+    </div>
+
+    <!-- ── Main Brands ── -->
+    <section class="container" aria-label="Marques principales">
+
+      <!-- Nike -->
+      <div class="brand-full-card reveal" id="nike">
+        <div class="brand-visual">
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80" alt="Nike — Collection" loading="lazy">
+        </div>
+        <div class="brand-info">
+          <div class="brand-founded"><i class="fas fa-map-marker-alt"></i> Beaverton, Oregon — Fondé en 1964</div>
+          <h2 class="brand-full-name">Nike</h2>
+          <p class="brand-tagline">"Just Do It"</p>
+          <p class="brand-description">
+            Fondée par Phil Knight et Bill Bowerman en 1964, Nike est devenue la marque sportive la plus emblématique au monde. De la Air Max à la Dunk en passant par l'Air Force 1, chaque silhouette Nike raconte une histoire d'innovation et de culture. Nos produits Nike sont certifiés authentiques et sourcés auprès de distributeurs officiels agréés.
+          </p>
+          <div class="brand-stats">
+            <div class="brand-stat">
+              <div class="brand-stat-value">142</div>
+              <div class="brand-stat-label">Produits</div>
+            </div>
+            <div class="brand-stat">
+              <div class="brand-stat-value">4.8<span style="color:var(--accent)">★</span></div>
+              <div class="brand-stat-label">Note moy.</div>
+            </div>
+            <div class="brand-stat">
+              <div class="brand-stat-value">1964</div>
+              <div class="brand-stat-label">Fondation</div>
+            </div>
+          </div>
+          <div class="brand-actions">
+            <a href="boutique.html?brand=Nike" class="btn btn-primary">
+              <i class="fas fa-shopping-bag"></i> Voir les produits Nike
+            </a>
+            <button class="btn btn-secondary" onclick="showToast('Nouvelle collection Nike disponible dès maintenant !','info')">
+              Nouveautés Nike
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Adidas -->
+      <div class="brand-full-card reverse reveal" id="adidas">
+        <div class="brand-visual">
+          <img src="https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?w=800&q=80" alt="Adidas — Collection" loading="lazy">
+        </div>
+        <div class="brand-info">
+          <div class="brand-founded"><i class="fas fa-map-marker-alt"></i> Herzogenaurach, Allemagne — Fondé en 1949</div>
+          <h2 class="brand-full-name">Adidas</h2>
+          <p class="brand-tagline">"Impossible Is Nothing"</p>
+          <p class="brand-description">
+            Adolf Dassler créa Adidas en 1949 avec une vision simple : créer les meilleures chaussures du monde. Aujourd'hui, la marque aux trois bandes incarne l'union parfaite du sport et du style. La Samba, la Stan Smith, la Gazelle — autant d'icônes qui ont traversé les décennies pour devenir des symboles de culture urbaine.
+          </p>
+          <div class="brand-stats">
+            <div class="brand-stat">
+              <div class="brand-stat-value">98</div>
+              <div class="brand-stat-label">Produits</div>
+            </div>
+            <div class="brand-stat">
+              <div class="brand-stat-value">4.7<span style="color:var(--accent)">★</span></div>
+              <div class="brand-stat-label">Note moy.</div>
+            </div>
+            <div class="brand-stat">
+              <div class="brand-stat-value">1949</div>
+              <div class="brand-stat-label">Fondation</div>
+            </div>
+          </div>
+          <div class="brand-actions">
+            <a href="boutique.html?brand=Adidas" class="btn btn-primary">
+              <i class="fas fa-shopping-bag"></i> Voir les produits Adidas
+            </a>
+            <button class="btn btn-secondary" onclick="showToast('Derniers drops Adidas en stock !','info')">
+              Derniers drops
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Balance -->
+      <div class="brand-full-card reveal" id="new-balance">
+        <div class="brand-visual">
+          <img src="https://images.unsplash.com/photo-1539185441755-769473a23570?w=800&q=80" alt="New Balance — Collection" loading="lazy">
+        </div>
+        <div class="brand-info">
+          <div class="brand-founded"><i class="fas fa-map-marker-alt"></i> Boston, Massachusetts — Fondé en 1906</div>
+          <h2 class="brand-full-name">New<br>Balance</h2>
+          <p class="brand-tagline">"Fearlessly Independent Since 1906"</p>
+          <p class="brand-description">
+            Depuis plus d'un siècle, New Balance fabrique des chaussures reconnues pour leur confort exceptionnel et leur qualité inégalée. La 574, la 550, la 1906R — chaque modèle témoigne d'un artisanat authentique. New Balance reste l'une des rares grandes marques à produire encore aux États-Unis, symbole d'un engagement fort pour la qualité.
+          </p>
+          <div class="brand-stats">
+            <div class="brand-stat">
+              <div class="brand-stat-value">76</div>
+              <div class="brand-stat-label">Produits</div>
+            </div>
+            <div class="brand-stat">
+              <div class="brand-stat-value">4.8<span style="color:var(--accent)">★</span></div>
+              <div class="brand-stat-label">Note moy.</div>
+            </div>
+            <div class="brand-stat">
+              <div class="brand-stat-value">1906</div>
+              <div class="brand-stat-label">Fondation</div>
+            </div>
+          </div>
+          <div class="brand-actions">
+            <a href="boutique.html?brand=New+Balance" class="btn btn-primary">
+              <i class="fas fa-shopping-bag"></i> Voir New Balance
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Birkenstock -->
+      <div class="brand-full-card reverse reveal" id="birkenstock">
+        <div class="brand-visual">
+          <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=800&q=80" alt="Birkenstock — Collection" loading="lazy">
+        </div>
+        <div class="brand-info">
+          <div class="brand-founded"><i class="fas fa-map-marker-alt"></i> Neustadt, Allemagne — Fondé en 1774</div>
+          <h2 class="brand-full-name">Birken-<br>stock</h2>
+          <p class="brand-tagline">"250 Years of Excellence"</p>
+          <p class="brand-description">
+            Birkenstock fabrique des chaussures depuis 1774, faisant d'elle l'une des marques les plus anciennes du monde. La légendaire semelle en liège-latex naturel, moulée à la forme unique du pied, offre un confort biomécanique inégalable. L'Arizona, la Boston, la Gizeh — des icônes adoptées par les célébrités, les professionnels de la santé et les amateurs de style.
+          </p>
+          <div class="brand-stats">
+            <div class="brand-stat">
+              <div class="brand-stat-value">54</div>
+              <div class="brand-stat-label">Produits</div>
+            </div>
+            <div class="brand-stat">
+              <div class="brand-stat-value">4.9<span style="color:var(--accent)">★</span></div>
+              <div class="brand-stat-label">Note moy.</div>
+            </div>
+            <div class="brand-stat">
+              <div class="brand-stat-value">1774</div>
+              <div class="brand-stat-label">Fondation</div>
+            </div>
+          </div>
+          <div class="brand-actions">
+            <a href="boutique.html?brand=Birkenstock" class="btn btn-primary">
+              <i class="fas fa-shopping-bag"></i> Voir Birkenstock
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carhartt -->
+      <div class="brand-full-card reveal" id="carhartt">
+        <div class="brand-visual">
+          <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&q=80" alt="Carhartt — Collection" loading="lazy">
+        </div>
+        <div class="brand-info">
+          <div class="brand-founded"><i class="fas fa-map-marker-alt"></i> Detroit, Michigan — Fondé en 1889</div>
+          <h2 class="brand-full-name">Car-<br>hartt</h2>
+          <p class="brand-tagline">"Since 1889 — Built for the Worker"</p>
+          <p class="brand-description">
+            Hamilton Carhartt fonda sa marque en 1889 pour équiper les travailleurs américains. Aujourd'hui, Carhartt WIP a réinterprété cet héritage workwear pour la culture urbaine mondiale. Les vestes Detroit, les beanies Watch Hat, les t-shirts Pocket — des pièces robustes et intemporelles qui incarnent l'authenticité du streetwear contemporain.
+          </p>
+          <div class="brand-stats">
+            <div class="brand-stat">
+              <div class="brand-stat-value">63</div>
+              <div class="brand-stat-label">Produits</div>
+            </div>
+            <div class="brand-stat">
+              <div class="brand-stat-value">4.7<span style="color:var(--accent)">★</span></div>
+              <div class="brand-stat-label">Note moy.</div>
+            </div>
+            <div class="brand-stat">
+              <div class="brand-stat-value">1889</div>
+              <div class="brand-stat-label">Fondation</div>
+            </div>
+          </div>
+          <div class="brand-actions">
+            <a href="boutique.html?brand=Carhartt" class="btn btn-primary">
+              <i class="fas fa-shopping-bag"></i> Voir Carhartt WIP
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Other brands grid -->
+    <section style="background:var(--gray-50);padding:80px 0;" aria-label="Autres marques">
+      <div class="container">
+        <div class="section-header centered reveal">
+          <span class="section-eyebrow">Et bien d'autres</span>
+          <h2 class="section-title">Toutes nos marques</h2>
+          <p class="section-subtitle">Nous enrichissons constamment notre catalogue avec de nouvelles marques premium.</p>
+        </div>
+
+        <div class="brands-compact-grid">
+          <a href="boutique.html?brand=Converse" class="brand-compact-card reveal">
+            <div class="brand-compact-logo">Converse</div>
+            <div class="brand-compact-count">47 produits · Since 1908</div>
+            <div class="brand-compact-arrow">Voir la collection <i class="fas fa-arrow-right"></i></div>
+          </a>
+          <a href="boutique.html?brand=Vans" class="brand-compact-card reveal reveal-delay-1">
+            <div class="brand-compact-logo">Vans</div>
+            <div class="brand-compact-count">38 produits · Since 1966</div>
+            <div class="brand-compact-arrow">Voir la collection <i class="fas fa-arrow-right"></i></div>
+          </a>
+          <a href="boutique.html?brand=Reebok" class="brand-compact-card reveal reveal-delay-2">
+            <div class="brand-compact-logo">Reebok</div>
+            <div class="brand-compact-count">32 produits · Since 1895</div>
+            <div class="brand-compact-arrow">Voir la collection <i class="fas fa-arrow-right"></i></div>
+          </a>
+          <a href="boutique.html?brand=Puma" class="brand-compact-card reveal reveal-delay-3">
+            <div class="brand-compact-logo">Puma</div>
+            <div class="brand-compact-count">44 produits · Since 1948</div>
+            <div class="brand-compact-arrow">Voir la collection <i class="fas fa-arrow-right"></i></div>
+          </a>
+          <a href="boutique.html?brand=Levis" class="brand-compact-card reveal">
+            <div class="brand-compact-logo">Levi's</div>
+            <div class="brand-compact-count">29 produits · Since 1853</div>
+            <div class="brand-compact-arrow">Voir la collection <i class="fas fa-arrow-right"></i></div>
+          </a>
+          <a href="boutique.html?brand=The+North+Face" class="brand-compact-card reveal reveal-delay-1">
+            <div class="brand-compact-logo">The North Face</div>
+            <div class="brand-compact-count">51 produits · Since 1966</div>
+            <div class="brand-compact-arrow">Voir la collection <i class="fas fa-arrow-right"></i></div>
+          </a>
+        </div>
+
+        <!-- Coming soon -->
+        <div class="reveal" style="text-align:center;padding-top:20px;">
+          <p style="color:var(--gray-400);font-size:0.875rem;margin-bottom:20px;">
+            Prochainement : <strong>Stone Island</strong>, <strong>Arc'teryx</strong>, <strong>A.P.C.</strong>, <strong>Maison Kitsuné</strong>
+          </p>
+          <button class="btn btn-secondary" onclick="showToast('Vous serez notifié dès l\'arrivée des nouvelles marques !','success')">
+            <i class="fas fa-bell"></i> M'alerter des nouvelles marques
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust section -->
+    <section class="section" aria-label="Notre engagement">
+      <div class="container">
+        <div class="section-header centered reveal">
+          <span class="section-eyebrow">Notre engagement</span>
+          <h2 class="section-title">Authenticité Garantie</h2>
+          <p class="section-subtitle">Chaque produit vendu sur LUXE BRAND est soumis à un processus rigoureux de vérification.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;" class="reveal">
+          <div style="text-align:center;padding:32px 20px;">
+            <div style="width:64px;height:64px;background:var(--gray-100);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:1.5rem;"><i class="fas fa-search" style="color:var(--accent);"></i></div>
+            <h3 style="font-family:var(--font-primary);font-size:1rem;font-weight:700;margin-bottom:10px;">Sélection rigoureuse</h3>
+            <p style="font-size:.875rem;color:var(--gray-500);line-height:1.6;">Nous sourçons uniquement auprès de distributeurs officiels agréés par les marques.</p>
+          </div>
+          <div style="text-align:center;padding:32px 20px;">
+            <div style="width:64px;height:64px;background:var(--gray-100);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:1.5rem;"><i class="fas fa-certificate" style="color:var(--accent);"></i></div>
+            <h3 style="font-family:var(--font-primary);font-size:1rem;font-weight:700;margin-bottom:10px;">Certification</h3>
+            <p style="font-size:.875rem;color:var(--gray-500);line-height:1.6;">Chaque article est accompagné de son certificat d'authenticité et de ses étiquettes d'origine.</p>
+          </div>
+          <div style="text-align:center;padding:32px 20px;">
+            <div style="width:64px;height:64px;background:var(--gray-100);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:1.5rem;"><i class="fas fa-shield-alt" style="color:var(--accent);"></i></div>
+            <h3 style="font-family:var(--font-primary);font-size:1rem;font-weight:700;margin-bottom:10px;">Contrôle qualité</h3>
+            <p style="font-size:.875rem;color:var(--gray-500);line-height:1.6;">Notre équipe inspecte chaque produit avant expédition pour garantir sa conformité.</p>
+          </div>
+          <div style="text-align:center;padding:32px 20px;">
+            <div style="width:64px;height:64px;background:var(--gray-100);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:1.5rem;"><i class="fas fa-handshake" style="color:var(--accent);"></i></div>
+            <h3 style="font-family:var(--font-primary);font-size:1rem;font-weight:700;margin-bottom:10px;">Respect des marques</h3>
+            <p style="font-size:.875rem;color:var(--gray-500);line-height:1.6;">Nous opérons dans le strict respect des droits des marques et de la propriété intellectuelle.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer compact -->
+  <footer>
+    <div class="container">
+      <div class="footer-main" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr;">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-logo" style="display:block;color:var(--white);margin-bottom:12px;">LUXE<span>.</span></a>
+          <p>Produits 100% authentiques, livraison rapide, service client premium.</p>
+          <div class="footer-socials" style="margin-top:20px;">
+            <a href="#" class="social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-btn" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            <a href="#" class="social-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          </div>
+        </div>
+        <div class="footer-col"><h4>Boutique</h4><nav class="footer-links"><a href="boutique.html?category=sneakers">Sneakers</a><a href="boutique.html?category=vetements">Vêtements</a><a href="boutique.html?filter=sale">Soldes</a></nav></div>
+        <div class="footer-col"><h4>Marques</h4><nav class="footer-links"><a href="#nike">Nike</a><a href="#adidas">Adidas</a><a href="#new-balance">New Balance</a></nav></div>
+        <div class="footer-col"><h4>Service</h4><nav class="footer-links"><a href="contact.html">Contact</a><a href="contact.html#faq">FAQ</a><a href="#">Livraison</a></nav></div>
+        <div class="footer-col"><h4>À propos</h4><nav class="footer-links"><a href="a-propos.html">Notre histoire</a><a href="#">Fidélité</a></nav></div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 LUXE BRAND — Produits authentiques agréés</span>
+        <div class="footer-payment-methods"><span class="payment-icon">VISA</span><span class="payment-icon">MC</span><span class="payment-icon">PayPal</span><span class="payment-icon">Stripe</span></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cart & Search -->
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Panier" role="dialog">
+    <div class="cart-header"><div class="cart-header-info"><h3>Mon Panier</h3><span id="cart-item-label">0 article</span></div><button class="cart-close" id="cart-close"><i class="fas fa-times"></i></button></div>
+    <div class="cart-items" id="cart-items-container"><div class="cart-empty" id="cart-empty-state"><i class="fas fa-shopping-bag"></i><h4>Panier vide</h4><p>Ajoutez des produits</p></div></div>
+    <div id="cart-promo-section" class="cart-promo" style="display:none;"><div class="cart-promo-inner"><input type="text" placeholder="Code promo" id="promo-input"><button id="apply-promo">Appliquer</button></div></div>
+    <div class="cart-footer" id="cart-footer" style="display:none;">
+      <div class="cart-totals"><div class="cart-total-row"><span>Sous-total</span><span id="cart-subtotal">0,00 €</span></div><div class="cart-total-row total"><span>Total</span><span id="cart-total">0,00 €</span></div></div>
+      <div class="cart-free-shipping" id="cart-shipping-msg"><i class="fas fa-truck"></i><span id="cart-shipping-text">Livraison offerte dès 150€</span></div>
+      <button class="cart-checkout-btn"><i class="fas fa-lock"></i> Passer la commande</button>
+      <a class="cart-continue" id="cart-close-link">Continuer</a>
+    </div>
+  </aside>
+
+  <div class="search-overlay" id="search-overlay">
+    <div class="search-inner">
+      <div class="search-input-wrap">
+        <i class="fas fa-search"></i>
+        <input type="search" id="search-input" placeholder="Rechercher..." autocomplete="off">
+        <button class="search-close" id="search-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="search-suggestions"><h4>Populaires</h4><div class="search-tags"><span class="search-tag" onclick="doSearch('Nike')">Nike</span><span class="search-tag" onclick="doSearch('Adidas Samba')">Adidas Samba</span></div></div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+  // Brand filter tabs (UI only demo)
+  document.querySelectorAll('.brand-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.brand-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      showToast(`Filtrer par : ${tab.textContent}`, 'info');
+    });
+  });
+
+  // Scroll to anchor from URL
+  document.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash;
+    if (hash) {
+      setTimeout(() => {
+        const el = document.querySelector(hash);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+    }
+  });
+  </script>
+</body>
+</html>

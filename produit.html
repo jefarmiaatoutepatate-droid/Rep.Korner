@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="meta-title">Produit — LUXE BRAND</title>
+  <meta name="description" id="meta-desc" content="Fiche produit LUXE BRAND — Produit authentique, livraison rapide.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .product-page { padding: 40px 0 100px; }
+    .product-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--gray-400); margin-bottom: 40px; flex-wrap: wrap; }
+    .product-breadcrumb a { color: var(--gray-500); transition: var(--transition-fast); }
+    .product-breadcrumb a:hover { color: var(--black); }
+    .product-breadcrumb i { font-size: 0.6rem; }
+
+    /* Product Layout */
+    .product-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    /* ── Gallery ── */
+    .product-gallery { position: sticky; top: calc(var(--nav-height) + 24px); }
+    .gallery-main {
+      position: relative;
+      aspect-ratio: 1/1;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--gray-50);
+      margin-bottom: 12px;
+      cursor: zoom-in;
+    }
+    .gallery-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .gallery-main.zoomed { cursor: zoom-out; }
+    .gallery-main.zoomed img { transform: scale(1.8); }
+    .gallery-main:not(.zoomed) img:hover { transform: scale(1.04); }
+
+    .gallery-zoom-hint {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-full);
+      padding: 6px 12px;
+      font-size: 0.72rem;
+      color: var(--gray-500);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+      transition: var(--transition);
+    }
+    .gallery-main.zoomed .gallery-zoom-hint { opacity: 0; }
+
+    .gallery-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .gallery-thumbs {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    .gallery-thumbs::-webkit-scrollbar { display: none; }
+    .gallery-thumb {
+      width: 80px;
+      height: 80px;
+      flex-shrink: 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      background: var(--gray-100);
+    }
+    .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .gallery-thumb.active { border-color: var(--black); }
+    .gallery-thumb:hover { border-color: var(--gray-400); }
+
+    /* ── Product Info ── */
+    .product-info {}
+    .product-brand-link {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+      transition: var(--transition-fast);
+    }
+    .product-brand-link:hover { color: var(--accent-dark); }
+    .product-name {
+      font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .product-rating-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .product-stars { font-size: 1rem; color: var(--accent); letter-spacing: 2px; }
+    .product-reviews-link {
+      font-size: 0.875rem;
+      color: var(--gray-400);
+      text-decoration: underline;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    .product-reviews-link:hover { color: var(--black); }
+    .verified-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    /* Price */
+    .product-price-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .product-price-current {
+      font-size: 2rem;
+      font-weight: 800;
+      font-family: var(--font-display);
+    }
+    .product-price-original {
+      font-size: 1.2rem;
+      color: var(--gray-400);
+      text-decoration: line-through;
+    }
+    .product-price-save {
+      background: var(--danger);
+      color: var(--white);
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 700;
+    }
+
+    /* Stock indicator */
+    .stock-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      margin-bottom: 28px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+    }
+    .stock-indicator.in-stock { background: rgba(34, 197, 94, 0.08); color: var(--success); }
+    .stock-indicator.low-stock { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .stock-indicator.out-stock { background: rgba(239, 68, 68, 0.08); color: var(--danger); }
+    .stock-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .in-stock .stock-dot { background: var(--success); }
+    .low-stock .stock-dot { background: var(--warning); animation: pulse-dot 1.5s infinite; }
+    .out-stock .stock-dot { background: var(--danger); }
+
+    /* Color selector */
+    .product-option-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .product-option-label span { color: var(--black); font-weight: 600; }
+
+    .color-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .color-option {
+      padding: 8px 16px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      background: var(--white);
+    }
+    .color-option:hover, .color-option.active {
+      border-color: var(--black);
+      background: var(--black);
+      color: var(--white);
+    }
+
+    /* Size selector */
+    .size-section { margin-bottom: 28px; }
+    .size-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .size-guide-link {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      text-decoration: underline;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: var(--transition-fast);
+    }
+    .size-guide-link:hover { color: var(--black); }
+    .product-sizes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .size-option {
+      min-width: 56px;
+      height: 48px;
+      padding: 0 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .size-option:hover { border-color: var(--black); }
+    .size-option.active { border-color: var(--black); background: var(--black); color: var(--white); }
+    .size-option.unavailable { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+    .size-option.unavailable:hover { border-color: var(--gray-200); background: var(--white); color: var(--black); }
+
+    /* Quantity */
+    .qty-selector {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .qty-selector-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-500); }
+    .qty-control {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    .qty-control button {
+      width: 44px;
+      height: 48px;
+      border: none;
+      background: var(--white);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-600);
+    }
+    .qty-control button:hover { background: var(--black); color: var(--white); }
+    .qty-control span {
+      width: 56px;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 700;
+      border-left: 1.5px solid var(--gray-200);
+      border-right: 1.5px solid var(--gray-200);
+    }
+
+    /* CTA buttons */
+    .product-cta {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .btn-add-cart {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 18px;
+      background: var(--black);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-add-cart:hover { background: var(--gray-800); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .btn-add-cart:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-wishlist-full {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px;
+      background: transparent;
+      color: var(--black);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-wishlist-full:hover { border-color: var(--black); }
+    .btn-wishlist-full.active { border-color: var(--danger); color: var(--danger); }
+
+    /* Trust badges */
+    .trust-badges {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+      padding: 20px;
+      background: var(--gray-50);
+      border-radius: var(--radius-md);
+    }
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: var(--gray-600);
+    }
+    .trust-badge i { color: var(--success); font-size: 1rem; flex-shrink: 0; }
+
+    /* Payment icons */
+    .payment-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-top: 20px;
+      border-top: 1px solid var(--gray-100);
+    }
+    .payment-row span { font-size: 0.78rem; color: var(--gray-400); margin-right: 4px; }
+
+    /* Tabs */
+    .product-tabs { margin-top: 80px; }
+    .tabs-nav {
+      display: flex;
+      border-bottom: 1px solid var(--gray-200);
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tab-btn {
+      padding: 14px 24px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    .tab-btn.active { color: var(--black); border-bottom-color: var(--black); }
+    .tab-btn:hover { color: var(--black); }
+    .tab-content { padding: 40px 0; display: none; }
+    .tab-content.active { display: block; }
+
+    /* Description tab */
+    .product-description { max-width: 720px; }
+    .product-description p { font-size: 0.95rem; color: var(--gray-600); line-height: 1.8; margin-bottom: 16px; }
+    .product-features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 24px; }
+    .product-feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      padding: 12px;
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+    }
+    .product-feature i { color: var(--accent); margin-top: 2px; font-size: 0.85rem; flex-shrink: 0; }
+
+    /* Reviews tab */
+    .reviews-summary {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+      align-items: center;
+    }
+    .reviews-score-big { text-align: center; }
+    .reviews-score-big .score { font-size: 4rem; font-weight: 800; font-family: var(--font-display); line-height: 1; }
+    .reviews-score-big .score-stars { font-size: 1.5rem; color: var(--accent); letter-spacing: 3px; margin: 8px 0; }
+    .reviews-score-big .score-count { font-size: 0.875rem; color: var(--gray-400); }
+    .reviews-bars { display: flex; flex-direction: column; gap: 8px; }
+    .review-bar-row { display: flex; align-items: center; gap: 12px; }
+    .review-bar-label { font-size: 0.875rem; color: var(--gray-500); min-width: 60px; text-align: right; }
+    .review-bar-track { flex: 1; height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
+    .review-bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 1s ease; }
+    .review-bar-count { font-size: 0.8rem; color: var(--gray-400); min-width: 32px; }
+
+    .review-card {
+      border: 1px solid var(--gray-100);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: var(--transition);
+    }
+    .review-card:hover { border-color: var(--gray-200); box-shadow: var(--shadow-sm); }
+    .review-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+    .review-author-info { display: flex; align-items: center; gap: 12px; }
+    .review-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .review-author h4 { font-family: var(--font-primary); font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; }
+    .review-author span { font-size: 0.75rem; color: var(--gray-400); }
+    .review-stars { color: var(--accent); font-size: 0.875rem; letter-spacing: 1px; }
+    .review-title { font-weight: 600; font-family: var(--font-primary); margin-bottom: 8px; font-size: 0.95rem; }
+    .review-text { font-size: 0.875rem; color: var(--gray-600); line-height: 1.7; }
+    .review-verified { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; color: var(--success); font-weight: 600; margin-top: 12px; }
+
+    /* Similar products */
+    .similar-section { padding: 80px 0; }
+
+    @media (max-width: 1024px) {
+      .product-layout { grid-template-columns: 1fr; gap: 40px; }
+      .product-gallery { position: static; }
+      .reviews-summary { grid-template-columns: 1fr; gap: 24px; }
+    }
+    @media (max-width: 640px) {
+      .trust-badges { grid-template-columns: 1fr; }
+      .product-features { grid-template-columns: 1fr; }
+      .product-price-current { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="announcement-bar">
+    🎁 Livraison offerte dès 150€ &nbsp;|&nbsp; Retours gratuits 30 jours &nbsp;|&nbsp; Paiement 3× sans frais
+  </div>
+
+  <nav id="navbar" aria-label="Navigation principale">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo">LUXE<span>.</span></a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="boutique.html" class="nav-link active">Boutique</a>
+        <a href="marques.html" class="nav-link">Marques</a>
+        <a href="a-propos.html" class="nav-link">À Propos</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="nav-icon-btn" id="search-btn" aria-label="Rechercher"><i class="fas fa-search"></i></button>
+        <button class="nav-icon-btn" id="wishlist-btn" aria-label="Favoris"><i class="far fa-heart"></i><span class="nav-badge" id="wishlist-count" style="display:none">0</span></button>
+        <button class="nav-icon-btn" id="cart-btn" aria-label="Panier"><i class="fas fa-shopping-bag"></i><span class="nav-badge" id="cart-count">0</span></button>
+        <button class="nav-icon-btn" aria-label="Compte"><i class="far fa-user"></i></button>
+        <button class="hamburger" id="hamburger-btn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <div id="mobile-menu">
+    <a href="index.html" class="mobile-nav-link">Accueil</a>
+    <a href="boutique.html" class="mobile-nav-link">Boutique</a>
+    <a href="marques.html" class="mobile-nav-link">Marques</a>
+    <a href="a-propos.html" class="mobile-nav-link">À Propos</a>
+    <a href="contact.html" class="mobile-nav-link">Contact</a>
+  </div>
+
+  <main class="container product-page" style="margin-top:calc(var(--nav-height) + 40px);">
+
+    <!-- Breadcrumb -->
+    <nav class="product-breadcrumb" id="product-breadcrumb" aria-label="Fil d'Ariane">
+      <a href="index.html">Accueil</a>
+      <i class="fas fa-chevron-right"></i>
+      <a href="boutique.html">Boutique</a>
+      <i class="fas fa-chevron-right"></i>
+      <span id="bc-category">Chargement...</span>
+      <i class="fas fa-chevron-right"></i>
+      <span id="bc-product">—</span>
+    </nav>
+
+    <!-- Product Layout -->
+    <div class="product-layout" id="product-layout">
+
+      <!-- Gallery -->
+      <div class="product-gallery">
+        <div class="gallery-main reveal" id="gallery-main" role="img" aria-label="Image principale du produit">
+          <img id="gallery-main-img" src="" alt="" loading="eager">
+          <div class="gallery-badge" id="gallery-badges"></div>
+          <div class="gallery-zoom-hint">
+            <i class="fas fa-search-plus"></i> Cliquer pour zoomer
+          </div>
+        </div>
+        <div class="gallery-thumbs" id="gallery-thumbs" role="list" aria-label="Vignettes du produit"></div>
+      </div>
+
+      <!-- Info -->
+      <div class="product-info reveal">
+        <a href="#" class="product-brand-link" id="product-brand-link">Chargement…</a>
+        <h1 class="product-name" id="product-name">Chargement du produit…</h1>
+
+        <div class="product-rating-row">
+          <span class="product-stars" id="product-stars">★★★★★</span>
+          <a class="product-reviews-link" onclick="document.getElementById('tab-reviews').click();" id="product-review-count">— avis</a>
+          <span class="verified-badge"><i class="fas fa-check-circle"></i> Authentifié</span>
+        </div>
+
+        <div class="product-price-wrap">
+          <span class="product-price-current" id="product-price-current">—</span>
+          <span class="product-price-original" id="product-price-original" style="display:none">—</span>
+          <span class="product-price-save" id="product-price-save" style="display:none">—</span>
+        </div>
+
+        <!-- Stock -->
+        <div class="stock-indicator in-stock" id="stock-indicator">
+          <span class="stock-dot"></span>
+          <span id="stock-text">En stock</span>
+        </div>
+
+        <!-- Color -->
+        <div id="color-section">
+          <p class="product-option-label">Couleur — <span id="selected-color-label">—</span></p>
+          <div class="color-options" id="color-options"></div>
+        </div>
+
+        <!-- Size -->
+        <div class="size-section">
+          <div class="size-header">
+            <p class="product-option-label" style="margin-bottom:0;">Taille — <span id="selected-size-label">Sélectionnez</span></p>
+            <button class="size-guide-link" onclick="showToast('Guide des tailles disponible en contactant notre service client.','info')">
+              <i class="fas fa-ruler"></i> Guide des tailles
+            </button>
+          </div>
+          <div class="product-sizes" id="product-sizes"></div>
+        </div>
+
+        <!-- Quantity -->
+        <div class="qty-selector">
+          <span class="qty-selector-label">Quantité</span>
+          <div class="qty-control">
+            <button onclick="changeQty(-1)" aria-label="Diminuer">−</button>
+            <span id="qty-display">1</span>
+            <button onclick="changeQty(1)" aria-label="Augmenter">+</button>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="product-cta">
+          <button class="btn-add-cart" id="add-to-cart-btn" onclick="addCurrentProductToCart()">
+            <i class="fas fa-shopping-bag"></i> Ajouter au panier
+          </button>
+          <button class="btn-wishlist-full" id="wishlist-btn-full" onclick="toggleCurrentWishlist()">
+            <i class="far fa-heart" id="wishlist-icon-full"></i>
+            <span id="wishlist-text-full">Ajouter aux favoris</span>
+          </button>
+        </div>
+
+        <!-- Trust badges -->
+        <div class="trust-badges">
+          <div class="trust-badge">
+            <i class="fas fa-shield-alt"></i>
+            <span>Produit 100% authentique</span>
+          </div>
+          <div class="trust-badge">
+            <i class="fas fa-truck"></i>
+            <span>Livraison express 24-48h</span>
+          </div>
+          <div class="trust-badge">
+            <i class="fas fa-undo"></i>
+            <span>Retours gratuits 30 jours</span>
+          </div>
+          <div class="trust-badge">
+            <i class="fas fa-lock"></i>
+            <span>Paiement sécurisé SSL</span>
+          </div>
+        </div>
+
+        <!-- Payments -->
+        <div class="payment-row">
+          <span>Paiement accepté :</span>
+          <span class="payment-icon" style="background:var(--gray-100);color:var(--black);">VISA</span>
+          <span class="payment-icon" style="background:var(--gray-100);color:var(--black);">MC</span>
+          <span class="payment-icon" style="background:var(--gray-100);color:var(--black);">AMEX</span>
+          <span class="payment-icon" style="background:var(--gray-100);color:var(--black);">PayPal</span>
+          <span class="payment-icon" style="background:var(--gray-100);color:var(--black);">Apple Pay</span>
+          <span style="font-size:0.75rem;color:var(--gray-400);margin-left:8px;"><i class="fas fa-credit-card"></i> 3× sans frais</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TABS ── -->
+    <div class="product-tabs">
+      <div class="tabs-nav" role="tablist">
+        <button class="tab-btn active" id="tab-description" role="tab" aria-selected="true" onclick="switchTab('description')">Description</button>
+        <button class="tab-btn" id="tab-details" role="tab" aria-selected="false" onclick="switchTab('details')">Caractéristiques</button>
+        <button class="tab-btn" id="tab-reviews" role="tab" aria-selected="false" onclick="switchTab('reviews')">Avis clients</button>
+        <button class="tab-btn" id="tab-delivery" role="tab" aria-selected="false" onclick="switchTab('delivery')">Livraison & Retours</button>
+      </div>
+
+      <!-- Description -->
+      <div class="tab-content active" id="tab-content-description" role="tabpanel">
+        <div class="product-description">
+          <p id="product-description-text">Chargement de la description...</p>
+          <div class="product-features" id="product-features-grid"></div>
+        </div>
+      </div>
+
+      <!-- Details -->
+      <div class="tab-content" id="tab-content-details" role="tabpanel">
+        <table style="width:100%;max-width:600px;border-collapse:collapse;">
+          <tbody id="details-table">
+            <tr style="border-bottom:1px solid var(--gray-100);">
+              <td style="padding:14px 0;font-size:.875rem;font-weight:600;width:200px;color:var(--gray-500);">Marque</td>
+              <td style="font-size:.875rem;" id="detail-brand">—</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--gray-100);">
+              <td style="padding:14px 0;font-size:.875rem;font-weight:600;color:var(--gray-500);">Référence</td>
+              <td style="font-size:.875rem;" id="detail-ref">—</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--gray-100);">
+              <td style="padding:14px 0;font-size:.875rem;font-weight:600;color:var(--gray-500);">Catégorie</td>
+              <td style="font-size:.875rem;" id="detail-category">—</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--gray-100);">
+              <td style="padding:14px 0;font-size:.875rem;font-weight:600;color:var(--gray-500);">Couleurs disponibles</td>
+              <td style="font-size:.875rem;" id="detail-colors">—</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--gray-100);">
+              <td style="padding:14px 0;font-size:.875rem;font-weight:600;color:var(--gray-500);">Tailles disponibles</td>
+              <td style="font-size:.875rem;" id="detail-sizes">—</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--gray-100);">
+              <td style="padding:14px 0;font-size:.875rem;font-weight:600;color:var(--gray-500);">Genre</td>
+              <td style="font-size:.875rem;" id="detail-gender">—</td>
+            </tr>
+            <tr>
+              <td style="padding:14px 0;font-size:.875rem;font-weight:600;color:var(--gray-500);">Authenticité</td>
+              <td style="font-size:.875rem;color:var(--success);font-weight:600;"><i class="fas fa-check-circle"></i> 100% authentique, certificat inclus</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Reviews -->
+      <div class="tab-content" id="tab-content-reviews" role="tabpanel">
+        <div class="reviews-summary">
+          <div class="reviews-score-big">
+            <div class="score" id="reviews-score">4.8</div>
+            <div class="score-stars">★★★★★</div>
+            <div class="score-count" id="reviews-total">sur 342 avis</div>
+          </div>
+          <div class="reviews-bars">
+            <div class="review-bar-row">
+              <span class="review-bar-label">5 ★</span>
+              <div class="review-bar-track"><div class="review-bar-fill" style="width:72%"></div></div>
+              <span class="review-bar-count">72%</span>
+            </div>
+            <div class="review-bar-row">
+              <span class="review-bar-label">4 ★</span>
+              <div class="review-bar-track"><div class="review-bar-fill" style="width:18%"></div></div>
+              <span class="review-bar-count">18%</span>
+            </div>
+            <div class="review-bar-row">
+              <span class="review-bar-label">3 ★</span>
+              <div class="review-bar-track"><div class="review-bar-fill" style="width:7%"></div></div>
+              <span class="review-bar-count">7%</span>
+            </div>
+            <div class="review-bar-row">
+              <span class="review-bar-label">2 ★</span>
+              <div class="review-bar-track"><div class="review-bar-fill" style="width:2%"></div></div>
+              <span class="review-bar-count">2%</span>
+            </div>
+            <div class="review-bar-row">
+              <span class="review-bar-label">1 ★</span>
+              <div class="review-bar-track"><div class="review-bar-fill" style="width:1%"></div></div>
+              <span class="review-bar-count">1%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review cards -->
+        <div id="reviews-list">
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-author-info">
+                <div class="review-avatar">👨</div>
+                <div class="review-author">
+                  <h4>Thomas M.</h4>
+                  <span>Paris · 12 janv. 2026</span>
+                </div>
+              </div>
+              <div class="review-stars">★★★★★</div>
+            </div>
+            <div class="review-title">Parfait, exactement comme en boutique officielle</div>
+            <p class="review-text">Produit en excellent état, authentique comme annoncé. L'emballage était impeccable avec le certificat d'authenticité. La livraison en 24h est un vrai plus. Je recommande vivement !</p>
+            <div class="review-verified"><i class="fas fa-check-circle"></i> Achat vérifié</div>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-author-info">
+                <div class="review-avatar">👩</div>
+                <div class="review-author">
+                  <h4>Camille D.</h4>
+                  <span>Lyon · 3 fév. 2026</span>
+                </div>
+              </div>
+              <div class="review-stars">★★★★★</div>
+            </div>
+            <div class="review-title">Guide des tailles très utile</div>
+            <p class="review-text">J'avais peur de me tromper de taille mais le guide est très précis. Le produit est magnifique, la qualité est irréprochable. Ma nouvelle référence pour l'achat de sneakers.</p>
+            <div class="review-verified"><i class="fas fa-check-circle"></i> Achat vérifié</div>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-author-info">
+                <div class="review-avatar">🧑</div>
+                <div class="review-author">
+                  <h4>Antoine P.</h4>
+                  <span>Bordeaux · 18 mars 2026</span>
+                </div>
+              </div>
+              <div class="review-stars">★★★★☆</div>
+            </div>
+            <div class="review-title">Très bon produit, livraison rapide</div>
+            <p class="review-text">Satisfait dans l'ensemble. Le produit correspond parfaitement à la description. Je retire une étoile car le délai de livraison a été un peu plus long que prévu, mais le produit en vaut la peine.</p>
+            <div class="review-verified"><i class="fas fa-check-circle"></i> Achat vérifié</div>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" style="margin-top:24px;" onclick="showToast('Chargement de plus d\'avis...','info')">
+          Voir plus d'avis <i class="fas fa-arrow-down"></i>
+        </button>
+      </div>
+
+      <!-- Delivery -->
+      <div class="tab-content" id="tab-content-delivery" role="tabpanel">
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:700px;">
+          <div style="padding:24px;background:var(--gray-50);border-radius:var(--radius-md);">
+            <div style="font-size:1.5rem;margin-bottom:12px;">🚚</div>
+            <h4 style="font-family:var(--font-primary);font-size:.95rem;font-weight:700;margin-bottom:8px;">Livraison standard</h4>
+            <p style="font-size:.875rem;color:var(--gray-500);line-height:1.6;">3-5 jours ouvrés. Gratuite dès 150€ d'achat, sinon 5,99€.</p>
+          </div>
+          <div style="padding:24px;background:var(--gray-50);border-radius:var(--radius-md);">
+            <div style="font-size:1.5rem;margin-bottom:12px;">⚡</div>
+            <h4 style="font-family:var(--font-primary);font-size:.95rem;font-weight:700;margin-bottom:8px;">Livraison express</h4>
+            <p style="font-size:.875rem;color:var(--gray-500);line-height:1.6;">24-48h. Disponible pour 9,99€ supplémentaires.</p>
+          </div>
+          <div style="padding:24px;background:var(--gray-50);border-radius:var(--radius-md);">
+            <div style="font-size:1.5rem;margin-bottom:12px;">↩️</div>
+            <h4 style="font-family:var(--font-primary);font-size:.95rem;font-weight:700;margin-bottom:8px;">Retours gratuits</h4>
+            <p style="font-size:.875rem;color:var(--gray-500);line-height:1.6;">30 jours pour changer d'avis. Retour gratuit avec étiquette prépayée.</p>
+          </div>
+          <div style="padding:24px;background:var(--gray-50);border-radius:var(--radius-md);">
+            <div style="font-size:1.5rem;margin-bottom:12px;">🔒</div>
+            <h4 style="font-family:var(--font-primary);font-size:.95rem;font-weight:700;margin-bottom:8px;">Garantie authenticité</h4>
+            <p style="font-size:.875rem;color:var(--gray-500);line-height:1.6;">Chaque produit est authentifié et livré avec son certificat original.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Similar products -->
+  <section class="similar-section" style="background:var(--gray-50);">
+    <div class="container">
+      <div class="section-header-row">
+        <div>
+          <span class="section-eyebrow">Vous pourriez aimer</span>
+          <h2 class="section-title">Produits similaires</h2>
+        </div>
+        <a href="boutique.html" class="btn btn-secondary">Voir tout <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="products-grid" id="similar-products-grid"></div>
+    </div>
+  </section>
+
+  <!-- Cart -->
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Panier" role="dialog">
+    <div class="cart-header">
+      <div class="cart-header-info"><h3>Mon Panier</h3><span id="cart-item-label">0 article</span></div>
+      <button class="cart-close" id="cart-close" aria-label="Fermer"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="cart-items" id="cart-items-container">
+      <div class="cart-empty" id="cart-empty-state"><i class="fas fa-shopping-bag"></i><h4>Panier vide</h4><p>Ajoutez des produits pour commencer</p></div>
+    </div>
+    <div id="cart-promo-section" class="cart-promo" style="display:none;"><div class="cart-promo-inner"><input type="text" placeholder="Code promo" id="promo-input"><button id="apply-promo">Appliquer</button></div></div>
+    <div class="cart-footer" id="cart-footer" style="display:none;">
+      <div class="cart-totals">
+        <div class="cart-total-row"><span>Sous-total</span><span id="cart-subtotal">0,00 €</span></div>
+        <div class="cart-total-row"><span>Livraison</span><span id="cart-shipping">—</span></div>
+        <div class="cart-total-row total"><span>Total</span><span id="cart-total">0,00 €</span></div>
+      </div>
+      <div class="cart-free-shipping" id="cart-shipping-msg"><i class="fas fa-truck"></i><span id="cart-shipping-text">Livraison offerte dès 150€</span></div>
+      <button class="cart-checkout-btn" onclick="showToast('Redirection paiement sécurisé...','info')"><i class="fas fa-lock"></i> Passer la commande</button>
+      <a class="cart-continue" id="cart-close-link">Continuer mes achats</a>
+    </div>
+  </aside>
+
+  <div class="search-overlay" id="search-overlay">
+    <div class="search-inner">
+      <div class="search-input-wrap">
+        <i class="fas fa-search"></i>
+        <input type="search" id="search-input" placeholder="Rechercher..." autocomplete="off">
+        <button class="search-close" id="search-close" aria-label="Fermer"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="search-suggestions"><h4>Populaires</h4>
+        <div class="search-tags">
+          <span class="search-tag" onclick="doSearch('Nike')">Nike</span>
+          <span class="search-tag" onclick="doSearch('Adidas')">Adidas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+  let currentProduct = null;
+  let selectedSize = null;
+  let selectedColor = null;
+  let qty = 1;
+
+  // ── Load product ──
+  function loadProduct() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    let product = id ? getProductById(id) : PRODUCTS[0];
+    if (!product) product = PRODUCTS[0];
+    currentProduct = product;
+
+    // Meta
+    document.getElementById('meta-title').textContent = `${product.brand} ${product.name} — LUXE BRAND`;
+    document.getElementById('meta-desc').content = product.description;
+
+    // Breadcrumb
+    const labels = { sneakers: 'Sneakers', vetements: 'Vêtements', accessoires: 'Accessoires' };
+    document.getElementById('bc-category').textContent = labels[product.category] || product.category;
+    document.getElementById('bc-product').textContent = product.name;
+
+    // Brand
+    const brandLink = document.getElementById('product-brand-link');
+    brandLink.textContent = product.brand;
+    brandLink.href = `marques.html#${product.brand.toLowerCase().replace(' ', '-')}`;
+
+    // Name & rating
+    document.getElementById('product-name').textContent = product.name;
+    const stars = '★'.repeat(Math.round(product.rating)) + '☆'.repeat(5 - Math.round(product.rating));
+    document.getElementById('product-stars').textContent = stars;
+    document.getElementById('product-review-count').textContent = `${product.reviews.toLocaleString('fr-FR')} avis`;
+
+    // Price
+    document.getElementById('product-price-current').textContent = formatPrice(product.price);
+    if (product.originalPrice) {
+      document.getElementById('product-price-original').textContent = formatPrice(product.originalPrice);
+      document.getElementById('product-price-original').style.display = 'inline';
+      document.getElementById('product-price-save').textContent = `-${product.discount}%`;
+      document.getElementById('product-price-save').style.display = 'inline-flex';
+    }
+
+    // Stock
+    const stockEl = document.getElementById('stock-indicator');
+    const stockText = document.getElementById('stock-text');
+    if (product.stock === 0) {
+      stockEl.className = 'stock-indicator out-stock';
+      stockText.textContent = 'Rupture de stock';
+      document.getElementById('add-to-cart-btn').disabled = true;
+    } else if (product.stock <= 5) {
+      stockEl.className = 'stock-indicator low-stock';
+      stockText.textContent = `Stock limité — Plus que ${product.stock} disponible${product.stock > 1 ? 's' : ''}`;
+    } else {
+      stockEl.className = 'stock-indicator in-stock';
+      stockText.textContent = `En stock (${product.stock} disponibles)`;
+    }
+
+    // Colors
+    const colorOptions = document.getElementById('color-options');
+    selectedColor = product.colors[0];
+    document.getElementById('selected-color-label').textContent = selectedColor;
+    product.colors.forEach((c, i) => {
+      const btn = document.createElement('button');
+      btn.className = `color-option ${i === 0 ? 'active' : ''}`;
+      btn.textContent = c;
+      btn.addEventListener('click', () => {
+        colorOptions.querySelectorAll('.color-option').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedColor = c;
+        document.getElementById('selected-color-label').textContent = c;
+      });
+      colorOptions.appendChild(btn);
+    });
+
+    // Sizes
+    const sizesContainer = document.getElementById('product-sizes');
+    product.sizes.forEach(s => {
+      const btn = document.createElement('button');
+      btn.className = 'size-option';
+      btn.textContent = s;
+      btn.addEventListener('click', () => {
+        if (btn.classList.contains('unavailable')) return;
+        sizesContainer.querySelectorAll('.size-option').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedSize = s;
+        document.getElementById('selected-size-label').textContent = s;
+      });
+      sizesContainer.appendChild(btn);
+    });
+
+    // Gallery
+    buildGallery(product);
+
+    // Description tab
+    document.getElementById('product-description-text').textContent = product.description;
+    buildFeatures(product);
+
+    // Details tab
+    document.getElementById('detail-brand').textContent = product.brand;
+    document.getElementById('detail-ref').textContent = product.id.toUpperCase().replace(/-/g, ' ');
+    const catLabels = { sneakers: 'Sneakers', vetements: 'Vêtements', accessoires: 'Accessoires' };
+    document.getElementById('detail-category').textContent = `${catLabels[product.category] || product.category} — ${product.subcategory}`;
+    document.getElementById('detail-colors').textContent = product.colors.join(', ');
+    document.getElementById('detail-sizes').textContent = product.sizes.join(', ');
+    document.getElementById('detail-gender').textContent = product.gender.charAt(0).toUpperCase() + product.gender.slice(1);
+
+    // Reviews
+    document.getElementById('reviews-score').textContent = product.rating.toFixed(1);
+    document.getElementById('reviews-total').textContent = `sur ${product.reviews.toLocaleString('fr-FR')} avis`;
+
+    // Wishlist state
+    updateWishlistBtnState();
+
+    // Similar
+    const similar = PRODUCTS.filter(p => p.id !== product.id && (p.category === product.category || p.brand === product.brand)).slice(0, 4);
+    renderGrid('similar-products-grid', similar);
+  }
+
+  function buildGallery(product) {
+    const mainImg = document.getElementById('gallery-main-img');
+    const thumbsContainer = document.getElementById('gallery-thumbs');
+    const badges = document.getElementById('gallery-badges');
+    const main = document.getElementById('gallery-main');
+
+    mainImg.src = product.images[0];
+    mainImg.alt = `${product.brand} ${product.name}`;
+
+    // Badges
+    badges.innerHTML = '';
+    if (product.isNew) badges.innerHTML += '<span class="badge badge-new">Nouveau</span>';
+    if (product.isSale) badges.innerHTML += `<span class="badge badge-sale">-${product.discount}%</span>`;
+    if (product.stock <= 5 && product.stock > 0) badges.innerHTML += '<span class="badge badge-limited">Stock limité</span>';
+
+    // Zoom
+    main.addEventListener('click', () => {
+      main.classList.toggle('zoomed');
+    });
+    main.addEventListener('mousemove', (e) => {
+      if (!main.classList.contains('zoomed')) return;
+      const rect = main.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      mainImg.style.transformOrigin = `${x}% ${y}%`;
+    });
+
+    // Thumbnails
+    thumbsContainer.innerHTML = '';
+    const allImages = [...product.images];
+    if (allImages.length < 4) {
+      allImages.push(product.images[0], product.images[0]);
+    }
+    allImages.slice(0, 5).forEach((src, i) => {
+      const thumb = document.createElement('div');
+      thumb.className = `gallery-thumb ${i === 0 ? 'active' : ''}`;
+      thumb.setAttribute('role', 'listitem');
+      thumb.innerHTML = `<img src="${src}" alt="${product.brand} vue ${i + 1}" loading="lazy">`;
+      thumb.addEventListener('click', () => {
+        mainImg.src = src;
+        thumbsContainer.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+        main.classList.remove('zoomed');
+      });
+      thumbsContainer.appendChild(thumb);
+    });
+  }
+
+  function buildFeatures(product) {
+    const grid = document.getElementById('product-features-grid');
+    const features = [
+      { icon: 'fa-certificate', text: 'Produit 100% authentique avec certificat officiel' },
+      { icon: 'fa-truck', text: 'Livraison express disponible en 24-48h' },
+      { icon: 'fa-undo', text: 'Retour gratuit sous 30 jours' },
+      { icon: 'fa-box', text: 'Emballage premium d\'origine préservé' },
+    ];
+    if (product.tags.includes('bio') || product.tags.includes('naturel')) {
+      features.push({ icon: 'fa-leaf', text: 'Matières naturelles et durables' });
+    }
+    if (product.stock > 10) {
+      features.push({ icon: 'fa-check', text: 'En stock — Expédié sous 24h' });
+    }
+    grid.innerHTML = features.map(f =>
+      `<div class="product-feature"><i class="fas ${f.icon}"></i><span>${f.text}</span></div>`
+    ).join('');
+  }
+
+  // ── Cart & Wishlist actions ──
+  function changeQty(delta) {
+    qty = Math.max(1, Math.min(qty + delta, 10));
+    document.getElementById('qty-display').textContent = qty;
+  }
+
+  function addCurrentProductToCart() {
+    if (!currentProduct) return;
+    if (!selectedSize) {
+      showToast('Veuillez sélectionner une taille', 'error');
+      document.getElementById('product-sizes').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    Store.addToCart(currentProduct.id, selectedSize, selectedColor || currentProduct.colors[0], qty);
+    openCart();
+  }
+
+  function toggleCurrentWishlist() {
+    if (!currentProduct) return;
+    const added = Store.toggleWishlist(currentProduct.id);
+    updateWishlistBtnState();
+  }
+
+  function updateWishlistBtnState() {
+    if (!currentProduct) return;
+    const added = Store.isInWishlist(currentProduct.id);
+    const btn = document.getElementById('wishlist-btn-full');
+    const icon = document.getElementById('wishlist-icon-full');
+    const text = document.getElementById('wishlist-text-full');
+    btn?.classList.toggle('active', added);
+    if (icon) icon.className = (added ? 'fas' : 'far') + ' fa-heart';
+    if (text) text.textContent = added ? 'Dans vos favoris' : 'Ajouter aux favoris';
+  }
+
+  // ── Tabs ──
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.id === `tab-${name}`);
+      btn.setAttribute('aria-selected', btn.id === `tab-${name}` ? 'true' : 'false');
+    });
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.toggle('active', content.id === `tab-content-${name}`);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadProduct();
+    observeReveal();
+  });
+  </script>
+</body>
+</html>
