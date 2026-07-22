@@ -1,0 +1,13 @@
+name = "fitcoach-claude-proxy"
+main = "src/index.ts"
+compatibility_date = "2024-09-01"
+
+# Déploiement :
+#   1. npm i -g wrangler
+#   2. wrangler secret put ANTHROPIC_API_KEY   (colle ta clé, jamais commitée)
+#   3. wrangler deploy
+#   4. Copie l'URL générée dans app.json -> expo.extra.claudeProxyUrl
+#
+# (Optionnel) restreindre l'origine :
+# [vars]
+# ALLOWED_ORIGIN = "https://ton-app"
