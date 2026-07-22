@@ -98,6 +98,7 @@ export default function NutritionScreen() {
   const todayEntries = entries.filter((e) => e.meal_type === meal);
   const mealLabel = MEAL_TYPES.find((m) => m.key === meal)?.label;
   const mealColor = MEAL_TYPES.find((m) => m.key === meal)?.color ?? COLORS.accent;
+  const mealEmoji = MEAL_TYPES.find((m) => m.key === meal)?.emoji ?? '🍽️';
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.bg }}>
@@ -139,7 +140,7 @@ export default function NutritionScreen() {
           <>
             <SectionHeader title="Cache local" />
             <View style={{ gap: 10 }}>
-              {local.slice(0, 6).map((f) => <SuggestionRow key={f.id} c={f} icon="food" color={mealColor} onPress={() => setSelected(f)} />)}
+              {local.slice(0, 6).map((f) => <SuggestionRow key={f.id} c={f} emoji="🍗" color={mealColor} onPress={() => setSelected(f)} />)}
             </View>
           </>
         )}
@@ -149,7 +150,7 @@ export default function NutritionScreen() {
           <>
             <SectionHeader title="En ligne" />
             <View style={{ gap: 10 }}>
-              {remote.map((f, i) => <SuggestionRow key={`${f.name}-${i}`} c={f} icon="apple" color={COLORS.success} onPress={() => setSelected(f)} />)}
+              {remote.map((f, i) => <SuggestionRow key={`${f.name}-${i}`} c={f} emoji="🍎" color={COLORS.success} onPress={() => setSelected(f)} />)}
             </View>
           </>
         )}
@@ -160,7 +161,7 @@ export default function NutritionScreen() {
             <SectionHeader title="Aperçu" />
             <Card style={{ borderColor: COLORS.accent, borderWidth: 1.5 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                <Thumb icon="run" color={COLORS.accent} />
+                <Thumb emoji="🍗" color={COLORS.accent} />
                 <View style={{ flex: 1 }}>
                   <Text style={{ color: COLORS.onLight, fontWeight: '700', fontSize: 15 }}>{selected.name}</Text>
                   <Text style={{ color: COLORS.onLightMuted, fontSize: 12, marginTop: 2 }}>{quantity} g · source {selected.source}</Text>
@@ -188,7 +189,7 @@ export default function NutritionScreen() {
         <View style={{ gap: 8 }}>
           {todayEntries.map((e) => (
             <Card key={e.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-              <Thumb icon="food" size={40} color={mealColor} />
+              <Thumb emoji={mealEmoji} size={40} color={mealColor} />
               <View style={{ flex: 1 }}>
                 <Text style={{ color: COLORS.text, fontWeight: '600', fontSize: 13.5 }}>{e.food_name}</Text>
                 <Text style={{ color: COLORS.faint, fontSize: 11.5 }}>
@@ -263,11 +264,11 @@ function QuickAdd({ meal, onDone }: { meal: MealType; onDone: () => void }) {
   );
 }
 
-function SuggestionRow({ c, icon, color, onPress }: { c: Candidate; icon: string; color: string; onPress: () => void }) {
+function SuggestionRow({ c, emoji, color, onPress }: { c: Candidate; emoji: string; color: string; onPress: () => void }) {
   return (
     <Pressable onPress={onPress}>
       <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        <Thumb icon={icon} size={40} color={color} />
+        <Thumb emoji={emoji} size={40} color={color} />
         <View style={{ flex: 1 }}>
           <Text style={{ color: COLORS.text, fontWeight: '600', fontSize: 13.5 }}>{c.name}</Text>
           <Text style={{ color: COLORS.faint, fontSize: 11.5 }}>

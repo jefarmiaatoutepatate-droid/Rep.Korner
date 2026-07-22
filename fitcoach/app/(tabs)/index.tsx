@@ -76,9 +76,9 @@ export default function HomeScreen() {
 
         {/* Stats — pastilles colorées */}
         <View style={{ flexDirection: 'row', gap: 11, marginTop: 13 }}>
-          <StatTile label="Poids" value="78.6" unit="kg" icon="scale" color={COLORS.accent} />
-          <StatTile label="Objectif" value={String(USER.weight_target_kg)} unit="kg" icon="check" color={COLORS.success} />
-          <StatTile label="Eau" value={daily.water_l.toFixed(1)} unit={`/ ${TARGETS.water_l} L`} icon="drop" color={CATEGORY.post_workout} />
+          <StatTile label="Poids" value="78.6" unit="kg" emoji="⚖️" color={COLORS.accent} />
+          <StatTile label="Objectif" value={String(USER.weight_target_kg)} unit="kg" emoji="🎯" color={COLORS.success} />
+          <StatTile label="Eau" value={daily.water_l.toFixed(1)} unit={`/ ${TARGETS.water_l} L`} emoji="💧" color={CATEGORY.post_workout} />
         </View>
 
         {/* Aujourd'hui : anneau + macros */}
@@ -142,7 +142,7 @@ export default function HomeScreen() {
             return (
               <Pressable key={meal.key} onPress={() => router.push({ pathname: '/nutrition', params: { meal: meal.key } })}>
                 <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 13 }}>
-                  <Thumb icon={meal.icon} color={meal.color} />
+                  <Thumb emoji={meal.emoji} color={meal.color} />
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: COLORS.text, fontWeight: '600', fontSize: 14 }}>{meal.label}</Text>
                     <Text style={{ color: COLORS.faint, fontSize: 11.5, marginTop: 1 }}>

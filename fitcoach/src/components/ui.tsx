@@ -117,8 +117,11 @@ export function Pill({ label, active, onPress, color = COLORS.accent }: { label:
   );
 }
 
-/** Vignette « logo coloré » : icône pleine sur pastille teintée de la même couleur. */
-export function Thumb({ icon, size = 44, color = COLORS.accent }: { icon: string; size?: number; color?: string }) {
+/**
+ * Vignette « logo coloré » : pastille teintée + logo au choix.
+ * `emoji` → logo réaliste (emoji couleur système) ; sinon icône en trait.
+ */
+export function Thumb({ icon, emoji, size = 44, color = COLORS.accent }: { icon?: string; emoji?: string; size?: number; color?: string }) {
   return (
     <View
       style={{
@@ -132,7 +135,11 @@ export function Thumb({ icon, size = 44, color = COLORS.accent }: { icon: string
         borderColor: withAlpha(color, 0.2),
       }}
     >
-      <Icon name={icon} size={size * 0.46} color={color} strokeWidth={1.8} />
+      {emoji ? (
+        <Text style={{ fontSize: size * 0.5 }}>{emoji}</Text>
+      ) : (
+        <Icon name={icon ?? 'home'} size={size * 0.46} color={color} strokeWidth={1.8} />
+      )}
     </View>
   );
 }
@@ -167,13 +174,13 @@ export function IconButton({ icon, onPress, dot, color = COLORS.muted }: { icon:
   );
 }
 
-/** Tuile de statistique — pastille icône colorée + valeur. */
-export function StatTile({ label, value, unit, icon, color = COLORS.accent }: { label: string; value: string; unit?: string; icon?: string; color?: string }) {
+/** Tuile de statistique — pastille logo coloré (emoji ou icône) + valeur. */
+export function StatTile({ label, value, unit, icon, emoji, color = COLORS.accent }: { label: string; value: string; unit?: string; icon?: string; emoji?: string; color?: string }) {
   return (
     <View style={[styles.cardBase, styles.card, styles.softShadow, { padding: 13 }]}>
-      {icon ? (
+      {icon || emoji ? (
         <View style={{ width: 30, height: 30, borderRadius: 9, backgroundColor: withAlpha(color, 0.13), alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-          <Icon name={icon} size={16} color={color} strokeWidth={1.9} />
+          {emoji ? <Text style={{ fontSize: 15 }}>{emoji}</Text> : <Icon name={icon as string} size={16} color={color} strokeWidth={1.9} />}
         </View>
       ) : null}
       <Text style={styles.statK}>{label}</Text>

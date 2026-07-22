@@ -88,7 +88,7 @@ export default function EntrainementScreen() {
             return (
               <Pressable key={s.id} onPress={() => router.push(`/workout/${s.id}`)}>
                 <Card variant={accentCard ? 'accent' : 'default'} style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-                  <Thumb icon={s.id.startsWith('lower') ? 'run' : 'dumbbell'} size={58} color={accentCard ? '#FFFFFF' : c} />
+                  <Thumb emoji={s.id.startsWith('lower') ? '🦵' : '💪'} size={58} color={accentCard ? '#FFFFFF' : c} />
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: eyebrowColor, fontSize: 9.5, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>
                       {i === 0 ? 'À venir · ' : ''}{DAY_FR[s.day] ?? s.day}

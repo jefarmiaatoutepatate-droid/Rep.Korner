@@ -70,6 +70,15 @@ export const TAB_COLOR = {
   bilan: '#E0A100', // ambre
 } as const;
 
+/** Logos réalistes (emoji) des onglets. */
+export const TAB_EMOJI = {
+  index: '🏠',
+  nutrition: '🍽️',
+  entrainement: '🏋️',
+  progression: '📈',
+  bilan: '📊',
+} as const;
+
 /** Dégradé de fond d'écran (très léger sur base blanche). */
 export const BG_GRADIENT = [COLORS.bgTop, COLORS.bg] as const;
 
@@ -83,11 +92,11 @@ export function withAlpha(hex: string, alpha: number): string {
 }
 
 export const MEAL_TYPES = [
-  { key: 'breakfast', label: 'Petit-déjeuner', icon: 'food', color: CATEGORY.breakfast },
-  { key: 'lunch', label: 'Déjeuner', icon: 'food', color: CATEGORY.lunch },
-  { key: 'snack', label: 'Collation', icon: 'apple', color: CATEGORY.snack },
-  { key: 'dinner', label: 'Dîner', icon: 'food', color: CATEGORY.dinner },
-  { key: 'post_workout', label: 'Post-training', icon: 'flame', color: CATEGORY.post_workout },
+  { key: 'breakfast', label: 'Petit-déjeuner', icon: 'food', emoji: '🍳', color: CATEGORY.breakfast },
+  { key: 'lunch', label: 'Déjeuner', icon: 'food', emoji: '🍽️', color: CATEGORY.lunch },
+  { key: 'snack', label: 'Collation', icon: 'apple', emoji: '🍎', color: CATEGORY.snack },
+  { key: 'dinner', label: 'Dîner', icon: 'food', emoji: '🍲', color: CATEGORY.dinner },
+  { key: 'post_workout', label: 'Post-training', icon: 'flame', emoji: '🥤', color: CATEGORY.post_workout },
 ] as const;
 
 export type MealType = (typeof MEAL_TYPES)[number]['key'];
