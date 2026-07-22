@@ -97,6 +97,7 @@ export default function NutritionScreen() {
   const preview = selected ? computeMacros(selected, parseFloat(quantity.replace(',', '.')) || 0) : null;
   const todayEntries = entries.filter((e) => e.meal_type === meal);
   const mealLabel = MEAL_TYPES.find((m) => m.key === meal)?.label;
+  const mealColor = MEAL_TYPES.find((m) => m.key === meal)?.color ?? COLORS.accent;
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.bg }}>
@@ -107,10 +108,10 @@ export default function NutritionScreen() {
       >
         <Text style={{ color: COLORS.text, fontSize: 24, fontWeight: '800', letterSpacing: -0.3, marginBottom: 14 }}>Nutrition</Text>
 
-        {/* Sélecteur de repas */}
+        {/* Sélecteur de repas — pastilles colorées */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 14 }}>
           {MEAL_TYPES.map((m) => (
-            <Pill key={m.key} label={m.label} active={meal === m.key} onPress={() => setMeal(m.key)} />
+            <Pill key={m.key} label={m.label} active={meal === m.key} color={m.color} onPress={() => setMeal(m.key)} />
           ))}
         </ScrollView>
 
@@ -138,7 +139,7 @@ export default function NutritionScreen() {
           <>
             <SectionHeader title="Cache local" />
             <View style={{ gap: 10 }}>
-              {local.slice(0, 6).map((f) => <SuggestionRow key={f.id} c={f} icon="food" onPress={() => setSelected(f)} />)}
+              {local.slice(0, 6).map((f) => <SuggestionRow key={f.id} c={f} icon="food" color={mealColor} onPress={() => setSelected(f)} />)}
             </View>
           </>
         )}
@@ -148,7 +149,7 @@ export default function NutritionScreen() {
           <>
             <SectionHeader title="En ligne" />
             <View style={{ gap: 10 }}>
-              {remote.map((f, i) => <SuggestionRow key={`${f.name}-${i}`} c={f} icon="apple" onPress={() => setSelected(f)} />)}
+              {remote.map((f, i) => <SuggestionRow key={`${f.name}-${i}`} c={f} icon="apple" color={COLORS.success} onPress={() => setSelected(f)} />)}
             </View>
           </>
         )}
@@ -157,9 +158,9 @@ export default function NutritionScreen() {
         {selected && preview && (
           <>
             <SectionHeader title="Aperçu" />
-            <Card variant="light">
+            <Card style={{ borderColor: COLORS.accent, borderWidth: 1.5 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                <Thumb icon="run" light />
+                <Thumb icon="run" color={COLORS.accent} />
                 <View style={{ flex: 1 }}>
                   <Text style={{ color: COLORS.onLight, fontWeight: '700', fontSize: 15 }}>{selected.name}</Text>
                   <Text style={{ color: COLORS.onLightMuted, fontSize: 12, marginTop: 2 }}>{quantity} g · source {selected.source}</Text>
@@ -187,7 +188,7 @@ export default function NutritionScreen() {
         <View style={{ gap: 8 }}>
           {todayEntries.map((e) => (
             <Card key={e.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-              <Thumb icon="food" size={40} />
+              <Thumb icon="food" size={40} color={mealColor} />
               <View style={{ flex: 1 }}>
                 <Text style={{ color: COLORS.text, fontWeight: '600', fontSize: 13.5 }}>{e.food_name}</Text>
                 <Text style={{ color: COLORS.faint, fontSize: 11.5 }}>
@@ -262,11 +263,11 @@ function QuickAdd({ meal, onDone }: { meal: MealType; onDone: () => void }) {
   );
 }
 
-function SuggestionRow({ c, icon, onPress }: { c: Candidate; icon: string; onPress: () => void }) {
+function SuggestionRow({ c, icon, color, onPress }: { c: Candidate; icon: string; color: string; onPress: () => void }) {
   return (
     <Pressable onPress={onPress}>
       <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        <Thumb icon={icon} size={40} />
+        <Thumb icon={icon} size={40} color={color} />
         <View style={{ flex: 1 }}>
           <Text style={{ color: COLORS.text, fontWeight: '600', fontSize: 13.5 }}>{c.name}</Text>
           <Text style={{ color: COLORS.faint, fontSize: 11.5 }}>

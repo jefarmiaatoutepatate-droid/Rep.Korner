@@ -38,7 +38,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: COLORS.bg } }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="workout/[id]" options={{ presentation: 'card' }} />

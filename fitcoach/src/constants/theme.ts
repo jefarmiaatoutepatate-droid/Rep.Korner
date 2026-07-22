@@ -1,65 +1,93 @@
 /**
- * Design system « Nocturne » — sobre & classe.
- * Palette harmonisée : bleu encre profond, un accent périwinkle UNIQUE,
- * surfaces claires mises en avant avec parcimonie, macros désaturées.
- * Source de vérité unique pour toute la couleur de l'app.
+ * Design system « Clair » — base blanche, sobre & classe, logos colorés.
+ * Fond blanc cassé froid, accent périwinkle, une couleur par catégorie
+ * (repas / onglets) pour les pastilles d'icônes colorées.
  */
 export const COLORS = {
-  // Fonds
-  bg: '#0A1120', // encre profonde
-  bgTop: '#101B33', // haut du dégradé d'écran
-  navy: '#0A1120', // alias historique
-  navyLight: '#172743',
+  // Fonds (base blanche)
+  bg: '#F4F6FB', // blanc cassé légèrement froid
+  bgTop: '#FFFFFF', // haut du dégradé d'écran
+  navy: '#FFFFFF', // alias historique
+  navyLight: '#EEF1F8',
 
   // Surfaces
-  card: '#131F38',
-  surface: '#131F38',
-  surface2: '#172743',
-  surfaceHi: '#1E2E50',
-  bgElevated: '#172743',
+  card: '#FFFFFF',
+  surface: '#FFFFFF',
+  surface2: '#F1F4FA',
+  surfaceHi: '#EDF0F7',
+  bgElevated: '#F1F4FA',
 
-  // Surface claire (« touche blanche » — cartes mises en avant)
-  surfaceLight: '#F4F6FC',
+  // (compat) surface « mise en avant »
+  surfaceLight: '#FFFFFF',
   onLight: '#141B33',
   onLightMuted: '#5E6A86',
+  onAccent: '#FFFFFF',
 
   // Lignes
-  border: 'rgba(255,255,255,0.08)',
-  hairline: 'rgba(255,255,255,0.12)',
-  lightBorder: 'rgba(20,27,51,0.08)',
+  border: 'rgba(20,27,51,0.09)',
+  hairline: 'rgba(20,27,51,0.14)',
+  lightBorder: 'rgba(20,27,51,0.09)',
+  trackBg: 'rgba(20,27,51,0.08)',
 
-  // Texte
-  text: '#EDF1FA',
-  muted: '#93A1C0',
-  faint: '#5E6A88',
+  // Texte (encre sur blanc)
+  text: '#141B33',
+  muted: '#5E6A86',
+  faint: '#98A3BC',
 
   // Accent unique
-  accent: '#7C93FF',
-  accent2: '#A3B2FF',
-  accentInk: '#4E5FC7', // accent lisible sur surface claire
-  accentDark: '#4E5FC7',
-  accentSoft: 'rgba(124,147,255,0.14)',
+  accent: '#5B6EF5', // périwinkle plus soutenu, lisible sur blanc
+  accent2: '#8A97FF',
+  accentInk: '#4655C9',
+  accentDark: '#4655C9',
+  accentSoft: 'rgba(91,110,245,0.12)',
 
   // Sémantique
-  success: '#74C29B',
-  warn: '#E0B978',
-  danger: '#E0808A',
+  success: '#1FA97E',
+  warn: '#E0A100',
+  danger: '#E5484D',
 
-  // Macros (désaturées, harmonisées avec l'accent froid)
-  protein: '#82B4E8',
-  carbs: '#D9B26B',
-  fat: '#C98FB0',
+  // Macros
+  protein: '#3B82C4',
+  carbs: '#D69A2E',
+  fat: '#C05E93',
 } as const;
 
-/** Dégradé de fond d'écran (haut → bas). */
+/** Couleurs de catégories (logos colorés) — vives mais harmonisées. */
+export const CATEGORY = {
+  breakfast: '#F59E42', // orange
+  lunch: '#22B07D', // vert
+  snack: '#EC5C8D', // rose
+  dinner: '#7C6CF0', // indigo
+  post_workout: '#2FA8E0', // bleu
+} as const;
+
+/** Couleurs des onglets de la barre du bas (logos colorés). */
+export const TAB_COLOR = {
+  index: '#5B6EF5', // Home — accent
+  nutrition: '#22B07D', // vert
+  entrainement: '#F2683C', // corail
+  progression: '#8B5CF6', // violet
+  bilan: '#E0A100', // ambre
+} as const;
+
+/** Dégradé de fond d'écran (très léger sur base blanche). */
 export const BG_GRADIENT = [COLORS.bgTop, COLORS.bg] as const;
 
+/** Convertit un hex #RRGGBB en rgba(r,g,b,a). */
+export function withAlpha(hex: string, alpha: number): string {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export const MEAL_TYPES = [
-  { key: 'breakfast', label: 'Petit-déjeuner', icon: 'food' },
-  { key: 'lunch', label: 'Déjeuner', icon: 'food' },
-  { key: 'snack', label: 'Collation', icon: 'apple' },
-  { key: 'dinner', label: 'Dîner', icon: 'food' },
-  { key: 'post_workout', label: 'Post-training', icon: 'flame' },
+  { key: 'breakfast', label: 'Petit-déjeuner', icon: 'food', color: CATEGORY.breakfast },
+  { key: 'lunch', label: 'Déjeuner', icon: 'food', color: CATEGORY.lunch },
+  { key: 'snack', label: 'Collation', icon: 'apple', color: CATEGORY.snack },
+  { key: 'dinner', label: 'Dîner', icon: 'food', color: CATEGORY.dinner },
+  { key: 'post_workout', label: 'Post-training', icon: 'flame', color: CATEGORY.post_workout },
 ] as const;
 
 export type MealType = (typeof MEAL_TYPES)[number]['key'];

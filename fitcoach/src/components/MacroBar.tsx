@@ -22,7 +22,7 @@ export function MacroBar({ label, value, target, color, unit = 'g' }: Props) {
           {Math.round(value)} / {target} {unit}
         </Text>
       </View>
-      <View style={{ height: 6, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+      <View style={{ height: 6, borderRadius: 4, backgroundColor: COLORS.trackBg, overflow: 'hidden' }}>
         <View style={{ height: '100%', width: `${p * 100}%`, backgroundColor: color, borderRadius: 4 }} />
       </View>
     </View>

@@ -56,13 +56,13 @@ export default function BilanScreen() {
 
         {report && (
           <>
-            {/* Recommandation — surface claire */}
-            <Card variant="light">
+            {/* Recommandation — carte accent */}
+            <Card variant="accent">
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <Icon name="chart" size={15} color={COLORS.accentInk} strokeWidth={2} />
-                <Text style={{ color: COLORS.accentInk, fontWeight: '700', fontSize: 12.5, textTransform: 'uppercase', letterSpacing: 0.8 }}>Recommandation</Text>
+                <Icon name="chart" size={15} color="#fff" strokeWidth={2} />
+                <Text style={{ color: 'rgba(255,255,255,0.9)', fontWeight: '700', fontSize: 12.5, textTransform: 'uppercase', letterSpacing: 0.8 }}>Recommandation</Text>
               </View>
-              <Text style={{ color: COLORS.onLight, fontSize: 14.5, lineHeight: 21 }}>{report.recommendation}</Text>
+              <Text style={{ color: '#fff', fontSize: 14.5, lineHeight: 21 }}>{report.recommendation}</Text>
             </Card>
 
             <SectionHeader title="Nutrition" />

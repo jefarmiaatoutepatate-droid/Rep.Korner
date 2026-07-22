@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDayStore } from '@/store/dayStore';
 import { TARGETS, USER } from '@/constants/profile';
 import { PROGRAM } from '@/constants/program';
-import { COLORS, MEAL_TYPES } from '@/constants/theme';
+import { COLORS, MEAL_TYPES, CATEGORY, withAlpha } from '@/constants/theme';
 import { ProgressRing } from '@/components/ProgressRing';
 import { MacroBar } from '@/components/MacroBar';
 import { Card, SectionHeader, GradientBg, Avatar, IconButton, Thumb, StatTile } from '@/components/ui';
@@ -51,34 +51,34 @@ export default function HomeScreen() {
           <IconButton icon="bell" dot />
         </View>
 
-        {/* Carte hero — prochaine séance (surface claire) */}
+        {/* Carte hero — prochaine séance (accent) */}
         <Pressable onPress={() => router.push(`/workout/${session.id}`)}>
-          <Card variant="light" style={{ padding: 18 }}>
+          <Card variant="accent" style={{ padding: 18 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <View style={{ flex: 1 }}>
-                <View style={{ alignSelf: 'flex-start', backgroundColor: 'rgba(78,95,199,0.10)', borderWidth: 1, borderColor: 'rgba(78,95,199,0.25)', paddingVertical: 4, paddingHorizontal: 9, borderRadius: 999 }}>
-                  <Text style={{ color: COLORS.accentInk, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                <View style={{ alignSelf: 'flex-start', backgroundColor: 'rgba(255,255,255,0.2)', paddingVertical: 4, paddingHorizontal: 9, borderRadius: 999 }}>
+                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8 }}>
                     Prochaine séance · {WEEKDAYS_FR[ORDER.indexOf(session.day)]}
                   </Text>
                 </View>
-                <Text style={{ color: COLORS.onLight, fontSize: 20, fontWeight: '800', marginTop: 12, letterSpacing: -0.3 }}>{session.name}</Text>
+                <Text style={{ color: '#fff', fontSize: 20, fontWeight: '800', marginTop: 12, letterSpacing: -0.3 }}>{session.name}</Text>
                 <View style={{ flexDirection: 'row', gap: 16, marginTop: 8 }}>
                   <Meta icon="dumbbell" text={`${session.exercises.length} exercices`} />
                   <Meta icon="clock" text="~65 min" />
                 </View>
               </View>
-              <View style={{ width: 46, height: 46, borderRadius: 15, backgroundColor: COLORS.accent, alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name="arrow" size={20} color={COLORS.bg} strokeWidth={2.2} />
+              <View style={{ width: 46, height: 46, borderRadius: 15, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name="arrow" size={20} color={COLORS.accent} strokeWidth={2.2} />
               </View>
             </View>
           </Card>
         </Pressable>
 
-        {/* Stats */}
+        {/* Stats — pastilles colorées */}
         <View style={{ flexDirection: 'row', gap: 11, marginTop: 13 }}>
-          <StatTile label="Poids" value="78.6" unit="kg" />
-          <StatTile label="Objectif" value={String(USER.weight_target_kg)} unit="kg" />
-          <StatTile label="Eau" value={daily.water_l.toFixed(1)} unit={`/ ${TARGETS.water_l} L`} valueColor={COLORS.protein} />
+          <StatTile label="Poids" value="78.6" unit="kg" icon="scale" color={COLORS.accent} />
+          <StatTile label="Objectif" value={String(USER.weight_target_kg)} unit="kg" icon="check" color={COLORS.success} />
+          <StatTile label="Eau" value={daily.water_l.toFixed(1)} unit={`/ ${TARGETS.water_l} L`} icon="drop" color={CATEGORY.post_workout} />
         </View>
 
         {/* Aujourd'hui : anneau + macros */}
@@ -98,11 +98,11 @@ export default function HomeScreen() {
         <View style={{ flexDirection: 'row', gap: 12, marginTop: 12 }}>
           <Card style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 8 }}>
-              <Icon name="drop" size={16} color={COLORS.protein} />
+              <Icon name="drop" size={16} color={CATEGORY.post_workout} />
               <Text style={{ color: COLORS.text, fontWeight: '700', fontSize: 13.5 }}>Hydratation</Text>
             </View>
-            <View style={{ height: 6, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.08)', overflow: 'hidden', marginBottom: 10 }}>
-              <View style={{ height: '100%', width: `${waterPct * 100}%`, backgroundColor: COLORS.protein }} />
+            <View style={{ height: 6, borderRadius: 4, backgroundColor: COLORS.trackBg, overflow: 'hidden', marginBottom: 10 }}>
+              <View style={{ height: '100%', width: `${waterPct * 100}%`, backgroundColor: CATEGORY.post_workout }} />
             </View>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               <WaterBtn label="+25cl" onPress={() => addWater(0.25)} />
@@ -126,14 +126,14 @@ export default function HomeScreen() {
                 alignItems: 'center',
               }}
             >
-              <Text style={{ color: daily.creatine_taken ? COLORS.bg : COLORS.muted, fontWeight: '700', fontSize: 13 }}>
+              <Text style={{ color: daily.creatine_taken ? '#fff' : COLORS.muted, fontWeight: '700', fontSize: 13 }}>
                 {daily.creatine_taken ? '✓ Prise' : 'À prendre'}
               </Text>
             </Pressable>
           </Card>
         </View>
 
-        {/* Repas */}
+        {/* Repas — logos colorés par catégorie */}
         <SectionHeader title="Repas" action="Tout voir" />
         <View style={{ gap: 12 }}>
           {MEAL_TYPES.map((meal) => {
@@ -142,7 +142,7 @@ export default function HomeScreen() {
             return (
               <Pressable key={meal.key} onPress={() => router.push({ pathname: '/nutrition', params: { meal: meal.key } })}>
                 <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 13 }}>
-                  <Thumb icon={meal.icon} />
+                  <Thumb icon={meal.icon} color={meal.color} />
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: COLORS.text, fontWeight: '600', fontSize: 14 }}>{meal.label}</Text>
                     <Text style={{ color: COLORS.faint, fontSize: 11.5, marginTop: 1 }}>
@@ -155,7 +155,9 @@ export default function HomeScreen() {
                       <Text style={{ color: COLORS.faint, fontSize: 11 }}>kcal</Text>
                     </View>
                   ) : (
-                    <Icon name="plus" size={18} color={COLORS.accent} strokeWidth={2} />
+                    <View style={{ width: 30, height: 30, borderRadius: 9, backgroundColor: withAlpha(meal.color, 0.13), alignItems: 'center', justifyContent: 'center' }}>
+                      <Icon name="plus" size={17} color={meal.color} strokeWidth={2.2} />
+                    </View>
                   )}
                 </Card>
               </Pressable>
@@ -170,8 +172,8 @@ export default function HomeScreen() {
 function Meta({ icon, text }: { icon: string; text: string }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-      <Icon name={icon} size={14} color={COLORS.onLightMuted} strokeWidth={1.7} />
-      <Text style={{ color: COLORS.onLightMuted, fontSize: 12.5 }}>{text}</Text>
+      <Icon name={icon} size={14} color="rgba(255,255,255,0.85)" strokeWidth={1.8} />
+      <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 12.5 }}>{text}</Text>
     </View>
   );
 }
@@ -182,7 +184,7 @@ function WaterBtn({ label, onPress }: { label: string; onPress: () => void }) {
       onPress={onPress}
       style={{ flex: 1, backgroundColor: COLORS.surfaceHi, borderColor: COLORS.border, borderWidth: 1, paddingVertical: 8, borderRadius: 11, alignItems: 'center' }}
     >
-      <Text style={{ color: COLORS.protein, fontWeight: '700', fontSize: 12 }}>{label}</Text>
+      <Text style={{ color: CATEGORY.post_workout, fontWeight: '700', fontSize: 12 }}>{label}</Text>
     </Pressable>
   );
 }

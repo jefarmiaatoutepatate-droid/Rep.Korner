@@ -12,6 +12,14 @@ const DAY_FR: Record<string, string> = { monday: 'lundi', tuesday: 'mardi', thur
 const DOW_SHORT = ['dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam'];
 const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
+// Un logo coloré par séance
+const SESSION_COLOR: Record<string, string> = {
+  lower_a: '#F2683C', // corail
+  upper_a: '#8B5CF6', // violet
+  lower_b: '#22B07D', // vert
+  upper_b: '#2FA8E0', // bleu
+};
+
 export default function EntrainementScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -62,8 +70,8 @@ export default function EntrainementScreen() {
                   borderColor: on ? COLORS.accent : COLORS.border,
                 }}
               >
-                <Text style={{ color: on ? COLORS.bg : COLORS.text, fontSize: 15, fontWeight: '700' }}>{d.getDate()}</Text>
-                <Text style={{ color: on ? 'rgba(10,17,32,0.7)' : COLORS.faint, fontSize: 10, marginTop: 3 }}>{DOW_SHORT[d.getDay()]}</Text>
+                <Text style={{ color: on ? '#fff' : COLORS.text, fontSize: 15, fontWeight: '700' }}>{d.getDate()}</Text>
+                <Text style={{ color: on ? 'rgba(255,255,255,0.75)' : COLORS.faint, fontSize: 10, marginTop: 3 }}>{DOW_SHORT[d.getDay()]}</Text>
               </View>
             );
           })}
@@ -72,22 +80,26 @@ export default function EntrainementScreen() {
         <SectionHeader title="Séances" action="4 / semaine" />
         <View style={{ gap: 12 }}>
           {PROGRAM.sessions.map((s, i) => {
-            const light = i === 0;
+            const accentCard = i === 0;
+            const c = SESSION_COLOR[s.id] ?? COLORS.accent;
+            const eyebrowColor = accentCard ? 'rgba(255,255,255,0.85)' : c;
+            const titleColor = accentCard ? '#fff' : COLORS.text;
+            const metaColor = accentCard ? 'rgba(255,255,255,0.85)' : COLORS.muted;
             return (
               <Pressable key={s.id} onPress={() => router.push(`/workout/${s.id}`)}>
-                <Card variant={light ? 'light' : 'default'} style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-                  <Thumb icon={s.id.startsWith('lower') ? 'run' : 'dumbbell'} size={58} light={light} />
+                <Card variant={accentCard ? 'accent' : 'default'} style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+                  <Thumb icon={s.id.startsWith('lower') ? 'run' : 'dumbbell'} size={58} color={accentCard ? '#FFFFFF' : c} />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: light ? COLORS.accentInk : COLORS.accent2, fontSize: 9.5, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>
+                    <Text style={{ color: eyebrowColor, fontSize: 9.5, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>
                       {i === 0 ? 'À venir · ' : ''}{DAY_FR[s.day] ?? s.day}
                     </Text>
-                    <Text style={{ color: light ? COLORS.onLight : COLORS.text, fontSize: 15, fontWeight: '800', marginVertical: 3, letterSpacing: -0.2 }}>{s.name}</Text>
+                    <Text style={{ color: titleColor, fontSize: 15, fontWeight: '800', marginVertical: 3, letterSpacing: -0.2 }}>{s.name}</Text>
                     <View style={{ flexDirection: 'row', gap: 13 }}>
-                      <SessMeta icon="dumbbell" text={`${s.exercises.length} exos`} light={light} />
-                      <SessMeta icon="clock" text="60 min" light={light} />
+                      <SessMeta icon="dumbbell" text={`${s.exercises.length} exos`} color={metaColor} />
+                      <SessMeta icon="clock" text="60 min" color={metaColor} />
                     </View>
                   </View>
-                  <Icon name="chevRight" size={20} color={light ? COLORS.accentInk : COLORS.accent} />
+                  <Icon name="chevRight" size={20} color={accentCard ? '#fff' : c} />
                 </Card>
               </Pressable>
             );
@@ -105,12 +117,11 @@ export default function EntrainementScreen() {
   );
 }
 
-function SessMeta({ icon, text, light }: { icon: string; text: string; light: boolean }) {
-  const c = light ? COLORS.onLightMuted : COLORS.muted;
+function SessMeta({ icon, text, color }: { icon: string; text: string; color: string }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-      <Icon name={icon} size={13} color={c} strokeWidth={1.7} />
-      <Text style={{ color: c, fontSize: 11.5 }}>{text}</Text>
+      <Icon name={icon} size={13} color={color} strokeWidth={1.7} />
+      <Text style={{ color, fontSize: 11.5 }}>{text}</Text>
     </View>
   );
 }

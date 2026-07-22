@@ -1,24 +1,25 @@
-/** Composants UI réutilisables — design system « Nocturne ». */
+/** Composants UI réutilisables — design system « Clair » (base blanche). */
 import React from 'react';
 import { View, Text, Pressable, ViewStyle, StyleSheet, TextStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, BG_GRADIENT } from '@/constants/theme';
+import { COLORS, BG_GRADIENT, withAlpha } from '@/constants/theme';
 import { Icon } from '@/components/Icon';
 
-/** Fond dégradé encre, à placer en absolute derrière le contenu d'un écran. */
+/** Fond dégradé clair, à placer en absolute derrière le contenu d'un écran. */
 export function GradientBg() {
   return (
     <LinearGradient
       colors={BG_GRADIENT}
       start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 0.55 }}
+      end={{ x: 0, y: 0.4 }}
       style={StyleSheet.absoluteFill}
     />
   );
 }
 
-type CardVariant = 'default' | 'light';
+type CardVariant = 'default' | 'accent';
 
+/** Carte : blanche par défaut, ou accent plein (dégradé) pour les mises en avant. */
 export function Card({
   children,
   style,
@@ -28,30 +29,19 @@ export function Card({
   style?: ViewStyle;
   variant?: CardVariant;
 }) {
-  const light = variant === 'light';
-  return (
-    <View
-      style={[
-        {
-          backgroundColor: light ? COLORS.surfaceLight : COLORS.surface,
-          borderRadius: 22,
-          padding: 16,
-          borderWidth: 1,
-          borderColor: light ? COLORS.lightBorder : COLORS.border,
-        },
-        light && styles.lightShadow,
-        style,
-      ]}
-    >
-      {children}
-    </View>
-  );
-}
-
-/** Texte qui s'adapte à une carte claire ou sombre. */
-export function onCard(light: boolean | undefined, key: 'text' | 'muted' | 'faint'): string {
-  if (light) return key === 'text' ? COLORS.onLight : COLORS.onLightMuted;
-  return key === 'text' ? COLORS.text : key === 'muted' ? COLORS.muted : COLORS.faint;
+  if (variant === 'accent') {
+    return (
+      <LinearGradient
+        colors={[COLORS.accent, COLORS.accentDark] as const}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.cardBase, styles.accentShadow, { borderWidth: 0 }, style]}
+      >
+        {children}
+      </LinearGradient>
+    );
+  }
+  return <View style={[styles.cardBase, styles.card, styles.softShadow, style]}>{children}</View>;
 }
 
 export function SectionHeader({ title, action }: { title: string; action?: string }) {
@@ -98,16 +88,17 @@ export function Button({
           gap: 8,
           opacity: pressed ? 0.85 : 1,
         },
+        primary && styles.accentShadow,
         style,
       ]}
     >
-      {icon ? <Icon name={icon} size={17} color={primary ? COLORS.bg : COLORS.text} strokeWidth={2} /> : null}
-      <Text style={{ color: primary ? COLORS.bg : COLORS.text, fontWeight: '700', fontSize: 14.5 }}>{title}</Text>
+      {icon ? <Icon name={icon} size={17} color={primary ? COLORS.onAccent : COLORS.text} strokeWidth={2} /> : null}
+      <Text style={{ color: primary ? COLORS.onAccent : COLORS.text, fontWeight: '700', fontSize: 14.5 }}>{title}</Text>
     </Pressable>
   );
 }
 
-export function Pill({ label, active, onPress }: { label: string; active?: boolean; onPress?: () => void }) {
+export function Pill({ label, active, onPress, color = COLORS.accent }: { label: string; active?: boolean; onPress?: () => void; color?: string }) {
   return (
     <Pressable
       onPress={onPress}
@@ -115,19 +106,19 @@ export function Pill({ label, active, onPress }: { label: string; active?: boole
         paddingVertical: 8,
         paddingHorizontal: 14,
         borderRadius: 999,
-        backgroundColor: active ? COLORS.accent : COLORS.surface,
+        backgroundColor: active ? color : COLORS.surface,
         borderWidth: 1,
-        borderColor: active ? COLORS.accent : COLORS.border,
+        borderColor: active ? color : COLORS.border,
         marginRight: 8,
       }}
     >
-      <Text style={{ color: active ? COLORS.bg : COLORS.muted, fontWeight: '700', fontSize: 12.5 }}>{label}</Text>
+      <Text style={{ color: active ? COLORS.onAccent : COLORS.muted, fontWeight: '700', fontSize: 12.5 }}>{label}</Text>
     </Pressable>
   );
 }
 
-/** Vignette carrée (icône en trait sur fond dégradé). */
-export function Thumb({ icon, size = 44, light = false }: { icon: string; size?: number; light?: boolean }) {
+/** Vignette « logo coloré » : icône pleine sur pastille teintée de la même couleur. */
+export function Thumb({ icon, size = 44, color = COLORS.accent }: { icon: string; size?: number; color?: string }) {
   return (
     <View
       style={{
@@ -136,12 +127,12 @@ export function Thumb({ icon, size = 44, light = false }: { icon: string; size?:
         borderRadius: size * 0.31,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: light ? '#E7EAF8' : COLORS.surfaceHi,
+        backgroundColor: withAlpha(color, 0.13),
         borderWidth: 1,
-        borderColor: light ? COLORS.lightBorder : COLORS.hairline,
+        borderColor: withAlpha(color, 0.2),
       }}
     >
-      <Icon name={icon} size={size * 0.46} color={light ? COLORS.accentInk : COLORS.accent2} strokeWidth={1.6} />
+      <Icon name={icon} size={size * 0.46} color={color} strokeWidth={1.8} />
     </View>
   );
 }
@@ -149,7 +140,7 @@ export function Thumb({ icon, size = 44, light = false }: { icon: string; size?:
 export function Avatar({ initial, size = 46 }: { initial: string; size?: number }) {
   return (
     <LinearGradient
-      colors={[COLORS.accent, '#4E5FC7'] as const}
+      colors={[COLORS.accent, COLORS.accentDark] as const}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={{ width: size, height: size, borderRadius: size * 0.33, alignItems: 'center', justifyContent: 'center' }}
@@ -159,47 +150,34 @@ export function Avatar({ initial, size = 46 }: { initial: string; size?: number 
   );
 }
 
-export function IconButton({ icon, onPress, dot }: { icon: string; onPress?: () => void; dot?: boolean }) {
+export function IconButton({ icon, onPress, dot, color = COLORS.muted }: { icon: string; onPress?: () => void; dot?: boolean; color?: string }) {
   return (
     <Pressable
       onPress={onPress}
-      style={{
-        width: 40,
-        height: 40,
-        borderRadius: 13,
-        backgroundColor: COLORS.surface,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+      style={[
+        { width: 40, height: 40, borderRadius: 13, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center', justifyContent: 'center' },
+        styles.softShadow,
+      ]}
     >
-      <Icon name={icon} size={19} color={COLORS.muted} />
+      <Icon name={icon} size={19} color={color} />
       {dot ? (
-        <View
-          style={{
-            position: 'absolute',
-            top: 9,
-            right: 10,
-            width: 7,
-            height: 7,
-            borderRadius: 4,
-            backgroundColor: COLORS.accent,
-            borderWidth: 2,
-            borderColor: COLORS.surface,
-          }}
-        />
+        <View style={{ position: 'absolute', top: 9, right: 10, width: 7, height: 7, borderRadius: 4, backgroundColor: COLORS.danger, borderWidth: 2, borderColor: COLORS.surface }} />
       ) : null}
     </Pressable>
   );
 }
 
-/** Tuile de statistique compacte (Poids / Objectif / Eau…). */
-export function StatTile({ label, value, unit, valueColor }: { label: string; value: string; unit?: string; valueColor?: string }) {
+/** Tuile de statistique — pastille icône colorée + valeur. */
+export function StatTile({ label, value, unit, icon, color = COLORS.accent }: { label: string; value: string; unit?: string; icon?: string; color?: string }) {
   return (
-    <View style={styles.stat}>
+    <View style={[styles.cardBase, styles.card, styles.softShadow, { padding: 13 }]}>
+      {icon ? (
+        <View style={{ width: 30, height: 30, borderRadius: 9, backgroundColor: withAlpha(color, 0.13), alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+          <Icon name={icon} size={16} color={color} strokeWidth={1.9} />
+        </View>
+      ) : null}
       <Text style={styles.statK}>{label}</Text>
-      <Text style={[styles.statV, valueColor ? { color: valueColor } : null]}>
+      <Text style={styles.statV}>
         {value}
         {unit ? <Text style={styles.statUnit}> {unit}</Text> : null}
       </Text>
@@ -208,26 +186,27 @@ export function StatTile({ label, value, unit, valueColor }: { label: string; va
 }
 
 const styles = StyleSheet.create({
-  lightShadow: {
-    shadowColor: '#02060F',
-    shadowOpacity: 0.5,
-    shadowRadius: 22,
-    shadowOffset: { width: 0, height: 16 },
+  cardBase: { borderRadius: 22, padding: 16 },
+  card: { backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border },
+  softShadow: {
+    shadowColor: '#1B2A4A',
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 3,
+  },
+  accentShadow: {
+    shadowColor: COLORS.accent,
+    shadowOpacity: 0.35,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 12 },
     elevation: 8,
   },
-  secH: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 12,
-    paddingHorizontal: 2,
-  },
+  secH: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 24, marginBottom: 12, paddingHorizontal: 2 },
   secTitle: { color: COLORS.text, fontSize: 16, fontWeight: '700', letterSpacing: -0.2 },
   secAction: { color: COLORS.accent, fontSize: 12, fontWeight: '600' },
   eyebrow: { textTransform: 'uppercase', letterSpacing: 1.6, fontSize: 10.5, fontWeight: '700' },
-  stat: { flex: 1, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border, borderRadius: 18, padding: 13 },
   statK: { color: COLORS.faint, fontSize: 10.5, textTransform: 'uppercase', letterSpacing: 0.8 },
-  statV: { color: COLORS.text, fontSize: 19, fontWeight: '700', marginTop: 5 } as TextStyle,
+  statV: { color: COLORS.text, fontSize: 19, fontWeight: '700', marginTop: 4 } as TextStyle,
   statUnit: { color: COLORS.muted, fontSize: 11, fontWeight: '500' },
 });

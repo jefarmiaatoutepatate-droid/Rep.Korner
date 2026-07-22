@@ -6,12 +6,12 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "fitcoach",
-    "userInterfaceStyle": "dark",
-    "backgroundColor": "#0B2545",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFFFFF",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0B2545"
+      "backgroundColor": "#FFFFFF"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
