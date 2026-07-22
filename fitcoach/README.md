@@ -17,7 +17,7 @@ Construite selon la spec produit fournie (FitCoach — §1 à §8).
 | Notifications | `expo-notifications` |
 | Fuzzy search | `fuse.js` |
 | Backend proxy | Cloudflare Worker (clé API Claude côté serveur) |
-| Build | EAS Build (APK Android) |
+| Build | EAS Build (APK Android + IPA / build simulateur iOS) |
 
 > Le styling utilise des styles inline centralisés autour d'une palette unique
 > (`src/constants/theme.ts`). NativeWind était recommandé dans la spec mais
@@ -71,13 +71,33 @@ npm test           # 31 tests (macros, bilan hebdo, parsing quick-add)
 npm run typecheck  # tsc --noEmit, 0 erreur
 ```
 
-### Build APK Android (EAS)
+### Build (EAS) — Android & iOS
+
+L'app est cross-platform (Expo). Le même code tourne sur les deux OS.
 
 ```bash
 npm i -g eas-cli
 eas login
-eas build -p android --profile preview   # génère un APK installable
+
+# Android — APK installable directement
+eas build -p android --profile preview
+
+# iOS — build pour SIMULATEUR (aucun compte Apple Developer requis)
+eas build -p ios --profile preview
+#   → télécharge le .app, glisse-le sur un simulateur iOS (macOS)
+
+# iOS — build pour un vrai iPhone / TestFlight (compte Apple Developer requis)
+eas build -p ios --profile preview-device   # ou --profile production
 ```
+
+**Développement rapide sur iPhone sans builder** : `npm start` puis scanne le QR
+avec l'app **Expo Go** (iOS). Toutes les fonctionnalités marchent sauf celles qui
+exigent un dev build ; ici tout (SQLite, notifications locales, image-picker,
+charts) fonctionne dans Expo Go.
+
+> ⚠️ **Icône App Store** : les `assets/*.png` sont des placeholders 1×1. Pour un
+> build iOS de production, remplace `assets/icon.png` par une image **1024×1024
+> sans canal alpha** (exigence Apple), sinon la soumission App Store est refusée.
 
 ---
 
@@ -123,7 +143,8 @@ Tant que ce n'est pas configuré, l'app fonctionne avec les niveaux 1 et 2.
 
 ## Notes / TODO v2
 
-- Les icônes/splash (`assets/*.png`) sont des placeholders 1×1 à remplacer.
+- Les icônes/splash (`assets/*.png`) sont des placeholders 1×1 à remplacer
+  (iOS App Store exige une icône 1024×1024 sans alpha).
 - La détection « semaine 1-3 de créatine » est simplifiée (retourne toujours S1) ;
   stocker la date de début du programme dans la table `meta` pour l'affiner.
 - Bonus spec non implémentés : scan code-barres, watch companion, mode « cuisine ».
