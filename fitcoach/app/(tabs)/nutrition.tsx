@@ -1,27 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  ScrollView,
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { ScrollView, View, Text, TextInput, Pressable, ActivityIndicator, Alert } from 'react-native';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, MEAL_TYPES, type MealType } from '@/constants/theme';
-import { Card, SectionTitle, Button, Pill } from '@/components/ui';
+import { Card, SectionHeader, Button, Pill, GradientBg, Thumb } from '@/components/ui';
+import { Icon } from '@/components/Icon';
 import { useDayStore } from '@/store/dayStore';
 import { todayISO } from '@/lib/dates';
 import { computeMacros } from '@/lib/macros';
-import {
-  searchLocal,
-  searchOpenFoodFacts,
-  estimateWithClaude,
-  parseQuickAdd,
-  type FoodSuggestion,
-} from '@/lib/foodService';
+import { searchLocal, searchOpenFoodFacts, estimateWithClaude, parseQuickAdd, type FoodSuggestion } from '@/lib/foodService';
 import { upsertFood, addMealEntry, deleteMealEntry } from '@/db/repositories';
 import type { Food } from '@/types';
 
@@ -43,7 +30,6 @@ export default function NutritionScreen() {
   useFocusEffect(useCallback(() => { refresh(); }, [refresh]));
   useEffect(() => { if (params.meal) setMeal(params.meal as MealType); }, [params.meal]);
 
-  // Niveau 1 : cache local en direct
   useEffect(() => {
     let alive = true;
     if (query.trim().length < 2) { setLocal([]); return; }
@@ -72,26 +58,20 @@ export default function NutritionScreen() {
       const est = await estimateWithClaude(query, q);
       if (est) {
         const factor = 100 / q;
-        setRemote([
-          {
-            name: query,
-            kcal_per_100g: Math.round(est.kcal * factor),
-            protein_per_100g: Math.round(est.protein_g * factor * 10) / 10,
-            carbs_per_100g: Math.round(est.carbs_g * factor * 10) / 10,
-            fat_per_100g: Math.round(est.fat_g * factor * 10) / 10,
-            source: 'claude',
-          },
-        ]);
+        setRemote([{
+          name: query,
+          kcal_per_100g: Math.round(est.kcal * factor),
+          protein_per_100g: Math.round(est.protein_g * factor * 10) / 10,
+          carbs_per_100g: Math.round(est.carbs_g * factor * 10) / 10,
+          fat_per_100g: Math.round(est.fat_g * factor * 10) / 10,
+          source: 'claude',
+        }]);
       } else {
         Alert.alert('Introuvable', 'Aucun résultat. Configure le proxy Claude ou saisis les macros manuellement.');
       }
     } catch {
       Alert.alert('Erreur réseau', 'Impossible de joindre OpenFoodFacts / le proxy Claude.');
     }
-  };
-
-  const pick = (c: Candidate) => {
-    setSelected(c);
   };
 
   const save = async () => {
@@ -106,12 +86,7 @@ export default function NutritionScreen() {
       fat_per_100g: selected.fat_per_100g,
       source: selected.source,
     });
-    await addMealEntry({
-      date: todayISO(),
-      meal_type: meal,
-      food: { ...selected, id: foodId, usage_count: 0 } as Food,
-      quantity_g: q,
-    });
+    await addMealEntry({ date: todayISO(), meal_type: meal, food: { ...selected, id: foodId, usage_count: 0 } as Food, quantity_g: q });
     setSelected(null);
     setQuery('');
     setRemote([]);
@@ -121,112 +96,115 @@ export default function NutritionScreen() {
 
   const preview = selected ? computeMacros(selected, parseFloat(quantity.replace(',', '.')) || 0) : null;
   const todayEntries = entries.filter((e) => e.meal_type === meal);
+  const mealLabel = MEAL_TYPES.find((m) => m.key === meal)?.label;
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: COLORS.bg }}
-      contentContainerStyle={{ padding: 16, paddingTop: insets.top + 12, paddingBottom: 40 }}
-      keyboardShouldPersistTaps="handled"
-    >
-      <Text style={{ color: COLORS.text, fontSize: 26, fontWeight: '900', marginBottom: 14 }}>Nutrition</Text>
+    <View style={{ flex: 1, backgroundColor: COLORS.bg }}>
+      <GradientBg />
+      <ScrollView
+        contentContainerStyle={{ padding: 16, paddingTop: insets.top + 12, paddingBottom: 110 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text style={{ color: COLORS.text, fontSize: 24, fontWeight: '800', letterSpacing: -0.3, marginBottom: 14 }}>Nutrition</Text>
 
-      {/* Sélecteur de repas */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 14 }}>
-        {MEAL_TYPES.map((m) => (
-          <Pill key={m.key} label={`${m.icon} ${m.label}`} active={meal === m.key} onPress={() => setMeal(m.key)} />
-        ))}
-      </ScrollView>
+        {/* Sélecteur de repas */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 14 }}>
+          {MEAL_TYPES.map((m) => (
+            <Pill key={m.key} label={m.label} active={meal === m.key} onPress={() => setMeal(m.key)} />
+          ))}
+        </ScrollView>
 
-      {/* Recherche + quantité */}
-      <Card>
-        <View style={{ flexDirection: 'row', gap: 10 }}>
+        {/* Recherche */}
+        <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12 }}>
+          <Icon name="search" size={19} color={COLORS.faint} />
           <TextInput
             value={query}
             onChangeText={setQuery}
             placeholder="Rechercher un aliment…"
-            placeholderTextColor={COLORS.muted}
-            style={inputStyle}
+            placeholderTextColor={COLORS.faint}
+            style={{ flex: 1, color: COLORS.text, fontSize: 15, padding: 0 }}
           />
           <TextInput
             value={quantity}
             onChangeText={setQuantity}
             keyboardType="numeric"
-            placeholder="g"
-            placeholderTextColor={COLORS.muted}
-            style={[inputStyle, { width: 74, textAlign: 'center' }]}
+            style={{ backgroundColor: COLORS.surfaceHi, borderColor: COLORS.hairline, borderWidth: 1, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5, color: COLORS.text, fontSize: 13, fontWeight: '600', minWidth: 52, textAlign: 'center' }}
           />
-        </View>
-        <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
-          <Button title={loadingRemote ? '…' : 'Chercher en ligne'} onPress={runRemoteSearch} variant="ghost" style={{ flex: 1 }} />
-        </View>
-      </Card>
-
-      {/* Suggestions locales */}
-      {local.length > 0 && !selected && (
-        <View style={{ marginTop: 12 }}>
-          <Text style={{ color: COLORS.muted, fontSize: 12, marginBottom: 6 }}>Cache local</Text>
-          {local.slice(0, 6).map((f) => (
-            <SuggestionRow key={f.id} c={f} onPress={() => pick(f)} />
-          ))}
-        </View>
-      )}
-
-      {/* Suggestions distantes */}
-      {loadingRemote && <ActivityIndicator color={COLORS.accent} style={{ marginTop: 12 }} />}
-      {remote.length > 0 && !selected && (
-        <View style={{ marginTop: 12 }}>
-          <Text style={{ color: COLORS.muted, fontSize: 12, marginBottom: 6 }}>En ligne</Text>
-          {remote.map((f, i) => (
-            <SuggestionRow key={`${f.name}-${i}`} c={f} onPress={() => pick(f)} />
-          ))}
-        </View>
-      )}
-
-      {/* Aperçu + validation */}
-      {selected && preview && (
-        <Card style={{ marginTop: 12, borderColor: COLORS.accent }}>
-          <Text style={{ color: COLORS.text, fontWeight: '800', fontSize: 16 }}>{selected.name}</Text>
-          <Text style={{ color: COLORS.muted, fontSize: 12, marginTop: 2 }}>
-            {quantity} g · source {selected.source}
-          </Text>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
-            <Macro label="kcal" value={preview.kcal} color={COLORS.accent} />
-            <Macro label="P" value={preview.protein_g} color={COLORS.protein} />
-            <Macro label="G" value={preview.carbs_g} color={COLORS.carbs} />
-            <Macro label="L" value={preview.fat_g} color={COLORS.fat} />
-          </View>
-          <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
-            <Button title="Annuler" onPress={() => setSelected(null)} variant="ghost" style={{ flex: 1 }} />
-            <Button title="Ajouter au repas" onPress={save} style={{ flex: 2 }} />
-          </View>
         </Card>
-      )}
+        <Button title={loadingRemote ? 'Recherche…' : 'Chercher en ligne'} onPress={runRemoteSearch} variant="ghost" icon="search" style={{ marginTop: 10 }} />
 
-      <QuickAdd meal={meal} onDone={refresh} />
-
-      {/* Historique du repas sélectionné */}
-      <View style={{ marginTop: 22 }}>
-        <SectionTitle>Logué · {MEAL_TYPES.find((m) => m.key === meal)?.label}</SectionTitle>
-        {todayEntries.length === 0 && <Text style={{ color: COLORS.muted }}>Rien pour ce repas aujourd'hui.</Text>}
-        {todayEntries.map((e) => (
-          <Card key={e.id} style={{ marginBottom: 8, flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ flex: 1 }}>
-              <Text style={{ color: COLORS.text, fontWeight: '600' }}>{e.food_name}</Text>
-              <Text style={{ color: COLORS.muted, fontSize: 12 }}>
-                {e.quantity_g} g · {Math.round(e.kcal)} kcal · P{Math.round(e.protein_g)} G{Math.round(e.carbs_g)} L{Math.round(e.fat_g)}
-              </Text>
+        {/* Suggestions locales */}
+        {local.length > 0 && !selected && (
+          <>
+            <SectionHeader title="Cache local" />
+            <View style={{ gap: 10 }}>
+              {local.slice(0, 6).map((f) => <SuggestionRow key={f.id} c={f} icon="food" onPress={() => setSelected(f)} />)}
             </View>
-            <Pressable onPress={async () => { await deleteMealEntry(e.id); await refresh(); }}>
-              <Text style={{ color: COLORS.danger, fontSize: 18, paddingHorizontal: 6 }}>🗑</Text>
-            </Pressable>
-          </Card>
-        ))}
-      </View>
-    </ScrollView>
+          </>
+        )}
+
+        {loadingRemote && <ActivityIndicator color={COLORS.accent} style={{ marginTop: 14 }} />}
+        {remote.length > 0 && !selected && (
+          <>
+            <SectionHeader title="En ligne" />
+            <View style={{ gap: 10 }}>
+              {remote.map((f, i) => <SuggestionRow key={`${f.name}-${i}`} c={f} icon="apple" onPress={() => setSelected(f)} />)}
+            </View>
+          </>
+        )}
+
+        {/* Aperçu (surface claire) */}
+        {selected && preview && (
+          <>
+            <SectionHeader title="Aperçu" />
+            <Card variant="light">
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <Thumb icon="run" light />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: COLORS.onLight, fontWeight: '700', fontSize: 15 }}>{selected.name}</Text>
+                  <Text style={{ color: COLORS.onLightMuted, fontSize: 12, marginTop: 2 }}>{quantity} g · source {selected.source}</Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 13, paddingTop: 13, borderTopWidth: 1, borderTopColor: 'rgba(20,27,51,0.10)' }}>
+                <MacroCell label="kcal" value={preview.kcal} color="#4E5FC7" />
+                <MacroCell label="Prot" value={preview.protein_g} color="#3E7FB8" />
+                <MacroCell label="Gluc" value={preview.carbs_g} color="#B0842A" />
+                <MacroCell label="Lip" value={preview.fat_g} color="#A85E86" />
+              </View>
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
+                <Button title="Annuler" onPress={() => setSelected(null)} variant="ghost" style={{ flex: 1, borderColor: 'rgba(20,27,51,0.18)' }} />
+                <Button title="Ajouter au repas" onPress={save} style={{ flex: 2 }} />
+              </View>
+            </Card>
+          </>
+        )}
+
+        <QuickAdd meal={meal} onDone={refresh} />
+
+        {/* Historique */}
+        <SectionHeader title={`Logué · ${mealLabel}`} />
+        {todayEntries.length === 0 && <Text style={{ color: COLORS.faint }}>Rien pour ce repas aujourd'hui.</Text>}
+        <View style={{ gap: 8 }}>
+          {todayEntries.map((e) => (
+            <Card key={e.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <Thumb icon="food" size={40} />
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: COLORS.text, fontWeight: '600', fontSize: 13.5 }}>{e.food_name}</Text>
+                <Text style={{ color: COLORS.faint, fontSize: 11.5 }}>
+                  {e.quantity_g} g · {Math.round(e.kcal)} kcal · P{Math.round(e.protein_g)} G{Math.round(e.carbs_g)} L{Math.round(e.fat_g)}
+                </Text>
+              </View>
+              <Pressable onPress={async () => { await deleteMealEntry(e.id); await refresh(); }} hitSlop={8}>
+                <Icon name="trash" size={18} color={COLORS.danger} />
+              </Pressable>
+            </Card>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
-/** Widget d'ajout rapide : "180g poulet + 100g riz" → résolution + ajout groupé. */
 function QuickAdd({ meal, onDone }: { meal: MealType; onDone: () => void }) {
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
@@ -256,12 +234,7 @@ function QuickAdd({ meal, onDone }: { meal: MealType; onDone: () => void }) {
           fat_per_100g: cand.fat_per_100g,
           source: cand.source,
         });
-        await addMealEntry({
-          date: todayISO(),
-          meal_type: meal,
-          food: { ...cand, id: foodId, usage_count: 0 } as Food,
-          quantity_g: qty,
-        });
+        await addMealEntry({ date: todayISO(), meal_type: meal, food: { ...cand, id: foodId, usage_count: 0 } as Food, quantity_g: qty });
         added++;
       }
     } finally {
@@ -273,53 +246,44 @@ function QuickAdd({ meal, onDone }: { meal: MealType; onDone: () => void }) {
   };
 
   return (
-    <Card style={{ marginTop: 14 }}>
-      <Text style={{ color: COLORS.text, fontWeight: '700', marginBottom: 8 }}>⚡ Ajout rapide</Text>
-      <TextInput
-        value={text}
-        onChangeText={setText}
-        placeholder="180g poulet + 100g riz + brocolis"
-        placeholderTextColor={COLORS.muted}
-        style={inputStyle}
-      />
-      <Button title={busy ? 'Résolution…' : 'Parser & ajouter'} onPress={run} style={{ marginTop: 10 }} />
-    </Card>
+    <>
+      <SectionHeader title="Ajout rapide" />
+      <Card>
+        <TextInput
+          value={text}
+          onChangeText={setText}
+          placeholder="180g poulet + 100g riz + brocolis"
+          placeholderTextColor={COLORS.faint}
+          style={{ backgroundColor: COLORS.surfaceHi, borderColor: COLORS.hairline, borderWidth: 1, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 11, color: COLORS.text, fontSize: 14 }}
+        />
+        <Button title={busy ? 'Résolution…' : 'Parser & ajouter'} onPress={run} icon="plus" style={{ marginTop: 10 }} />
+      </Card>
+    </>
   );
 }
 
-function SuggestionRow({ c, onPress }: { c: Candidate; onPress: () => void }) {
+function SuggestionRow({ c, icon, onPress }: { c: Candidate; icon: string; onPress: () => void }) {
   return (
     <Pressable onPress={onPress}>
-      <Card style={{ marginBottom: 8, flexDirection: 'row', alignItems: 'center' }}>
+      <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <Thumb icon={icon} size={40} />
         <View style={{ flex: 1 }}>
-          <Text style={{ color: COLORS.text, fontWeight: '600' }}>{c.name}</Text>
-          <Text style={{ color: COLORS.muted, fontSize: 12 }}>
+          <Text style={{ color: COLORS.text, fontWeight: '600', fontSize: 13.5 }}>{c.name}</Text>
+          <Text style={{ color: COLORS.faint, fontSize: 11.5 }}>
             /100g · {Math.round(c.kcal_per_100g)} kcal · P{c.protein_per_100g} G{c.carbs_per_100g} L{c.fat_per_100g}
           </Text>
         </View>
-        <Text style={{ color: COLORS.accent, fontSize: 20 }}>＋</Text>
+        <Icon name="plus" size={18} color={COLORS.accent} strokeWidth={2} />
       </Card>
     </Pressable>
   );
 }
 
-function Macro({ label, value, color }: { label: string; value: number; color: string }) {
+function MacroCell({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <View style={{ alignItems: 'center' }}>
-      <Text style={{ color, fontSize: 18, fontWeight: '800' }}>{value}</Text>
-      <Text style={{ color: COLORS.muted, fontSize: 11 }}>{label}</Text>
+      <Text style={{ color, fontSize: 17, fontWeight: '800' }}>{value}</Text>
+      <Text style={{ color: COLORS.onLightMuted, fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2 }}>{label}</Text>
     </View>
   );
 }
-
-const inputStyle = {
-  flex: 1,
-  backgroundColor: COLORS.bgElevated,
-  borderColor: COLORS.border,
-  borderWidth: 1,
-  borderRadius: 10,
-  paddingHorizontal: 12,
-  paddingVertical: 10,
-  color: COLORS.text,
-  fontSize: 15,
-} as const;

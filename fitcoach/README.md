@@ -1,6 +1,8 @@
 # 📱 FitCoach
 
-Application mobile personnelle de suivi **nutrition + musculation + composition corporelle**, avec calcul automatique des macros et bilan hebdomadaire. Interface en français, dark mode, accent orange (#E85D04) / navy (#0B2545).
+Application mobile personnelle de suivi **nutrition + musculation + composition corporelle**, avec calcul automatique des macros et bilan hebdomadaire. Interface en français.
+
+**Direction visuelle « Nocturne » — sobre & classe** : fond bleu encre (`#0A1120`), un accent périwinkle unique (`#7C93FF`), surfaces claires (`#F4F6FC`) mises en avant avec parcimonie, macros désaturées, icônes en trait fin (SVG), bottom-nav flottante. Palette harmonisée dans `src/constants/theme.ts`.
 
 Construite selon la spec produit fournie (FitCoach — §1 à §8).
 
@@ -14,15 +16,18 @@ Construite selon la spec produit fournie (FitCoach — §1 à §8).
 | Storage | SQLite (`expo-sqlite`, API async) |
 | State | Zustand |
 | Charts | `react-native-gifted-charts` |
+| Dégradés | `expo-linear-gradient` (fonds, avatar) |
+| Icônes | `react-native-svg` (jeu d'icônes en trait, `components/Icon.tsx`) |
 | Notifications | `expo-notifications` |
 | Fuzzy search | `fuse.js` |
 | Backend proxy | Cloudflare Worker (clé API Claude côté serveur) |
 | Build | EAS Build (APK Android + IPA / build simulateur iOS) |
 
 > Le styling utilise des styles inline centralisés autour d'une palette unique
-> (`src/constants/theme.ts`). NativeWind était recommandé dans la spec mais
-> introduit une incompatibilité babel avec le SDK 51 ; la palette centralisée
-> donne le même résultat sans fragiliser le build.
+> (`src/constants/theme.ts`) et de composants réutilisables (`components/ui.tsx` :
+> `Card`, `Button`, `Thumb`, `StatTile`, `GradientBg`…). NativeWind était recommandé
+> dans la spec mais introduit une incompatibilité babel avec le SDK 51 ; la palette
+> centralisée donne le même résultat sans fragiliser le build.
 
 ---
 

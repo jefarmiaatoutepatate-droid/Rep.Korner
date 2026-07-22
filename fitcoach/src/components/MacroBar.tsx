@@ -1,8 +1,8 @@
-/** Barre de progression d'une macro (protéines / glucides / lipides). */
+/** Barre de progression d'une macro — piste fine, étiquettes sobres. */
 import React from 'react';
 import { View, Text } from 'react-native';
 import { COLORS } from '@/constants/theme';
-import { progress, pct } from '@/lib/macros';
+import { progress } from '@/lib/macros';
 
 interface Props {
   label: string;
@@ -14,25 +14,16 @@ interface Props {
 
 export function MacroBar({ label, value, target, color, unit = 'g' }: Props) {
   const p = progress(value, target);
-  const percent = pct(value, target);
-
   return (
-    <View style={{ marginVertical: 6 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-        <Text style={{ color: COLORS.text, fontSize: 13, fontWeight: '600' }}>{label}</Text>
+    <View style={{ marginVertical: 7 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+        <Text style={{ color: COLORS.text, fontSize: 12, fontWeight: '600' }}>{label}</Text>
         <Text style={{ color: COLORS.muted, fontSize: 12 }}>
-          {Math.round(value)} / {target} {unit} · {percent}%
+          {Math.round(value)} / {target} {unit}
         </Text>
       </View>
-      <View style={{ height: 9, borderRadius: 5, backgroundColor: COLORS.border, overflow: 'hidden' }}>
-        <View
-          style={{
-            height: '100%',
-            width: `${p * 100}%`,
-            backgroundColor: color,
-            borderRadius: 5,
-          }}
-        />
+      <View style={{ height: 6, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+        <View style={{ height: '100%', width: `${p * 100}%`, backgroundColor: color, borderRadius: 4 }} />
       </View>
     </View>
   );

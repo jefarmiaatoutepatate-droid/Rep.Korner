@@ -4,7 +4,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PROGRAM, type ProgramExercise } from '@/constants/program';
 import { COLORS } from '@/constants/theme';
-import { Card, Button } from '@/components/ui';
+import { Card, Button, GradientBg } from '@/components/ui';
+import { Icon } from '@/components/Icon';
 import { todayISO } from '@/lib/dates';
 import { createWorkout, addSet, getLastSetsForExercise } from '@/db/repositories';
 import type { Workout, WorkoutSet } from '@/types';
@@ -19,12 +20,9 @@ export default function WorkoutScreen() {
   const [rest, setRest] = useState<number | null>(null);
 
   useEffect(() => {
-    if (session) {
-      createWorkout(todayISO(), session.id as Workout['session_type']).then(setWorkoutId);
-    }
+    if (session) createWorkout(todayISO(), session.id as Workout['session_type']).then(setWorkoutId);
   }, [session?.id]);
 
-  // Timer de repos
   useEffect(() => {
     if (rest == null) return;
     if (rest <= 0) { setRest(null); return; }
@@ -41,59 +39,46 @@ export default function WorkoutScreen() {
   }
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: COLORS.bg }}
-      contentContainerStyle={{ padding: 16, paddingTop: insets.top + 12, paddingBottom: 80 }}
-    >
-      <Pressable onPress={() => router.back()}>
-        <Text style={{ color: COLORS.accent, marginBottom: 8 }}>‹ Retour</Text>
-      </Pressable>
-      <Text style={{ color: COLORS.text, fontSize: 24, fontWeight: '900' }}>{session.name}</Text>
-      <Text style={{ color: COLORS.muted, marginBottom: 16 }}>{session.exercises.length} exercices</Text>
+    <View style={{ flex: 1, backgroundColor: COLORS.bg }}>
+      <GradientBg />
+      <ScrollView contentContainerStyle={{ padding: 16, paddingTop: insets.top + 12, paddingBottom: 90 }}>
+        <Pressable onPress={() => router.back()} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 10 }}>
+          <Icon name="chevLeft" size={18} color={COLORS.accent} />
+          <Text style={{ color: COLORS.accent, fontSize: 14 }}>Retour</Text>
+        </Pressable>
+        <Text style={{ color: COLORS.text, fontSize: 23, fontWeight: '800', letterSpacing: -0.3 }}>{session.name}</Text>
+        <Text style={{ color: COLORS.muted, marginBottom: 16, marginTop: 2 }}>{session.exercises.length} exercices</Text>
 
-      {session.exercises.map((ex) => (
-        <ExerciseBlock
-          key={ex.name}
-          exercise={ex}
-          workoutId={workoutId}
-          onStartRest={(sec) => setRest(sec)}
-        />
-      ))}
+        <View style={{ gap: 12 }}>
+          {session.exercises.map((ex) => (
+            <ExerciseBlock key={ex.name} exercise={ex} workoutId={workoutId} onStartRest={setRest} />
+          ))}
+        </View>
 
-      <Button
-        title="Terminer la séance"
-        onPress={() => { Alert.alert('Séance enregistrée', 'Bien joué 💪'); router.back(); }}
-        style={{ marginTop: 10 }}
-      />
+        <Button title="Terminer la séance" icon="check" onPress={() => { Alert.alert('Séance enregistrée', 'Bien joué 💪'); router.back(); }} style={{ marginTop: 14 }} />
+      </ScrollView>
 
-      {/* Timer flottant */}
       {rest != null && (
-        <Pressable onPress={() => setRest(null)} style={{ position: 'absolute', bottom: insets.bottom + 16, alignSelf: 'center', backgroundColor: COLORS.accent, paddingVertical: 12, paddingHorizontal: 26, borderRadius: 30 }}>
-          <Text style={{ color: '#fff', fontWeight: '800', fontSize: 16 }}>⏱ Repos {rest}s (tap pour stopper)</Text>
+        <Pressable
+          onPress={() => setRest(null)}
+          style={{ position: 'absolute', bottom: insets.bottom + 18, alignSelf: 'center', backgroundColor: COLORS.accent, paddingVertical: 12, paddingHorizontal: 24, borderRadius: 30, flexDirection: 'row', alignItems: 'center', gap: 8 }}
+        >
+          <Icon name="clock" size={17} color={COLORS.bg} strokeWidth={2} />
+          <Text style={{ color: COLORS.bg, fontWeight: '800', fontSize: 15 }}>Repos {rest}s · stopper</Text>
         </Pressable>
       )}
-    </ScrollView>
+    </View>
   );
 }
 
-function ExerciseBlock({
-  exercise,
-  workoutId,
-  onStartRest,
-}: {
-  exercise: ProgramExercise;
-  workoutId: number | null;
-  onStartRest: (sec: number) => void;
-}) {
+function ExerciseBlock({ exercise, workoutId, onStartRest }: { exercise: ProgramExercise; workoutId: number | null; onStartRest: (sec: number) => void }) {
   const [last, setLast] = useState<WorkoutSet[]>([]);
   const [weight, setWeight] = useState('');
   const [reps, setReps] = useState('');
   const [logged, setLogged] = useState<{ weight: number; reps: number }[]>([]);
   const setCounter = useRef(0);
 
-  useEffect(() => {
-    getLastSetsForExercise(exercise.name).then(setLast).catch(() => {});
-  }, [exercise.name]);
+  useEffect(() => { getLastSetsForExercise(exercise.name).then(setLast).catch(() => {}); }, [exercise.name]);
 
   const lastLabel = useMemo(() => {
     if (!last.length) return null;
@@ -106,14 +91,7 @@ function ExerciseBlock({
     const r = parseInt(reps, 10);
     if (!w || !r || workoutId == null) return;
     setCounter.current += 1;
-    await addSet({
-      workout_id: workoutId,
-      exercise_name: exercise.name,
-      set_number: setCounter.current,
-      weight_kg: w,
-      reps: r,
-      rir: null,
-    });
+    await addSet({ workout_id: workoutId, exercise_name: exercise.name, set_number: setCounter.current, weight_kg: w, reps: r, rir: null });
     setLogged((l) => [...l, { weight: w, reps: r }]);
     onStartRest(exercise.rest_sec);
   };
@@ -124,35 +102,32 @@ function ExerciseBlock({
   };
 
   return (
-    <Card style={{ marginBottom: 12 }}>
+    <Card>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ color: COLORS.text, fontWeight: '800', fontSize: 16, flex: 1 }}>{exercise.name}</Text>
-        {exercise.type === 'compound' && (
-          <Text style={{ color: COLORS.accent, fontSize: 11, fontWeight: '700' }}>COMPOUND</Text>
-        )}
+        <Text style={{ color: COLORS.text, fontWeight: '800', fontSize: 15, flex: 1 }}>{exercise.name}</Text>
+        {exercise.type === 'compound' && <Text style={{ color: COLORS.accent2, fontSize: 10, fontWeight: '700', letterSpacing: 0.8 }}>COMPOUND</Text>}
       </View>
-      <Text style={{ color: COLORS.muted, fontSize: 12, marginTop: 2 }}>
-        {exercise.sets} × {exercise.reps} · repos {exercise.rest_sec}s
-        {exercise.technique ? ` · ${exercise.technique}` : ''}
+      <Text style={{ color: COLORS.muted, fontSize: 11.5, marginTop: 3 }}>
+        {exercise.sets} × {exercise.reps} · repos {exercise.rest_sec}s{exercise.technique ? ` · ${exercise.technique}` : ''}
       </Text>
-      {lastLabel && (
-        <Text style={{ color: COLORS.protein, fontSize: 12, marginTop: 4 }}>Dernière fois : {lastLabel}</Text>
-      )}
+      {lastLabel && <Text style={{ color: COLORS.protein, fontSize: 11.5, marginTop: 5 }}>Dernière fois : {lastLabel}</Text>}
 
-      <View style={{ flexDirection: 'row', gap: 8, marginTop: 10, alignItems: 'center' }}>
-        <TextInput value={weight} onChangeText={setWeight} keyboardType="numeric" placeholder="kg" placeholderTextColor={COLORS.muted} style={numInput} />
-        <TextInput value={reps} onChangeText={setReps} keyboardType="numeric" placeholder="reps" placeholderTextColor={COLORS.muted} style={numInput} />
-        <Pressable onPress={() => bump(2.5)} style={bumpBtn}><Text style={bumpTxt}>+2,5kg</Text></Pressable>
-        <Pressable onPress={logSet} style={{ backgroundColor: COLORS.accent, paddingVertical: 11, paddingHorizontal: 16, borderRadius: 10 }}>
-          <Text style={{ color: '#fff', fontWeight: '800' }}>✓</Text>
+      <View style={{ flexDirection: 'row', gap: 7, marginTop: 12, alignItems: 'center' }}>
+        <TextInput value={weight} onChangeText={setWeight} keyboardType="numeric" placeholder="kg" placeholderTextColor={COLORS.faint} style={numInput} />
+        <TextInput value={reps} onChangeText={setReps} keyboardType="numeric" placeholder="reps" placeholderTextColor={COLORS.faint} style={numInput} />
+        <Pressable onPress={() => bump(2.5)} style={{ backgroundColor: COLORS.surfaceHi, borderColor: COLORS.accent, borderWidth: 1, paddingVertical: 11, paddingHorizontal: 9, borderRadius: 11 }}>
+          <Text style={{ color: COLORS.accent, fontWeight: '700', fontSize: 12 }}>+2,5</Text>
+        </Pressable>
+        <Pressable onPress={logSet} style={{ backgroundColor: COLORS.accent, paddingVertical: 11, paddingHorizontal: 15, borderRadius: 11 }}>
+          <Icon name="check" size={17} color={COLORS.bg} strokeWidth={2.4} />
         </Pressable>
       </View>
 
       {logged.length > 0 && (
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 11 }}>
           {logged.map((s, i) => (
-            <View key={i} style={{ backgroundColor: COLORS.bgElevated, borderRadius: 8, paddingVertical: 4, paddingHorizontal: 8 }}>
-              <Text style={{ color: COLORS.text, fontSize: 12 }}>S{i + 1}: {s.weight}×{s.reps}</Text>
+            <View key={i} style={{ backgroundColor: COLORS.surfaceHi, borderRadius: 9, paddingVertical: 4, paddingHorizontal: 9 }}>
+              <Text style={{ color: COLORS.text, fontSize: 11.5 }}>S{i + 1}: {s.weight}×{s.reps}</Text>
             </View>
           ))}
         </View>
@@ -162,24 +137,13 @@ function ExerciseBlock({
 }
 
 const numInput = {
-  width: 62,
-  backgroundColor: COLORS.bgElevated,
-  borderColor: COLORS.border,
+  width: 58,
+  backgroundColor: COLORS.surfaceHi,
+  borderColor: COLORS.hairline,
   borderWidth: 1,
-  borderRadius: 10,
+  borderRadius: 11,
   paddingVertical: 10,
   color: COLORS.text,
-  textAlign: 'center',
-  fontSize: 15,
-} as const;
-
-const bumpBtn = {
-  backgroundColor: COLORS.bgElevated,
-  borderColor: COLORS.accent,
-  borderWidth: 1,
-  paddingVertical: 10,
-  paddingHorizontal: 8,
-  borderRadius: 10,
-} as const;
-
-const bumpTxt = { color: COLORS.accent, fontWeight: '700', fontSize: 12 } as const;
+  textAlign: 'center' as const,
+  fontSize: 14,
+};
