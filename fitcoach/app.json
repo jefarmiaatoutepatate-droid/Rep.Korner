@@ -52,7 +52,9 @@
       "typedRoutes": true
     },
     "extra": {
-      "claudeProxyUrl": "https://YOUR-WORKER.workers.dev"
+      "claudeProxyUrl": "https://YOUR-WORKER.workers.dev",
+      "supabaseUrl": "",
+      "supabaseAnonKey": ""
     }
   }
 }

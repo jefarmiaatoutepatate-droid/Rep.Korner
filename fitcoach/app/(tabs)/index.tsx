@@ -11,6 +11,7 @@ import { MacroBar } from '@/components/MacroBar';
 import { Card, SectionHeader, GradientBg, Avatar, IconButton, Thumb, StatTile } from '@/components/ui';
 import { Icon } from '@/components/Icon';
 import { progress } from '@/lib/macros';
+import { useAuthStore } from '@/store/authStore';
 
 const WEEKDAYS_FR = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
 const ORDER = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -25,6 +26,9 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { totals, entries, daily, refresh, addWater, toggleCreatine } = useDayStore();
+  const user = useAuthStore((s) => s.user);
+  const firstName = user?.name?.split(' ')[0] ?? '';
+  const initial = (user?.name?.[0] ?? 'F').toUpperCase();
 
   useFocusEffect(useCallback(() => { refresh(); }, [refresh]));
 
@@ -43,12 +47,16 @@ export default function HomeScreen() {
       >
         {/* En-tête */}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-          <Avatar initial="N" />
+          <Pressable onPress={() => router.push('/settings')}>
+            <Avatar initial={initial} />
+          </Pressable>
           <View style={{ flex: 1 }}>
             <Text style={{ color: COLORS.muted, fontSize: 12.5, textTransform: 'capitalize' }}>{dateLabel}</Text>
-            <Text style={{ color: COLORS.text, fontSize: 20, fontWeight: '800', letterSpacing: -0.3 }}>Aujourd'hui</Text>
+            <Text style={{ color: COLORS.text, fontSize: 20, fontWeight: '800', letterSpacing: -0.3 }}>
+              {firstName ? `Salut ${firstName}` : "Aujourd'hui"}
+            </Text>
           </View>
-          <IconButton icon="bell" dot />
+          <IconButton icon="bell" dot onPress={() => router.push('/settings')} />
         </View>
 
         {/* Carte hero — prochaine séance (accent) */}

@@ -1,21 +1,13 @@
 /**
- * Repositories : toutes les requêtes SQL de l'app, regroupées par domaine.
- * Les écrans/stores ne parlent jamais à SQLite directement (séparation logique/UI).
+ * Repositories : toutes les requêtes SQL, groupées par domaine.
+ * Chaque donnée est rattachée au compte connecté (user_id via requireUserId()).
  */
-import { getDB } from './index';
-import type {
-  Food,
-  MealEntry,
-  Workout,
-  WorkoutSet,
-  BodyMeasurement,
-  DailyLog,
-  Macros,
-} from '@/types';
+import { getDB, requireUserId } from './index';
+import type { Food, MealEntry, Workout, WorkoutSet, BodyMeasurement, DailyLog, Macros } from '@/types';
 import type { MealType } from '@/constants/theme';
 import { computeMacros } from '@/lib/macros';
 
-// ---------- Foods ----------
+// ---------- Foods (cache partagé) ----------
 
 export async function searchFoods(term: string, limit = 20): Promise<Food[]> {
   const db = await getDB();
@@ -34,10 +26,7 @@ export async function allFoods(): Promise<Food[]> {
 
 export async function upsertFood(food: Omit<Food, 'id' | 'usage_count'>): Promise<number> {
   const db = await getDB();
-  const existing = await db.getFirstAsync<Food>(
-    'SELECT * FROM foods WHERE LOWER(name) = LOWER(?)',
-    food.name,
-  );
+  const existing = await db.getFirstAsync<Food>('SELECT * FROM foods WHERE LOWER(name) = LOWER(?)', food.name);
   if (existing) return existing.id;
   const res = await db.runAsync(
     `INSERT INTO foods (name, kcal_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, source, usage_count)
@@ -59,17 +48,14 @@ async function bumpFoodUsage(foodId: number): Promise<void> {
 
 // ---------- Meal entries ----------
 
-export async function addMealEntry(params: {
-  date: string;
-  meal_type: MealType;
-  food: Food;
-  quantity_g: number;
-}): Promise<void> {
+export async function addMealEntry(params: { date: string; meal_type: MealType; food: Food; quantity_g: number }): Promise<void> {
   const db = await getDB();
+  const uid = requireUserId();
   const m = computeMacros(params.food, params.quantity_g);
   await db.runAsync(
-    `INSERT INTO meal_entries (date, meal_type, food_id, food_name, quantity_g, kcal, protein_g, carbs_g, fat_g, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO meal_entries (user_id, date, meal_type, food_id, food_name, quantity_g, kcal, protein_g, carbs_g, fat_g, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    uid,
     params.date,
     params.meal_type,
     params.food.id,
@@ -86,24 +72,17 @@ export async function addMealEntry(params: {
 
 export async function getMealEntries(date: string): Promise<MealEntry[]> {
   const db = await getDB();
-  return db.getAllAsync<MealEntry>(
-    'SELECT * FROM meal_entries WHERE date = ? ORDER BY created_at ASC',
-    date,
-  );
+  return db.getAllAsync<MealEntry>('SELECT * FROM meal_entries WHERE user_id = ? AND date = ? ORDER BY created_at ASC', requireUserId(), date);
 }
 
 export async function getMealEntriesRange(from: string, to: string): Promise<MealEntry[]> {
   const db = await getDB();
-  return db.getAllAsync<MealEntry>(
-    'SELECT * FROM meal_entries WHERE date BETWEEN ? AND ? ORDER BY date ASC',
-    from,
-    to,
-  );
+  return db.getAllAsync<MealEntry>('SELECT * FROM meal_entries WHERE user_id = ? AND date BETWEEN ? AND ? ORDER BY date ASC', requireUserId(), from, to);
 }
 
 export async function deleteMealEntry(id: number): Promise<void> {
   const db = await getDB();
-  await db.runAsync('DELETE FROM meal_entries WHERE id = ?', id);
+  await db.runAsync('DELETE FROM meal_entries WHERE id = ? AND user_id = ?', id, requireUserId());
 }
 
 export async function getDayTotals(date: string): Promise<Macros> {
@@ -111,32 +90,32 @@ export async function getDayTotals(date: string): Promise<Macros> {
   const row = await db.getFirstAsync<Macros>(
     `SELECT COALESCE(SUM(kcal),0) as kcal, COALESCE(SUM(protein_g),0) as protein_g,
             COALESCE(SUM(carbs_g),0) as carbs_g, COALESCE(SUM(fat_g),0) as fat_g
-     FROM meal_entries WHERE date = ?`,
+     FROM meal_entries WHERE user_id = ? AND date = ?`,
+    requireUserId(),
     date,
   );
   return row ?? { kcal: 0, protein_g: 0, carbs_g: 0, fat_g: 0 };
 }
 
-// ---------- Daily log (eau / créatine) ----------
+// ---------- Daily log ----------
 
 export async function getDailyLog(date: string): Promise<DailyLog> {
   const db = await getDB();
-  const row = await db.getFirstAsync<{
-    date: string;
-    water_l: number;
-    creatine_taken: number;
-    sleep_hours: number | null;
-    mood: number | null;
-  }>('SELECT * FROM daily_log WHERE date = ?', date);
+  const row = await db.getFirstAsync<{ date: string; water_l: number; creatine_taken: number; sleep_hours: number | null; mood: number | null }>(
+    'SELECT * FROM daily_log WHERE user_id = ? AND date = ?',
+    requireUserId(),
+    date,
+  );
   if (!row) return { date, water_l: 0, creatine_taken: false, sleep_hours: null, mood: null };
-  return { ...row, creatine_taken: !!row.creatine_taken };
+  return { date: row.date, water_l: row.water_l, creatine_taken: !!row.creatine_taken, sleep_hours: row.sleep_hours, mood: row.mood };
 }
 
 export async function setWater(date: string, water_l: number): Promise<void> {
   const db = await getDB();
   await db.runAsync(
-    `INSERT INTO daily_log (date, water_l) VALUES (?, ?)
-     ON CONFLICT(date) DO UPDATE SET water_l = excluded.water_l`,
+    `INSERT INTO daily_log (user_id, date, water_l) VALUES (?, ?, ?)
+     ON CONFLICT(user_id, date) DO UPDATE SET water_l = excluded.water_l`,
+    requireUserId(),
     date,
     water_l,
   );
@@ -145,8 +124,9 @@ export async function setWater(date: string, water_l: number): Promise<void> {
 export async function setCreatine(date: string, taken: boolean): Promise<void> {
   const db = await getDB();
   await db.runAsync(
-    `INSERT INTO daily_log (date, creatine_taken) VALUES (?, ?)
-     ON CONFLICT(date) DO UPDATE SET creatine_taken = excluded.creatine_taken`,
+    `INSERT INTO daily_log (user_id, date, creatine_taken) VALUES (?, ?, ?)
+     ON CONFLICT(user_id, date) DO UPDATE SET creatine_taken = excluded.creatine_taken`,
+    requireUserId(),
     date,
     taken ? 1 : 0,
   );
@@ -156,42 +136,32 @@ export async function setCreatine(date: string, taken: boolean): Promise<void> {
 
 export async function createWorkout(date: string, session_type: Workout['session_type']): Promise<number> {
   const db = await getDB();
-  const res = await db.runAsync(
-    'INSERT INTO workouts (date, session_type) VALUES (?, ?)',
-    date,
-    session_type,
-  );
+  const res = await db.runAsync('INSERT INTO workouts (user_id, date, session_type) VALUES (?, ?, ?)', requireUserId(), date, session_type);
   return res.lastInsertRowId;
 }
 
-export async function finishWorkout(
-  id: number,
-  data: { duration_min?: number; rating?: number; notes?: string },
-): Promise<void> {
+export async function finishWorkout(id: number, data: { duration_min?: number; rating?: number; notes?: string }): Promise<void> {
   const db = await getDB();
   await db.runAsync(
-    'UPDATE workouts SET duration_min = ?, rating = ?, notes = ? WHERE id = ?',
+    'UPDATE workouts SET duration_min = ?, rating = ?, notes = ? WHERE id = ? AND user_id = ?',
     data.duration_min ?? null,
     data.rating ?? null,
     data.notes ?? null,
     id,
+    requireUserId(),
   );
 }
 
 export async function getWorkouts(from: string, to: string): Promise<Workout[]> {
   const db = await getDB();
-  return db.getAllAsync<Workout>(
-    'SELECT * FROM workouts WHERE date BETWEEN ? AND ? ORDER BY date DESC',
-    from,
-    to,
-  );
+  return db.getAllAsync<Workout>('SELECT * FROM workouts WHERE user_id = ? AND date BETWEEN ? AND ? ORDER BY date DESC', requireUserId(), from, to);
 }
 
 export async function addSet(set: Omit<WorkoutSet, 'id'>): Promise<void> {
   const db = await getDB();
   await db.runAsync(
-    `INSERT INTO sets (workout_id, exercise_name, set_number, weight_kg, reps, rir)
-     VALUES (?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO sets (user_id, workout_id, exercise_name, set_number, weight_kg, reps, rir) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    requireUserId(),
     set.workout_id,
     set.exercise_name,
     set.set_number,
@@ -203,33 +173,26 @@ export async function addSet(set: Omit<WorkoutSet, 'id'>): Promise<void> {
 
 export async function getSetsForWorkout(workoutId: number): Promise<WorkoutSet[]> {
   const db = await getDB();
-  return db.getAllAsync<WorkoutSet>(
-    'SELECT * FROM sets WHERE workout_id = ? ORDER BY exercise_name, set_number',
-    workoutId,
-  );
+  return db.getAllAsync<WorkoutSet>('SELECT * FROM sets WHERE workout_id = ? AND user_id = ? ORDER BY exercise_name, set_number', workoutId, requireUserId());
 }
 
-/** Dernière séance loggée d'un exercice (rappel de charge, progressive overload). */
 export async function getLastSetsForExercise(exercise: string, limit = 6): Promise<WorkoutSet[]> {
   const db = await getDB();
   return db.getAllAsync<WorkoutSet>(
-    `SELECT s.* FROM sets s
-     JOIN workouts w ON w.id = s.workout_id
-     WHERE s.exercise_name = ?
-     ORDER BY w.date DESC, s.set_number ASC
-     LIMIT ?`,
+    `SELECT s.* FROM sets s JOIN workouts w ON w.id = s.workout_id
+     WHERE s.user_id = ? AND s.exercise_name = ? ORDER BY w.date DESC, s.set_number ASC LIMIT ?`,
+    requireUserId(),
     exercise,
     limit,
   );
 }
 
-/** Meilleure charge (top set) pour un exercice sur une plage de dates. */
 export async function getBestWeight(exercise: string, from: string, to: string): Promise<number | null> {
   const db = await getDB();
   const row = await db.getFirstAsync<{ best: number | null }>(
-    `SELECT MAX(s.weight_kg) as best FROM sets s
-     JOIN workouts w ON w.id = s.workout_id
-     WHERE s.exercise_name = ? AND w.date BETWEEN ? AND ?`,
+    `SELECT MAX(s.weight_kg) as best FROM sets s JOIN workouts w ON w.id = s.workout_id
+     WHERE s.user_id = ? AND s.exercise_name = ? AND w.date BETWEEN ? AND ?`,
+    requireUserId(),
     exercise,
     from,
     to,
@@ -240,9 +203,9 @@ export async function getBestWeight(exercise: string, from: string, to: string):
 export async function getWeeklyVolume(from: string, to: string): Promise<number> {
   const db = await getDB();
   const row = await db.getFirstAsync<{ vol: number }>(
-    `SELECT COALESCE(SUM(s.weight_kg * s.reps),0) as vol FROM sets s
-     JOIN workouts w ON w.id = s.workout_id
-     WHERE w.date BETWEEN ? AND ?`,
+    `SELECT COALESCE(SUM(s.weight_kg * s.reps),0) as vol FROM sets s JOIN workouts w ON w.id = s.workout_id
+     WHERE s.user_id = ? AND w.date BETWEEN ? AND ?`,
+    requireUserId(),
     from,
     to,
   );
@@ -255,8 +218,9 @@ export async function addMeasurement(m: Omit<BodyMeasurement, 'id'>): Promise<vo
   const db = await getDB();
   await db.runAsync(
     `INSERT INTO body_measurements
-       (date, weight_kg, waist_cm, chest_cm, arm_r_cm, arm_l_cm, thigh_r_cm, thigh_l_cm, calf_cm, photo_uri)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (user_id, date, weight_kg, waist_cm, chest_cm, arm_r_cm, arm_l_cm, thigh_r_cm, thigh_l_cm, calf_cm, photo_uri)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    requireUserId(),
     m.date,
     m.weight_kg,
     m.waist_cm,
@@ -272,16 +236,14 @@ export async function addMeasurement(m: Omit<BodyMeasurement, 'id'>): Promise<vo
 
 export async function getMeasurements(limit = 100): Promise<BodyMeasurement[]> {
   const db = await getDB();
-  return db.getAllAsync<BodyMeasurement>(
-    'SELECT * FROM body_measurements ORDER BY date DESC LIMIT ?',
-    limit,
-  );
+  return db.getAllAsync<BodyMeasurement>('SELECT * FROM body_measurements WHERE user_id = ? ORDER BY date DESC LIMIT ?', requireUserId(), limit);
 }
 
 export async function getWeightsRange(from: string, to: string): Promise<number[]> {
   const db = await getDB();
   const rows = await db.getAllAsync<{ weight_kg: number }>(
-    'SELECT weight_kg FROM body_measurements WHERE date BETWEEN ? AND ? AND weight_kg IS NOT NULL ORDER BY date ASC',
+    'SELECT weight_kg FROM body_measurements WHERE user_id = ? AND date BETWEEN ? AND ? AND weight_kg IS NOT NULL ORDER BY date ASC',
+    requireUserId(),
     from,
     to,
   );
@@ -291,18 +253,20 @@ export async function getWeightsRange(from: string, to: string): Promise<number[
 export async function getLatestWeight(): Promise<number | null> {
   const db = await getDB();
   const row = await db.getFirstAsync<{ weight_kg: number }>(
-    'SELECT weight_kg FROM body_measurements WHERE weight_kg IS NOT NULL ORDER BY date DESC LIMIT 1',
+    'SELECT weight_kg FROM body_measurements WHERE user_id = ? AND weight_kg IS NOT NULL ORDER BY date DESC LIMIT 1',
+    requireUserId(),
   );
   return row?.weight_kg ?? null;
 }
 
-// ---------- Weekly reports (archive) ----------
+// ---------- Weekly reports ----------
 
 export async function saveWeeklyReport(weekStart: string, json: string): Promise<void> {
   const db = await getDB();
   await db.runAsync(
-    `INSERT INTO weekly_reports (week_start, json, created_at) VALUES (?, ?, ?)
-     ON CONFLICT(week_start) DO UPDATE SET json = excluded.json, created_at = excluded.created_at`,
+    `INSERT INTO weekly_reports (user_id, week_start, json, created_at) VALUES (?, ?, ?, ?)
+     ON CONFLICT(user_id, week_start) DO UPDATE SET json = excluded.json, created_at = excluded.created_at`,
+    requireUserId(),
     weekStart,
     json,
     new Date().toISOString(),
@@ -311,7 +275,5 @@ export async function saveWeeklyReport(weekStart: string, json: string): Promise
 
 export async function getArchivedReports(): Promise<{ week_start: string; json: string }[]> {
   const db = await getDB();
-  return db.getAllAsync<{ week_start: string; json: string }>(
-    'SELECT week_start, json FROM weekly_reports ORDER BY week_start DESC',
-  );
+  return db.getAllAsync<{ week_start: string; json: string }>('SELECT week_start, json FROM weekly_reports WHERE user_id = ? ORDER BY week_start DESC', requireUserId());
 }

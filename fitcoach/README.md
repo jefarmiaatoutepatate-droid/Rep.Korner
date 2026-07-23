@@ -15,6 +15,7 @@ Construite selon la spec produit fournie (FitCoach — §1 à §8).
 | Framework | Expo (React Native) + TypeScript + `expo-router` (5 tabs) |
 | Storage | SQLite (`expo-sqlite`, API async) |
 | State | Zustand |
+| Auth | Comptes locaux (`expo-crypto` hash + sel, session `expo-secure-store`), cloud-ready Supabase |
 | Charts | `react-native-gifted-charts` |
 | Dégradés | `expo-linear-gradient` (fonds, avatar) |
 | Icônes | `react-native-svg` (jeu d'icônes en trait, `components/Icon.tsx`) |
@@ -103,6 +104,37 @@ charts) fonctionne dans Expo Go.
 > ⚠️ **Icône App Store** : les `assets/*.png` sont des placeholders 1×1. Pour un
 > build iOS de production, remplace `assets/icon.png` par une image **1024×1024
 > sans canal alpha** (exigence Apple), sinon la soumission App Store est refusée.
+
+---
+
+## Comptes & synchronisation
+
+À l'installation, l'utilisateur **crée un compte** (prénom + e-mail + mot de passe),
+peut se **connecter / se déconnecter**, et **supprimer son compte** (exigence App Store).
+La session est persistée (`expo-secure-store`) — l'app rouvre directement connectée.
+
+- Toutes les données (repas, séances, séries, mensurations, logs, bilans) sont
+  **rattachées au compte** (`user_id`) : chaque utilisateur a son propre suivi.
+- **Mode par défaut : comptes locaux** (mots de passe hachés SHA-256 + sel sur
+  l'appareil). Fonctionne hors-ligne, sans backend.
+- **Écrans** : `app/(auth)/login.tsx`, `app/(auth)/signup.tsx`, gate dans
+  `app/_layout.tsx` (redirige vers login si non connecté), `app/settings.tsx`
+  (déconnexion + suppression de compte).
+
+### Activer la sync cloud (Supabase) — pour la publication stores
+
+Pour que le compte et les données suivent l'utilisateur d'un téléphone à l'autre :
+
+1. Crée un projet sur [supabase.com](https://supabase.com) (tier gratuit).
+2. Colle `backend/supabase/schema.sql` dans l'éditeur SQL (tables + RLS par
+   utilisateur via `auth.uid()`).
+3. Renseigne `expo.extra.supabaseUrl` et `expo.extra.supabaseAnonKey` dans
+   `app.json` (la clé *anon* est publique, elle peut être embarquée).
+4. `npm i @supabase/supabase-js` puis branche le provider cloud sur le store
+   d'auth (le point d'extension est prêt : `src/lib/cloudConfig.ts` détecte la
+   config, `users.remote_id` relie le compte local au compte Supabase).
+
+Tant que ces valeurs sont vides, l'app reste en comptes locaux — aucune régression.
 
 ---
 
