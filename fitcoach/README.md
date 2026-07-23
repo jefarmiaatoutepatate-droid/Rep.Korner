@@ -138,6 +138,28 @@ Tant que ces valeurs sont vides, l'app reste en comptes locaux — aucune régre
 
 ---
 
+## Coach virtuel (Coach Léo) 🧑‍🏫
+
+Un onglet dédié : un vrai coach conversationnel propulsé par Claude. Il t'accueille
+par ton prénom (« Bonjour {prénom} 👋 »), **pose et répond à toutes les questions**
+nutrition & musculation, et calcule concrètement (kcal + macros).
+
+- **Ses « skills » sont gravés** dans le system prompt du Worker (`backend/cloudflare-worker`) :
+  méthodo nutrition + références CIQUAL, le programme d'entraînement exact (les 4 séances
+  avec séries/reps/repos), les repères techniques des 4 mouvements clés, et les règles
+  d'ajustement calorique. Connaissances stables, côté serveur, jamais exposées.
+- **Contexte perso en direct** : l'app lui envoie tes cibles, tes macros du jour (+ le
+  restant), ton poids et ta prochaine séance (`src/lib/coach.ts` → `buildCoachContext`),
+  pour des réponses personnalisées.
+- **Conversation par compte**, persistée en SQLite (`coach_messages`), effaçable.
+- Modèle : `claude-opus-4-8` (endpoint `/chat` du Worker). Tant que le proxy n'est pas
+  configuré, le coach répond un message d'aide (pas de crash).
+
+Écran : `app/(tabs)/coach.tsx`. Sécurité : le coach n'est pas médecin (renvoie vers un
+professionnel de santé), et ne propose ni régime extrême ni dopage.
+
+---
+
 ## Calcul des macros (3 niveaux, §4)
 
 1. **Cache local** SQLite + fuzzy (`fuse.js`) → instantané.

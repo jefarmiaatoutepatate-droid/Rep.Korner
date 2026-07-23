@@ -3,7 +3,7 @@
  * Chaque donnée est rattachée au compte connecté (user_id via requireUserId()).
  */
 import { getDB, requireUserId } from './index';
-import type { Food, MealEntry, Workout, WorkoutSet, BodyMeasurement, DailyLog, Macros } from '@/types';
+import type { Food, MealEntry, Workout, WorkoutSet, BodyMeasurement, DailyLog, Macros, CoachMessage } from '@/types';
 import type { MealType } from '@/constants/theme';
 import { computeMacros } from '@/lib/macros';
 
@@ -276,4 +276,21 @@ export async function saveWeeklyReport(weekStart: string, json: string): Promise
 export async function getArchivedReports(): Promise<{ week_start: string; json: string }[]> {
   const db = await getDB();
   return db.getAllAsync<{ week_start: string; json: string }>('SELECT week_start, json FROM weekly_reports WHERE user_id = ? ORDER BY week_start DESC', requireUserId());
+}
+
+// ---------- Coach virtuel ----------
+
+export async function getCoachMessages(): Promise<CoachMessage[]> {
+  const db = await getDB();
+  return db.getAllAsync<CoachMessage>('SELECT id, role, content, created_at FROM coach_messages WHERE user_id = ? ORDER BY id ASC', requireUserId());
+}
+
+export async function addCoachMessage(role: 'user' | 'assistant', content: string): Promise<void> {
+  const db = await getDB();
+  await db.runAsync('INSERT INTO coach_messages (user_id, role, content, created_at) VALUES (?, ?, ?, ?)', requireUserId(), role, content, new Date().toISOString());
+}
+
+export async function clearCoachMessages(): Promise<void> {
+  const db = await getDB();
+  await db.runAsync('DELETE FROM coach_messages WHERE user_id = ?', requireUserId());
 }

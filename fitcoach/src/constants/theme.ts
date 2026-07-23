@@ -64,6 +64,7 @@ export const CATEGORY = {
 /** Couleurs des onglets de la barre du bas (logos colorés). */
 export const TAB_COLOR = {
   index: '#5B6EF5', // Home — accent
+  coach: '#12B3A6', // teal
   nutrition: '#22B07D', // vert
   entrainement: '#F2683C', // corail
   progression: '#8B5CF6', // violet
@@ -73,6 +74,7 @@ export const TAB_COLOR = {
 /** Logos réalistes (emoji) des onglets. */
 export const TAB_EMOJI = {
   index: '🏠',
+  coach: '🧑‍🏫',
   nutrition: '🍽️',
   entrainement: '🏋️',
   progression: '📈',

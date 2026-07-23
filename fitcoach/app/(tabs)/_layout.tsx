@@ -56,6 +56,7 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: ({ focused }) => <TabIcon emoji={TAB_EMOJI.index} color={TAB_COLOR.index} focused={focused} /> }} />
+      <Tabs.Screen name="coach" options={{ title: 'Coach', tabBarIcon: ({ focused }) => <TabIcon emoji={TAB_EMOJI.coach} color={TAB_COLOR.coach} focused={focused} /> }} />
       <Tabs.Screen name="nutrition" options={{ title: 'Nutrition', tabBarIcon: ({ focused }) => <TabIcon emoji={TAB_EMOJI.nutrition} color={TAB_COLOR.nutrition} focused={focused} /> }} />
       <Tabs.Screen name="entrainement" options={{ title: 'Training', tabBarIcon: ({ focused }) => <TabIcon emoji={TAB_EMOJI.entrainement} color={TAB_COLOR.entrainement} focused={focused} /> }} />
       <Tabs.Screen name="progression" options={{ title: 'Progression', tabBarIcon: ({ focused }) => <TabIcon emoji={TAB_EMOJI.progression} color={TAB_COLOR.progression} focused={focused} /> }} />

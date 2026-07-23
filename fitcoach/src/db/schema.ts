@@ -93,6 +93,16 @@ CREATE TABLE IF NOT EXISTS weekly_reports (
   PRIMARY KEY (user_id, week_start)
 );
 
+-- Conversation avec le coach virtuel (par utilisateur)
+CREATE TABLE IF NOT EXISTS coach_messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT NOT NULL,
+  role TEXT NOT NULL,               -- 'user' | 'assistant'
+  content TEXT NOT NULL,
+  created_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_coach_user ON coach_messages(user_id, id);
+
 CREATE TABLE IF NOT EXISTS meta (
   key TEXT PRIMARY KEY,
   value TEXT

@@ -75,6 +75,14 @@ export interface DailyLog {
   mood: number | null;
 }
 
+/** Message de la conversation avec le coach virtuel. */
+export interface CoachMessage {
+  id: number;
+  role: 'user' | 'assistant';
+  content: string;
+  created_at: string | null;
+}
+
 /** Estimation de macros renvoyée par le fallback Claude / OpenFoodFacts. */
 export interface MacroEstimate {
   kcal: number;
