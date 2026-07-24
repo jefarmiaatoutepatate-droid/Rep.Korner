@@ -6,6 +6,7 @@ import { COLORS, TAB_COLOR, withAlpha } from '@/constants/theme';
 import { GradientBg, IconButton } from '@/components/ui';
 import { Icon } from '@/components/Icon';
 import { useAuthStore } from '@/store/authStore';
+import { useDayStore } from '@/store/dayStore';
 import { getCoachMessages, addCoachMessage, clearCoachMessages } from '@/db/repositories';
 import { askCoach, greeting, type CoachTurn } from '@/lib/coach';
 import type { CoachMessage } from '@/types';
@@ -22,6 +23,7 @@ const SUGGESTIONS = [
 export default function CoachScreen() {
   const insets = useSafeAreaInsets();
   const user = useAuthStore((s) => s.user);
+  const refreshDay = useDayStore((s) => s.refresh);
   const firstName = user?.name?.split(' ')[0] ?? '';
 
   const [messages, setMessages] = useState<CoachMessage[]>([]);
@@ -57,8 +59,9 @@ export default function CoachScreen() {
 
     try {
       const history: CoachTurn[] = withUser.map((m) => ({ role: m.role, content: m.content }));
-      const reply = await askCoach(history, firstName);
+      const { reply, logged } = await askCoach(history, firstName);
       await addCoachMessage('assistant', reply);
+      if (logged) refreshDay().catch(() => {}); // le journal a changé → maj Home/Nutrition
     } catch {
       await addCoachMessage('assistant', "Aïe, je n'ai pas réussi à répondre (souci réseau ou proxy). Réessaie dans un instant. 🙏");
     } finally {
