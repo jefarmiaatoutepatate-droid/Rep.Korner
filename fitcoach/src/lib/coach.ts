@@ -8,7 +8,9 @@
  * puis renvoie le résultat au coach qui confirme.
  */
 import Constants from 'expo-constants';
-import { TARGETS, USER } from '@/constants/profile';
+import { USER } from '@/constants/profile';
+import { getActiveTargets, getActiveProfile } from '@/lib/activeProfile';
+import { GOAL_LABELS } from '@/lib/nutritionCalc';
 import { PROGRAM } from '@/constants/program';
 import { MEAL_TYPES, type MealType } from '@/constants/theme';
 import { todayISO } from '@/lib/dates';
@@ -51,28 +53,33 @@ export async function buildCoachContext(firstName: string): Promise<Record<strin
   const date = todayISO();
   const [totals, weight] = await Promise.all([getDayTotals(date), getLatestWeight()]);
   const session = nextSession();
+  const targets = getActiveTargets();
+  const profile = getActiveProfile();
 
   return {
     prenom: firstName,
     date,
     profil: {
-      sexe: USER.sex,
-      age: USER.age,
-      taille_cm: USER.height_cm,
-      poids_cible_kg: USER.weight_target_kg,
+      sexe: profile.sex,
+      age: profile.age,
+      taille_cm: profile.height_cm,
+      poids_actuel_kg: profile.weight_kg,
+      poids_cible_kg: profile.weight_target_kg,
+      objectif: GOAL_LABELS[profile.goal],
+      seances_par_semaine: profile.sessions_per_week,
       restrictions: USER.dietary_restrictions,
       complements: USER.supplements,
       lieu: USER.training_venue,
     },
-    cibles_jour: { kcal: TARGETS.daily_kcal, proteines_g: TARGETS.protein_g, glucides_g: TARGETS.carbs_g, lipides_g: TARGETS.fat_g, eau_l: TARGETS.water_l },
+    cibles_jour: { kcal: targets.daily_kcal, proteines_g: targets.protein_g, glucides_g: targets.carbs_g, lipides_g: targets.fat_g, eau_l: targets.water_l, maintenance_kcal: targets.tdee_kcal },
     consomme_aujourdhui: { kcal: Math.round(totals.kcal), proteines_g: Math.round(totals.protein_g), glucides_g: Math.round(totals.carbs_g), lipides_g: Math.round(totals.fat_g) },
     restant_aujourdhui: {
-      kcal: remaining(totals.kcal, TARGETS.daily_kcal),
-      proteines_g: remaining(totals.protein_g, TARGETS.protein_g),
-      glucides_g: remaining(totals.carbs_g, TARGETS.carbs_g),
-      lipides_g: remaining(totals.fat_g, TARGETS.fat_g),
+      kcal: remaining(totals.kcal, targets.daily_kcal),
+      proteines_g: remaining(totals.protein_g, targets.protein_g),
+      glucides_g: remaining(totals.carbs_g, targets.carbs_g),
+      lipides_g: remaining(totals.fat_g, targets.fat_g),
     },
-    poids_actuel_kg: weight,
+    poids_actuel_kg: weight ?? profile.weight_kg,
     prochaine_seance: session.name,
   };
 }
@@ -148,9 +155,10 @@ async function executeLogMeal(input: LogMealInput): Promise<{ summary: string; a
 
   // Total restant après ajout, pour que le coach le rappelle.
   const totals = await getDayTotals(date);
+  const targets = getActiveTargets();
   const rest = {
-    kcal: remaining(totals.kcal, TARGETS.daily_kcal),
-    proteines_g: remaining(totals.protein_g, TARGETS.protein_g),
+    kcal: remaining(totals.kcal, targets.daily_kcal),
+    proteines_g: remaining(totals.protein_g, targets.protein_g),
   };
 
   const parts: string[] = [];

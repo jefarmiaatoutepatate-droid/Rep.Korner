@@ -6,6 +6,7 @@ import { COLORS } from '@/constants/theme';
 import { Card, SectionHeader, GradientBg, Avatar } from '@/components/ui';
 import { Icon } from '@/components/Icon';
 import { useAuthStore } from '@/store/authStore';
+import { GOAL_LABELS } from '@/lib/nutritionCalc';
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
@@ -55,6 +56,37 @@ export default function SettingsScreen() {
           </View>
         </Card>
 
+        {/* Profil & cibles */}
+        {user?.profile && user?.targets && (
+          <>
+            <SectionHeader title="Profil & cibles" />
+            <Pressable onPress={() => router.push('/profile-edit')}>
+              <Card>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <View style={{ width: 38, height: 38, borderRadius: 11, backgroundColor: COLORS.surfaceHi, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 18 }}>🎯</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: COLORS.text, fontWeight: '700', fontSize: 15 }}>{user.targets.daily_kcal} kcal / jour</Text>
+                    <Text style={{ color: COLORS.faint, fontSize: 11.5, marginTop: 2 }}>
+                      P {user.targets.protein_g} · G {user.targets.carbs_g} · L {user.targets.fat_g} g · 💧 {user.targets.water_l} L
+                    </Text>
+                  </View>
+                  <Icon name="chevRight" size={18} color={COLORS.faint} />
+                </View>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: COLORS.border }}>
+                  <Meta text={`${user.profile.age} ans`} />
+                  <Meta text={`${user.profile.height_cm} cm`} />
+                  <Meta text={`${user.profile.weight_kg} → ${user.profile.weight_target_kg} kg`} />
+                  <Meta text={GOAL_LABELS[user.profile.goal]} />
+                  <Meta text={`${user.profile.sessions_per_week} séances/sem`} />
+                </View>
+                <Text style={{ color: COLORS.accent, fontSize: 12, fontWeight: '600', marginTop: 10 }}>Modifier mon profil</Text>
+              </Card>
+            </Pressable>
+          </>
+        )}
+
         {/* Synchronisation */}
         <SectionHeader title="Synchronisation" />
         <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
@@ -98,6 +130,14 @@ export default function SettingsScreen() {
           </Card>
         </Pressable>
       </ScrollView>
+    </View>
+  );
+}
+
+function Meta({ text }: { text: string }) {
+  return (
+    <View style={{ backgroundColor: COLORS.surfaceHi, borderRadius: 999, paddingVertical: 5, paddingHorizontal: 11 }}>
+      <Text style={{ color: COLORS.muted, fontSize: 11.5, fontWeight: '600' }}>{text}</Text>
     </View>
   );
 }

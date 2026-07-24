@@ -1,7 +1,12 @@
 /**
- * Profil utilisateur & cibles — hardcodés dans l'app (§1 de la spec).
- * Une seule source de vérité, importée partout où on a besoin des cibles.
+ * Profil & cibles PAR DÉFAUT (fallback).
+ *
+ * Depuis l'ajout de l'onboarding, chaque compte a SON profil (âge, taille, poids,
+ * séances…) et SES cibles calculées (voir `src/lib/nutritionCalc.ts`), stockés en
+ * base et exposés via le store d'auth. Ces constantes servent uniquement de repli
+ * pour les comptes créés avant l'onboarding et pour les tests.
  */
+import type { ProfileInput, Targets as ComputedTargets } from '@/lib/nutritionCalc';
 
 export interface UserProfile {
   sex: 'male' | 'female';
@@ -44,6 +49,20 @@ export const TARGETS: Targets = {
   fat_g: 70,
   water_l: 3.0,
 };
+
+/** Profil par défaut (repli), au format attendu par le calcul des cibles. */
+export const DEFAULT_PROFILE: ProfileInput = {
+  sex: USER.sex,
+  age: USER.age,
+  height_cm: USER.height_cm,
+  weight_kg: USER.weight_start_kg,
+  weight_target_kg: USER.weight_target_kg,
+  sessions_per_week: 4,
+  goal: 'lose',
+};
+
+/** Cibles par défaut (repli) — alias explicite de TARGETS. */
+export const DEFAULT_TARGETS: ComputedTargets = TARGETS;
 
 export const PROGRAM_DURATION_WEEKS = 8;
 export const TRAINING_SPLIT = 'upper_lower_4_days';

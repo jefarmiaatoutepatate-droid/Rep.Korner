@@ -73,7 +73,7 @@ npm start          # puis 'a' pour Android, ou scanner le QR avec Expo Go
 ### Tests & qualité
 
 ```bash
-npm test           # 31 tests (macros, bilan hebdo, parsing quick-add)
+npm test           # 47 tests (macros, calcul calorique, bilan hebdo, parsing, validation)
 npm run typecheck  # tsc --noEmit, 0 erreur
 ```
 
@@ -109,17 +109,41 @@ charts) fonctionne dans Expo Go.
 
 ## Comptes & synchronisation
 
-À l'installation, l'utilisateur **crée un compte** (prénom + e-mail + mot de passe),
-peut se **connecter / se déconnecter**, et **supprimer son compte** (exigence App Store).
+À l'installation, l'utilisateur **crée un compte en 2 étapes** :
+
+1. **Identifiants** : prénom + e-mail + mot de passe.
+2. **Profil** : sexe, âge, taille, poids actuel, poids cible, objectif (perdre / maintenir /
+   prendre du muscle) et **nombre de séances/semaine**. Les **besoins caloriques sont
+   calculés en direct** (aperçu affiché avant validation).
+
+Il peut ensuite se **connecter / se déconnecter**, **modifier son profil** (Réglages →
+les cibles se recalculent) et **supprimer son compte** (exigence App Store).
 La session est persistée (`expo-secure-store`) — l'app rouvre directement connectée.
+
+### Cibles caloriques personnalisées (`src/lib/nutritionCalc.ts`, testé)
+
+Le calcul est **pur et couvert par des tests** :
+
+- **BMR** — équation de Mifflin-St Jeor (selon sexe, poids, taille, âge).
+- **TDEE** — BMR × facteur d'activité **déduit du nombre de séances/semaine**
+  (0 ≈ 1,2 sédentaire → 7+ ≈ 1,9).
+- **Objectif** — ajustement kcal : déficit (−450), maintien (0) ou surplus (+350).
+- **Macros** — protéines & lipides indexés sur le poids (2,0 g/kg protéines en sèche,
+  sinon 1,8) ; glucides = reste de l'énergie ; eau ≈ 35 ml/kg. Plancher de sécurité.
+
+Chaque compte stocke **son profil et ses cibles** (colonnes de la table `users`,
+migration auto pour les bases existantes). Tout l'app (Home, Nutrition, bilan hebdo,
+Coach Léo) utilise les cibles du compte connecté — repli sur des valeurs par défaut
+pour les comptes créés avant l'onboarding.
 
 - Toutes les données (repas, séances, séries, mensurations, logs, bilans) sont
   **rattachées au compte** (`user_id`) : chaque utilisateur a son propre suivi.
 - **Mode par défaut : comptes locaux** (mots de passe hachés SHA-256 + sel sur
   l'appareil). Fonctionne hors-ligne, sans backend.
-- **Écrans** : `app/(auth)/login.tsx`, `app/(auth)/signup.tsx`, gate dans
-  `app/_layout.tsx` (redirige vers login si non connecté), `app/settings.tsx`
-  (déconnexion + suppression de compte).
+- **Écrans** : `app/(auth)/login.tsx`, `app/(auth)/signup.tsx` (2 étapes, formulaire
+  profil réutilisable `components/ProfileForm.tsx`), `app/profile-edit.tsx` (édition du
+  profil), gate dans `app/_layout.tsx` (redirige vers login si non connecté),
+  `app/settings.tsx` (profil + cibles, déconnexion + suppression de compte).
 
 ### Activer la sync cloud (Supabase) — pour la publication stores
 

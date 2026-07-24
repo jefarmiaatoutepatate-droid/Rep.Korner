@@ -5,7 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-gifted-charts';
 import { COLORS } from '@/constants/theme';
 import { Card, SectionHeader, Button, Pill, GradientBg } from '@/components/ui';
-import { USER } from '@/constants/profile';
+import { DEFAULT_PROFILE } from '@/constants/profile';
+import { useAuthStore } from '@/store/authStore';
 import { KEY_LIFTS } from '@/constants/program';
 import { todayISO } from '@/lib/dates';
 import { addMeasurement, getMeasurements, getLastSetsForExercise } from '@/db/repositories';
@@ -13,6 +14,7 @@ import type { BodyMeasurement } from '@/types';
 
 export default function ProgressionScreen() {
   const insets = useSafeAreaInsets();
+  const weightTarget = useAuthStore((s) => s.user?.profile?.weight_target_kg) ?? DEFAULT_PROFILE.weight_target_kg;
   const [measurements, setMeasurements] = useState<BodyMeasurement[]>([]);
   const [weightInput, setWeightInput] = useState('');
   const [lift, setLift] = useState(KEY_LIFTS[0]);
@@ -46,7 +48,7 @@ export default function ProgressionScreen() {
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: insets.top + 12, paddingBottom: 110 }}>
         <Text style={{ color: COLORS.text, fontSize: 24, fontWeight: '800', letterSpacing: -0.3, marginBottom: 6 }}>Progression</Text>
 
-        <SectionHeader title="Poids" action={`${latest ? latest + ' kg' : '—'} · cible ${USER.weight_target_kg}`} />
+        <SectionHeader title="Poids" action={`${latest ? latest + ' kg' : '—'} · cible ${weightTarget}`} />
         <Card>
           {weightPoints.length > 1 ? (
             <LineChart

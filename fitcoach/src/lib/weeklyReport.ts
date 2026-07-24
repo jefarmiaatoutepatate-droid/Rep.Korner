@@ -25,6 +25,11 @@ export interface ReportInput {
   keyLiftBests: Record<string, { current: number | null; previous: number | null }>;
   /** Semaine 1 à 3 de créatine → rétention d'eau attendue, on n'ajuste pas les kcal. */
   isCreatineWeek1to3: boolean;
+  /** Cibles personnalisées de l'utilisateur (repli sur les défauts si absent). */
+  proteinTarget?: number;
+  kcalOverLimit?: number;
+  kcalLowerBand?: number;
+  kcalUpperBand?: number;
 }
 
 export interface WeeklyReport {
@@ -87,12 +92,14 @@ export function generateRecommendation(args: {
   weightDelta: number | null;
   daysHitProtein: number;
   isCreatineWeek1to3: boolean;
+  proteinTarget?: number;
 }): string {
   const { weightDelta, daysHitProtein, isCreatineWeek1to3 } = args;
+  const proteinTarget = args.proteinTarget ?? TARGETS.protein_g;
 
   // Protéines d'abord : levier prioritaire, indépendant du poids.
   if (daysHitProtein < REPORT_THRESHOLDS.proteinComplianceMinDays) {
-    return 'Manque de protéines cette semaine. Ajoute une whey/jour pour tenir la cible de 160 g.';
+    return `Manque de protéines cette semaine. Ajoute une whey/jour pour tenir la cible de ${proteinTarget} g.`;
   }
 
   if (weightDelta == null) {
@@ -117,16 +124,20 @@ export function generateRecommendation(args: {
 
 export function generateWeeklyReport(input: ReportInput): WeeklyReport {
   const { days } = input;
+  const proteinTarget = input.proteinTarget ?? TARGETS.protein_g;
+  const overLimit = input.kcalOverLimit ?? REPORT_THRESHOLDS.kcalOverLimit;
+  const lowerBand = input.kcalLowerBand ?? REPORT_THRESHOLDS.kcalLowerBand;
+  const upperBand = input.kcalUpperBand ?? REPORT_THRESHOLDS.kcalUpperBand;
 
   const avgKcal = mean(days.map((d) => d.kcal));
   const avgProtein = mean(days.map((d) => d.protein_g));
   const avgCarbs = mean(days.map((d) => d.carbs_g));
   const avgFat = mean(days.map((d) => d.fat_g));
 
-  const daysHitProtein = days.filter((d) => d.protein_g >= TARGETS.protein_g).length;
-  const daysOverKcal = days.filter((d) => d.kcal > REPORT_THRESHOLDS.kcalOverLimit).length;
+  const daysHitProtein = days.filter((d) => d.protein_g >= proteinTarget).length;
+  const daysOverKcal = days.filter((d) => d.kcal > overLimit).length;
   const daysWithinRange = days.filter(
-    (d) => d.kcal >= REPORT_THRESHOLDS.kcalLowerBand && d.kcal <= REPORT_THRESHOLDS.kcalUpperBand,
+    (d) => d.kcal >= lowerBand && d.kcal <= upperBand,
   ).length;
 
   const weightCurrent = input.weekWeights.length ? mean(input.weekWeights) : null;
@@ -161,6 +172,7 @@ export function generateWeeklyReport(input: ReportInput): WeeklyReport {
       weightDelta,
       daysHitProtein,
       isCreatineWeek1to3: input.isCreatineWeek1to3,
+      proteinTarget,
     }),
   };
 }

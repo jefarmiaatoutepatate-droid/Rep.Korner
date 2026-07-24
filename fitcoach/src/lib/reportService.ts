@@ -14,6 +14,7 @@ import {
   saveWeeklyReport,
 } from '@/db/repositories';
 import { USER } from '@/constants/profile';
+import { getActiveTargets } from '@/lib/activeProfile';
 
 /** Numéro de semaine du programme (1..8) pour la détection créatine S1-3. */
 function programWeekIndex(weekStartISO: string): number {
@@ -63,6 +64,7 @@ export async function buildWeeklyReport(reference: Date = new Date()): Promise<W
     ? prevWeights.reduce((a, b) => a + b, 0) / prevWeights.length
     : null;
 
+  const targets = getActiveTargets();
   const input: ReportInput = {
     weekStart: startISO,
     days: [...byDay.values()],
@@ -73,6 +75,11 @@ export async function buildWeeklyReport(reference: Date = new Date()): Promise<W
     keyLiftBests,
     isCreatineWeek1to3:
       USER.supplements.some((s) => s.includes('creatine')) && programWeekIndex(startISO) <= 3,
+    // Cibles personnalisées → fourchettes de compliance calées sur l'objectif.
+    proteinTarget: targets.protein_g,
+    kcalOverLimit: targets.daily_kcal + 100,
+    kcalLowerBand: targets.daily_kcal - 200,
+    kcalUpperBand: targets.daily_kcal + 150,
   };
 
   const report = generateWeeklyReport(input);

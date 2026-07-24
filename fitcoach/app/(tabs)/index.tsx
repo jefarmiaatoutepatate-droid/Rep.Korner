@@ -3,7 +3,7 @@ import { ScrollView, View, Text, Pressable, RefreshControl } from 'react-native'
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDayStore } from '@/store/dayStore';
-import { TARGETS, USER } from '@/constants/profile';
+import { DEFAULT_TARGETS, DEFAULT_PROFILE } from '@/constants/profile';
 import { PROGRAM } from '@/constants/program';
 import { COLORS, MEAL_TYPES, CATEGORY, withAlpha } from '@/constants/theme';
 import { ProgressRing } from '@/components/ProgressRing';
@@ -29,12 +29,14 @@ export default function HomeScreen() {
   const user = useAuthStore((s) => s.user);
   const firstName = user?.name?.split(' ')[0] ?? '';
   const initial = (user?.name?.[0] ?? 'F').toUpperCase();
+  const targets = user?.targets ?? DEFAULT_TARGETS;
+  const profile = user?.profile ?? DEFAULT_PROFILE;
 
   useFocusEffect(useCallback(() => { refresh(); }, [refresh]));
 
   const session = nextSession();
   const dateLabel = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-  const waterPct = progress(daily.water_l, TARGETS.water_l);
+  const waterPct = progress(daily.water_l, targets.water_l);
   const mealKcal = (key: string) => entries.filter((e) => e.meal_type === key).reduce((s, e) => s + e.kcal, 0);
   const mealCount = (key: string) => entries.filter((e) => e.meal_type === key).length;
 
@@ -84,20 +86,20 @@ export default function HomeScreen() {
 
         {/* Stats — pastilles colorées */}
         <View style={{ flexDirection: 'row', gap: 11, marginTop: 13 }}>
-          <StatTile label="Poids" value="78.6" unit="kg" emoji="⚖️" color={COLORS.accent} />
-          <StatTile label="Objectif" value={String(USER.weight_target_kg)} unit="kg" emoji="🎯" color={COLORS.success} />
-          <StatTile label="Eau" value={daily.water_l.toFixed(1)} unit={`/ ${TARGETS.water_l} L`} emoji="💧" color={CATEGORY.post_workout} />
+          <StatTile label="Poids" value={profile.weight_kg.toFixed(1)} unit="kg" emoji="⚖️" color={COLORS.accent} />
+          <StatTile label="Objectif" value={String(profile.weight_target_kg)} unit="kg" emoji="🎯" color={COLORS.success} />
+          <StatTile label="Eau" value={daily.water_l.toFixed(1)} unit={`/ ${targets.water_l} L`} emoji="💧" color={CATEGORY.post_workout} />
         </View>
 
         {/* Aujourd'hui : anneau + macros */}
         <SectionHeader title="Aujourd'hui" action="Détails" />
         <Card>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-            <ProgressRing progress={progress(totals.kcal, TARGETS.daily_kcal)} value={totals.kcal} target={TARGETS.daily_kcal} compact />
+            <ProgressRing progress={progress(totals.kcal, targets.daily_kcal)} value={totals.kcal} target={targets.daily_kcal} compact />
             <View style={{ flex: 1 }}>
-              <MacroBar label="Protéines" value={totals.protein_g} target={TARGETS.protein_g} color={COLORS.protein} />
-              <MacroBar label="Glucides" value={totals.carbs_g} target={TARGETS.carbs_g} color={COLORS.carbs} />
-              <MacroBar label="Lipides" value={totals.fat_g} target={TARGETS.fat_g} color={COLORS.fat} />
+              <MacroBar label="Protéines" value={totals.protein_g} target={targets.protein_g} color={COLORS.protein} />
+              <MacroBar label="Glucides" value={totals.carbs_g} target={targets.carbs_g} color={COLORS.carbs} />
+              <MacroBar label="Lipides" value={totals.fat_g} target={targets.fat_g} color={COLORS.fat} />
             </View>
           </View>
         </Card>

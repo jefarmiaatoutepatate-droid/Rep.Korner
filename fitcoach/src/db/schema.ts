@@ -10,7 +10,22 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash TEXT,                -- null pour un compte cloud (mot de passe géré serveur)
   password_salt TEXT,
   remote_id TEXT,                    -- id Supabase quand synchronisé
-  created_at TEXT
+  created_at TEXT,
+  -- Profil saisi à l'inscription (onboarding)
+  sex TEXT,
+  age INTEGER,
+  height_cm REAL,
+  weight_kg REAL,
+  weight_target_kg REAL,
+  goal TEXT,                         -- 'lose' | 'maintain' | 'gain'
+  sessions_per_week INTEGER,
+  -- Cibles calculées (src/lib/nutritionCalc.ts)
+  tdee_kcal REAL,
+  daily_kcal REAL,
+  protein_g REAL,
+  carbs_g REAL,
+  fat_g REAL,
+  water_l REAL
 );
 
 -- Cache d'aliments (partagé entre comptes — base de référence commune)
@@ -108,3 +123,23 @@ CREATE TABLE IF NOT EXISTS meta (
   value TEXT
 );
 `;
+
+/**
+ * Colonnes profil/cibles ajoutées à `users` après coup. Pour les bases déjà
+ * créées, `CREATE TABLE IF NOT EXISTS` ne les ajoute pas → migration ALTER.
+ */
+export const USER_PROFILE_COLUMNS: { name: string; type: string }[] = [
+  { name: 'sex', type: 'TEXT' },
+  { name: 'age', type: 'INTEGER' },
+  { name: 'height_cm', type: 'REAL' },
+  { name: 'weight_kg', type: 'REAL' },
+  { name: 'weight_target_kg', type: 'REAL' },
+  { name: 'goal', type: 'TEXT' },
+  { name: 'sessions_per_week', type: 'INTEGER' },
+  { name: 'tdee_kcal', type: 'REAL' },
+  { name: 'daily_kcal', type: 'REAL' },
+  { name: 'protein_g', type: 'REAL' },
+  { name: 'carbs_g', type: 'REAL' },
+  { name: 'fat_g', type: 'REAL' },
+  { name: 'water_l', type: 'REAL' },
+];

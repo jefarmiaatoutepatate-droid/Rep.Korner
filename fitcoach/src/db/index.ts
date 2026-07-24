@@ -3,7 +3,7 @@
  * Ouvre la base, applique le schéma multi-utilisateur et amorce les données.
  */
 import * as SQLite from 'expo-sqlite';
-import { SCHEMA_SQL } from './schema';
+import { SCHEMA_SQL, USER_PROFILE_COLUMNS } from './schema';
 import { SEED_FOODS } from './seedFoods';
 
 let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
@@ -37,7 +37,19 @@ export function getCurrentUserId(): string | null {
 export async function initDatabase(): Promise<void> {
   const db = await getDB();
   await db.execAsync(SCHEMA_SQL);
+  await migrateUserColumns(db);
   await seedIfNeeded(db);
+}
+
+/** Ajoute les colonnes profil/cibles manquantes sur les bases déjà créées. */
+async function migrateUserColumns(db: SQLite.SQLiteDatabase): Promise<void> {
+  const cols = await db.getAllAsync<{ name: string }>('PRAGMA table_info(users)');
+  const existing = new Set(cols.map((c) => c.name));
+  for (const col of USER_PROFILE_COLUMNS) {
+    if (!existing.has(col.name)) {
+      await db.execAsync(`ALTER TABLE users ADD COLUMN ${col.name} ${col.type}`);
+    }
+  }
 }
 
 async function seedIfNeeded(db: SQLite.SQLiteDatabase): Promise<void> {
