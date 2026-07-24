@@ -151,6 +151,13 @@ nutrition & musculation, et calcule concrètement (kcal + macros).
 - **Contexte perso en direct** : l'app lui envoie tes cibles, tes macros du jour (+ le
   restant), ton poids et ta prochaine séance (`src/lib/coach.ts` → `buildCoachContext`),
   pour des réponses personnalisées.
+- **Il agit, il ne fait pas que parler** 🎯 : quand tu confirmes « oui j'ai mangé tel plat »
+  et que tu lui demandes de l'ajouter, le coach **l'inscrit dans ton journal du jour** et
+  décompte tes quotas. Techniquement, Claude appelle l'outil `log_meal` ; l'app résout
+  chaque aliment (cache → OpenFoodFacts → estimation Claude), calcule les macros, écrit
+  l'entrée, puis renvoie au coach le récap + le restant (`src/lib/coach.ts` →
+  `executeLogMeal`, boucle d'outil dans `askCoach`). Home et Nutrition se rafraîchissent
+  automatiquement.
 - **Conversation par compte**, persistée en SQLite (`coach_messages`), effaçable.
 - Modèle : `claude-opus-4-8` (endpoint `/chat` du Worker). Tant que le proxy n'est pas
   configuré, le coach répond un message d'aide (pas de crash).
@@ -173,12 +180,17 @@ La clé API Claude ne doit **jamais** être embarquée dans l'app.
 ```bash
 cd backend/cloudflare-worker
 npm install
-npx wrangler secret put ANTHROPIC_API_KEY   # colle ta clé
+npx wrangler login                          # autorise ton compte Cloudflare
+npx wrangler secret put ANTHROPIC_API_KEY   # colle ta clé (côté serveur, jamais commitée)
 npx wrangler deploy
 ```
 
 Puis copie l'URL générée dans `app.json` → `expo.extra.claudeProxyUrl`.
 Tant que ce n'est pas configuré, l'app fonctionne avec les niveaux 1 et 2.
+
+> 📖 **Guide pas-à-pas clé en main** (prérequis, vérification `curl`, dev local,
+> rotation de clé, sécurité) : [`backend/cloudflare-worker/DEPLOY.md`](backend/cloudflare-worker/DEPLOY.md).
+> Le même Worker alimente aussi le Coach Léo (endpoint `/chat`).
 
 ---
 
