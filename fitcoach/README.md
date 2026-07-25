@@ -101,9 +101,11 @@ avec l'app **Expo Go** (iOS). Toutes les fonctionnalités marchent sauf celles q
 exigent un dev build ; ici tout (SQLite, notifications locales, image-picker,
 charts) fonctionne dans Expo Go.
 
-> ⚠️ **Icône App Store** : les `assets/*.png` sont des placeholders 1×1. Pour un
-> build iOS de production, remplace `assets/icon.png` par une image **1024×1024
-> sans canal alpha** (exigence Apple), sinon la soumission App Store est refusée.
+> ✅ **Icônes prêtes pour les stores** : `assets/icon.png` est en **1024×1024 sans
+> canal alpha** (exigence Apple), `adaptive-icon.png` est le calque avant Android
+> (marque dans la zone sûre, fond `#5B6EF5` défini dans `app.json`), `splash.png`
+> se compose sur le fond blanc. Marque « haltère » aux couleurs du thème, générée
+> par `scripts/gen-icons.py` (relançable si la charte évolue).
 
 ---
 
@@ -238,8 +240,6 @@ Tant que ce n'est pas configuré, l'app fonctionne avec les niveaux 1 et 2.
 
 ## Notes / TODO v2
 
-- Les icônes/splash (`assets/*.png`) sont des placeholders 1×1 à remplacer
-  (iOS App Store exige une icône 1024×1024 sans alpha).
 - La détection « semaine 1-3 de créatine » est simplifiée (retourne toujours S1) ;
   stocker la date de début du programme dans la table `meta` pour l'affiner.
 - Bonus spec non implémentés : scan code-barres, watch companion, mode « cuisine ».
