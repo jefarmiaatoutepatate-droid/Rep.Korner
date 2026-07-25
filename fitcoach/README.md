@@ -75,6 +75,7 @@ npm start          # puis 'a' pour Android, ou scanner le QR avec Expo Go
 ```bash
 npm test           # 47 tests (macros, calcul calorique, bilan hebdo, parsing, validation)
 npm run typecheck  # tsc --noEmit, 0 erreur
+npm run lint       # eslint (config Expo), 0 problème
 ```
 
 ### Build (EAS) — Android & iOS
@@ -237,6 +238,16 @@ Tant que ce n'est pas configuré, l'app fonctionne avec les niveaux 1 et 2.
 - Aliments de base (réf. CIQUAL arrondies) seedés au 1er lancement : `src/db/seedFoods.ts`.
 
 ---
+
+## Publication sur les stores
+
+- **[`docs/PRIVACY.md`](docs/PRIVACY.md)** — politique de confidentialité, rédigée
+  d'après le traitement réel des données (local par défaut ; OpenFoodFacts et
+  Anthropic pour le coach). ⚠️ Trois champs `[À COMPLÉTER]` (éditeur, contact, date)
+  et **elle doit être hébergée sur une URL publique** : les deux stores l'exigent.
+- **[`docs/STORE.md`](docs/STORE.md)** — textes de fiche prêts à coller (descriptions,
+  mots-clés, nouveautés), formats de captures, **déclarations de confidentialité**
+  App Store / Google Play et checklist de soumission.
 
 ## Notes / TODO v2
 

@@ -1,4 +1,5 @@
 /** Validation PURE des saisies d'authentification (testée en Node). */
+import type { ProfileInput, Sex, Goal } from '@/lib/nutritionCalc';
 
 export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
@@ -33,8 +34,6 @@ export function validateSignup(input: { name: string; email: string; password: s
 }
 
 // ---- Profil (onboarding) ----
-
-import type { ProfileInput, Sex, Goal } from '@/lib/nutritionCalc';
 
 /** Brouillon de profil tel que saisi dans le formulaire (numériques en texte). */
 export interface ProfileDraft {

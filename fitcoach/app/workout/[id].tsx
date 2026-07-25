@@ -20,8 +20,9 @@ export default function WorkoutScreen() {
   const [rest, setRest] = useState<number | null>(null);
 
   useEffect(() => {
+    // `session` provient du tableau constant PROGRAM → référence stable.
     if (session) createWorkout(todayISO(), session.id as Workout['session_type']).then(setWorkoutId);
-  }, [session?.id]);
+  }, [session]);
 
   useEffect(() => {
     if (rest == null) return;
