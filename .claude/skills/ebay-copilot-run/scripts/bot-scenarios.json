@@ -1,0 +1,53 @@
+{
+  "_comment": "Valeurs d'exemple pour chaque commande du bot Discord, utilisées par run-bot-smoke-test.js. Ajoutez une entrée ici (via la skill ebay-copilot-add-command) chaque fois qu'une nouvelle commande est créée dans ebay-dropship-bot/discord-bot/commands/.",
+  "audit.js": {
+    "titre": "L@@K SUPER PROMO !!! Coque WOW meilleur prix du web 0612345678",
+    "description": "Belle coque. <script>alert(1)</script> contact test@example.com",
+    "categorie": "Jouets & jeux",
+    "photos": 1,
+    "retours": "non",
+    "expedition": "asie",
+    "delai_annonce": 5,
+    "delai_fournisseur": 20,
+    "marque": "Nike"
+  },
+  "titre.js": {
+    "nom": "Coque de protection",
+    "marque": "Générique",
+    "modele": "iPhone 15 Pro",
+    "couleur": "Noir",
+    "etat": "neuf-etiquette"
+  },
+  "description.js": {
+    "nom": "Coque de protection silicone",
+    "categorie": "Électronique & électroménager",
+    "marque": "Générique",
+    "modele": "iPhone 15 Pro",
+    "couleur": "Noir",
+    "etat": "neuf-etiquette",
+    "points_forts": "Anti-choc|Léger|Facile à poser",
+    "contenu_colis": "1x coque|1x chiffon",
+    "expedition": "france",
+    "delai": 5
+  },
+  "marge.js": {
+    "compte": "particulier",
+    "prix_vente": 24.9,
+    "cout_produit": 6.5,
+    "port_fournisseur": 2.5,
+    "budget_pub_pct": 10,
+    "frais_divers_pct": 5
+  },
+  "niche.js": {
+    "tendance": "croissance",
+    "concurrence": "moderee",
+    "poids": "leger",
+    "prix_vente": 24.9,
+    "resout_probleme": "oui",
+    "fournisseur_fiable": "oui"
+  },
+  "guide.js": {
+    "sujet": "gpsr"
+  },
+  "aide.js": {}
+}

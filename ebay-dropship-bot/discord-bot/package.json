@@ -1,0 +1,16 @@
+{
+  "name": "ebay-dropship-copilot-bot",
+  "version": "1.0.0",
+  "description": "Bot Discord pour eBay Dropship Copilot — audit d'annonces, générateur de titres/description, calculateur de marge et base de connaissances, directement dans Discord.",
+  "private": true,
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "node deploy-commands.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5"
+  }
+}
