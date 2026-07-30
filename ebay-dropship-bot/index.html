@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eBay Dropship Copilot — Audit, descriptions &amp; sourcing</title>
+<meta name="description" content="Outil hors-ligne pour auditer vos annonces eBay.fr avant publication, générer des titres/descriptions pro et évaluer vos produits niche en dropshipping.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-badge">eBay</span>
+      <div>
+        <h1>Dropship Copilot</h1>
+        <p>Assistant hors-ligne pour vendeurs eBay.fr en dropshipping</p>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn active" data-tab="dashboard">Tableau de bord</button>
+      <button class="tab-btn" data-tab="audit">Audit d'annonce</button>
+      <button class="tab-btn" data-tab="generator">Générateur</button>
+      <button class="tab-btn" data-tab="sourcing">Sourcing &amp; Marge</button>
+      <button class="tab-btn" data-tab="knowledge">Base de connaissances</button>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <div class="disclaimer">
+    ⚠️ Cet outil fonctionne <strong>100% hors-ligne</strong>, sans connexion à l'API eBay/AliExpress/Amazon (aucune clé requise). Il applique des règles et seuils basés sur les politiques publiques de ces plateformes et la réglementation UE — vérifiez toujours les pages officielles avant de publier, ces politiques évoluent régulièrement.
+  </div>
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <section class="tab-panel active" id="panel-dashboard">
+    <div class="grid-cards">
+      <div class="stat-card">
+        <span class="stat-value" id="stat-audits">0</span>
+        <span class="stat-label">Audits réalisés</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="stat-avgscore">—</span>
+        <span class="stat-label">Score moyen d'audit</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="stat-descriptions">0</span>
+        <span class="stat-label">Descriptions générées</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="stat-niches">0</span>
+        <span class="stat-label">Niches évaluées</span>
+      </div>
+    </div>
+
+    <div class="panel-block">
+      <h2>Comment utiliser cet outil</h2>
+      <ol class="howto">
+        <li><strong>Audit d'annonce</strong> — collez votre titre, description et infos logistiques avant de publier : vous obtenez un score et une liste concrète de corrections (bloquantes / à améliorer).</li>
+        <li><strong>Générateur</strong> — renseignez les infos produit, obtenez 3 titres optimisés (≤80 caractères) et une description HTML pro prête à copier-coller dans eBay.</li>
+        <li><strong>Sourcing &amp; Marge</strong> — calculez votre marge nette réelle après frais eBay et évaluez la viabilité d'une niche produit avant de vous lancer.</li>
+        <li><strong>Base de connaissances</strong> — politique dropshipping eBay, règles AliExpress/Amazon, GPSR, VeRO, TVA/IOSS, indicateurs de performance.</li>
+      </ol>
+    </div>
+
+    <div class="panel-block" id="recent-audits-block">
+      <h2>Derniers audits</h2>
+      <div id="recent-audits" class="empty-state">Aucun audit pour le moment.</div>
+    </div>
+  </section>
+
+  <!-- ===================== AUDIT ===================== -->
+  <section class="tab-panel" id="panel-audit">
+    <h2>Audit d'annonce avant publication</h2>
+    <p class="section-intro">Remplissez les champs ci-dessous avec le contenu prévu de votre annonce. L'audit tourne entièrement dans votre navigateur, rien n'est envoyé sur internet.</p>
+
+    <form id="audit-form" class="form-grid">
+      <label class="field span-2">
+        Titre de l'annonce
+        <input type="text" id="a-title" maxlength="200" placeholder="Ex: Coque Silicone iPhone 15 Pro Anti-Choc Transparente Neuve">
+      </label>
+
+      <label class="field span-2">
+        Description (collez le texte ou le HTML prévu)
+        <textarea id="a-description" rows="6" placeholder="Description complète de l'annonce..."></textarea>
+      </label>
+
+      <label class="field">
+        Catégorie
+        <select id="a-category"></select>
+      </label>
+
+      <label class="field">
+        Marque mentionnée (optionnel)
+        <input type="text" id="a-brand" placeholder="Ex: Nike, générique...">
+      </label>
+
+      <label class="field">
+        Nombre de photos
+        <input type="number" id="a-photos" min="0" value="6">
+      </label>
+
+      <label class="field checkbox-field">
+        <input type="checkbox" id="a-photohighres">
+        Photos ≥ 1600px (zoom actif)
+      </label>
+
+      <label class="field">
+        Politique de retour
+        <select id="a-returns">
+          <option value="30j">30 jours</option>
+          <option value="60j">60 jours</option>
+          <option value="non">Retours non acceptés</option>
+        </select>
+      </label>
+
+      <label class="field">
+        Expédition depuis
+        <select id="a-shipfrom">
+          <option value="france">France</option>
+          <option value="ue">Union Européenne</option>
+          <option value="asie">Asie (direct fournisseur)</option>
+        </select>
+      </label>
+
+      <label class="field">
+        Délai annoncé au client (jours)
+        <input type="number" id="a-declared-delay" min="0" value="7">
+      </label>
+
+      <label class="field">
+        Délai réel fournisseur (jours)
+        <input type="number" id="a-supplier-delay" min="0" value="5">
+      </label>
+
+      <label class="field">
+        Item Specifics remplis
+        <input type="number" id="a-specifics-filled" min="0" value="8">
+      </label>
+
+      <label class="field">
+        Item Specifics recommandés (total)
+        <input type="number" id="a-specifics-total" min="0" value="10">
+      </label>
+
+      <fieldset class="field span-2 gpsr-fieldset" id="gpsr-fieldset">
+        <legend>Conformité GPSR (catégories concernées)</legend>
+        <label class="checkbox-field"><input type="checkbox" id="a-gpsr-manufacturer"> Coordonnées fabricant renseignées</label>
+        <label class="checkbox-field"><input type="checkbox" id="a-gpsr-responsible"> Personne responsable UE renseignée</label>
+        <label class="checkbox-field"><input type="checkbox" id="a-gpsr-warnings"> Avertissements de sécurité renseignés</label>
+      </fieldset>
+
+      <div class="span-2 form-actions">
+        <button type="submit" class="btn-primary">Lancer l'audit</button>
+        <button type="button" class="btn-secondary" id="audit-reset">Réinitialiser</button>
+      </div>
+    </form>
+
+    <div id="audit-result" class="result-block hidden"></div>
+  </section>
+
+  <!-- ===================== GENERATOR ===================== -->
+  <section class="tab-panel" id="panel-generator">
+    <h2>Générateur de titres &amp; description pro</h2>
+    <p class="section-intro">Renseignez les informations produit pour obtenir des titres optimisés et une description HTML structurée, sans script ni contenu actif (conforme aux règles eBay).</p>
+
+    <form id="gen-form" class="form-grid">
+      <label class="field">
+        Nom du produit
+        <input type="text" id="g-name" placeholder="Ex: Coque de protection silicone">
+      </label>
+      <label class="field">
+        Marque (optionnel)
+        <input type="text" id="g-brand" placeholder="Ex: générique, marque autorisée...">
+      </label>
+      <label class="field">
+        Modèle / Compatibilité
+        <input type="text" id="g-model" placeholder="Ex: iPhone 15 Pro">
+      </label>
+      <label class="field">
+        Catégorie
+        <select id="g-category"></select>
+      </label>
+      <label class="field">
+        État
+        <select id="g-condition"></select>
+      </label>
+      <label class="field">
+        Couleur
+        <input type="text" id="g-color" placeholder="Ex: Noir">
+      </label>
+      <label class="field">
+        Matière
+        <input type="text" id="g-material" placeholder="Ex: Silicone">
+      </label>
+      <label class="field">
+        Expédition depuis
+        <select id="g-shipfrom">
+          <option value="france">notre entrepôt en France</option>
+          <option value="ue">notre entrepôt en Union Européenne</option>
+          <option value="asie">notre partenaire logistique (expédition internationale)</option>
+        </select>
+      </label>
+      <label class="field">
+        Délai de livraison annoncé (jours)
+        <input type="number" id="g-delay" min="0" value="7">
+      </label>
+      <label class="field span-2">
+        Points forts (un par ligne)
+        <textarea id="g-highlights" rows="4" placeholder="Protection anti-choc renforcée&#10;Compatible charge sans fil&#10;Installation facile"></textarea>
+      </label>
+      <label class="field span-2">
+        Contenu du colis (un par ligne)
+        <textarea id="g-contents" rows="3" placeholder="1x coque de protection&#10;1x chiffon de nettoyage"></textarea>
+      </label>
+      <label class="field span-2">
+        Garantie / Service client (optionnel)
+        <input type="text" id="g-warranty" placeholder="Ex: Retour gratuit 30 jours, réponse sous 24h">
+      </label>
+
+      <div class="span-2 form-actions">
+        <button type="submit" class="btn-primary">Générer</button>
+        <button type="button" class="btn-secondary" id="gen-reset">Réinitialiser</button>
+      </div>
+    </form>
+
+    <div id="gen-result" class="result-block hidden"></div>
+  </section>
+
+  <!-- ===================== SOURCING ===================== -->
+  <section class="tab-panel" id="panel-sourcing">
+    <h2>Sourcing &amp; Marge</h2>
+    <p class="section-intro">Calculez votre marge nette réelle après frais eBay, puis évaluez la viabilité d'une niche produit avant de vous lancer.</p>
+
+    <div class="two-col">
+      <div class="panel-block">
+        <h3>Calculateur de marge</h3>
+        <form id="margin-form" class="form-grid">
+          <label class="field">
+            Type de compte
+            <select id="m-account">
+              <option value="particulier">Particulier</option>
+              <option value="professionnel">Professionnel</option>
+            </select>
+          </label>
+          <label class="field" id="m-prorate-field">
+            Taux commission pro (%)
+            <input type="number" id="m-prorate" min="5" max="12" step="0.1" value="10">
+          </label>
+          <label class="field">
+            Prix de vente (€)
+            <input type="number" id="m-sellprice" min="0" step="0.01" value="24.90">
+          </label>
+          <label class="field">
+            Frais de port facturés à l'acheteur (€)
+            <input type="number" id="m-shipcharged" min="0" step="0.01" value="0">
+          </label>
+          <label class="field">
+            Coût produit fournisseur (€)
+            <input type="number" id="m-productcost" min="0" step="0.01" value="6.50">
+          </label>
+          <label class="field">
+            Port fournisseur → vous/client (€)
+            <input type="number" id="m-suppliershipping" min="0" step="0.01" value="2.50">
+          </label>
+          <label class="field">
+            Budget pub estimé (% du CA)
+            <input type="number" id="m-adspend" min="0" step="1" value="10">
+          </label>
+          <label class="field">
+            Frais divers / provision retours (% du CA)
+            <input type="number" id="m-misc" min="0" step="1" value="5">
+          </label>
+          <div class="span-2 form-actions">
+            <button type="submit" class="btn-primary">Calculer la marge</button>
+          </div>
+        </form>
+        <div id="margin-result" class="result-block hidden"></div>
+      </div>
+
+      <div class="panel-block">
+        <h3>Score de viabilité d'une niche</h3>
+        <form id="niche-form" class="form-grid">
+          <label class="field">
+            Tendance (Google Trends/TikTok)
+            <select id="n-trend">
+              <option value="baisse">En baisse</option>
+              <option value="stable">Stable</option>
+              <option value="croissance" selected>En croissance</option>
+              <option value="virale">Virale</option>
+            </select>
+          </label>
+          <label class="field">
+            Concurrence sur eBay
+            <select id="n-competition">
+              <option value="saturee">Saturée</option>
+              <option value="moderee" selected>Modérée</option>
+              <option value="faible">Faible</option>
+            </select>
+          </label>
+          <label class="field">
+            Poids / encombrement
+            <select id="n-weight">
+              <option value="leger" selected>Léger (&lt; 2kg)</option>
+              <option value="moyen">Moyen</option>
+              <option value="lourd">Lourd (&gt; 5kg)</option>
+            </select>
+          </label>
+          <label class="field">
+            Résout un problème / effet wow ?
+            <select id="n-solves">
+              <option value="oui">Oui</option>
+              <option value="non" selected>Non</option>
+            </select>
+          </label>
+          <label class="field">
+            Facile à trouver en magasin local ?
+            <select id="n-local">
+              <option value="oui">Oui</option>
+              <option value="non" selected>Non</option>
+            </select>
+          </label>
+          <label class="field">
+            Risque légal / restriction eBay ?
+            <select id="n-legal">
+              <option value="non" selected>Non</option>
+              <option value="oui">Oui</option>
+            </select>
+          </label>
+          <label class="field">
+            Fournisseur jugé fiable ?
+            <select id="n-supplier">
+              <option value="oui" selected>Oui (≥4.7★, historique solide)</option>
+              <option value="non">Incertain</option>
+            </select>
+          </label>
+          <label class="field">
+            Prix de vente envisagé (€)
+            <input type="number" id="n-sellprice" min="0" step="0.01" value="24.90">
+          </label>
+          <div class="span-2 form-actions">
+            <button type="submit" class="btn-primary">Évaluer la niche</button>
+            <span class="hint">Utilise automatiquement la marge calculée à gauche si disponible.</span>
+          </div>
+        </form>
+        <div id="niche-result" class="result-block hidden"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== KNOWLEDGE BASE ===================== -->
+  <section class="tab-panel" id="panel-knowledge">
+    <h2>Base de connaissances dropshipping &amp; eBay.fr</h2>
+    <p class="section-intro">Résumés pratiques des politiques qui impactent le plus vos annonces et votre compte. Dernière relecture : <span id="kb-date"></span>. À recouper avec les pages officielles.</p>
+    <div id="knowledge-list" class="accordion"></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>eBay Dropship Copilot — outil local, aucune donnée envoyée sur internet. Vos audits/générations sont sauvegardés uniquement dans votre navigateur (localStorage).</p>
+</footer>
+
+<script src="js/rules.js"></script>
+<script src="js/audit.js"></script>
+<script src="js/generator.js"></script>
+<script src="js/sourcing.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
