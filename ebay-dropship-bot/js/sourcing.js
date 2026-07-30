@@ -2,6 +2,10 @@
    SOURCING.JS — Calculateur de marge & score de viabilité niche
    ========================================================================== */
 
+if (typeof require !== "undefined" && typeof RULES === "undefined") {
+  globalThis.RULES = require("./rules.js");
+}
+
 const Sourcing = (() => {
 
   function computeFees(sellPrice, shippingCharged, accountType, proRate) {
@@ -93,3 +97,7 @@ const Sourcing = (() => {
 
   return { margin, nicheScore };
 })();
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = Sourcing;
+}

@@ -2,9 +2,16 @@
    AUDIT.JS — Moteur d'audit d'annonce avant publication
    ========================================================================== */
 
+if (typeof require !== "undefined" && typeof RULES === "undefined") {
+  globalThis.RULES = require("./rules.js");
+}
+
 const Audit = (() => {
 
   function stripHtml(html) {
+    if (typeof document === "undefined") {
+      return String(html || "").replace(/<[^>]*>/g, "");
+    }
     const div = document.createElement("div");
     div.innerHTML = html;
     return div.textContent || div.innerText || "";
@@ -216,3 +223,7 @@ const Audit = (() => {
 
   return { run };
 })();
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = Audit;
+}

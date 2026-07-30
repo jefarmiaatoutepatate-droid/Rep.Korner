@@ -2,6 +2,10 @@
    GENERATOR.JS — Générateur de titres & descriptions pro (HTML compatible eBay)
    ========================================================================== */
 
+if (typeof require !== "undefined" && typeof RULES === "undefined") {
+  globalThis.RULES = require("./rules.js");
+}
+
 const Generator = (() => {
 
   function truncateToLength(str, maxLen) {
@@ -34,7 +38,7 @@ const Generator = (() => {
   }
 
   function escapeHtml(str) {
-    return (str || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    return String(str == null ? "" : str).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   }
 
   function linesToList(text) {
@@ -110,3 +114,7 @@ const Generator = (() => {
 
   return { generate };
 })();
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = Generator;
+}

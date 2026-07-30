@@ -72,6 +72,22 @@ const RULES = {
     "Vêtements & mode enfant", "Bijoux & accessoires"
   ],
 
+  categories: [
+    "Jouets & jeux", "Électronique & électroménager", "Puériculture & bébé",
+    "Cosmétiques & beauté", "Sport & plein air", "Bricolage & outillage",
+    "Vêtements & mode enfant", "Bijoux & accessoires",
+    "Mode adulte", "Maison & jardin", "Auto & moto", "Informatique & accessoires", "Autre"
+  ],
+
+  conditions: [
+    { value: "neuf-etiquette", label: "Neuf avec étiquette" },
+    { value: "neuf-sans-etiquette", label: "Neuf sans étiquette" },
+    { value: "neuf-autre", label: "Neuf (autre)" },
+    { value: "reconditionne", label: "Reconditionné" },
+    { value: "occasion-bon-etat", label: "Occasion - bon état" },
+    { value: "occasion-satisfaisant", label: "Occasion - satisfaisant" }
+  ],
+
   veroSensitiveBrands: [
     "nike", "adidas", "lego", "disney", "chanel", "louis vuitton", "gucci", "rolex",
     "apple", "iphone", "samsung", "sony", "playstation", "nintendo", "hermès", "hermes",
@@ -197,3 +213,7 @@ Critères d'un fournisseur fiable (AliExpress et assimilés) :
     }
   ]
 };
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = RULES;
+}

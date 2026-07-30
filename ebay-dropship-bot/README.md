@@ -19,22 +19,27 @@ Ouvrez simplement `index.html` dans un navigateur (double-clic, ou servez le dos
 - **Les politiques citées évoluent.** Le contenu de la Base de connaissances et les seuils de l'audit reflètent les politiques eBay/AliExpress/Amazon et la réglementation UE (GPSR, TVA/IOSS) telles que comprises à la dernière relecture (voir date affichée dans l'onglet Base de connaissances). Vérifiez toujours les pages officielles avant de publier une annonce sensible.
 - **Le barème de frais eBay** utilisé dans le calculateur de marge (`js/rules.js`) est indicatif — la commission professionnelle varie réellement de 5% à 12% selon la catégorie exacte. Ajustez le champ « Taux commission pro » si besoin.
 
+## Bot Discord
+
+Les mêmes outils (`audit`, `titre`, `description`, `marge`, `niche`, `guide`) sont aussi disponibles sous forme de commandes slash Discord, dans `discord-bot/`. Le bot réutilise directement les fichiers `js/rules.js`, `audit.js`, `generator.js` et `sourcing.js` ci-dessous (même moteur, aucune logique dupliquée). Voir `discord-bot/README.md` pour la création du bot Discord, le token et le déploiement.
+
 ## Pour aller plus loin (connexion réelle à l'API eBay)
 
 Si vous voulez plus tard publier réellement des annonces ou auditer votre inventaire live :
 1. Créez un compte sur [developer.ebay.com](https://developer.ebay.com) et générez des clés API (Sell API / Inventory API).
-2. Un backend (Node/Python) serait nécessaire pour gérer l'authentification OAuth eBay en toute sécurité (les clés ne doivent jamais être exposées côté navigateur).
-3. Cet outil peut servir de moteur de règles réutilisable pour un futur module d'audit connecté.
+2. Un backend (Node/Python) serait nécessaire pour gérer l'authentification OAuth eBay en toute sécurité (les clés ne doivent jamais être exposées côté navigateur ni dans le bot Discord).
+3. Ce moteur de règles (`js/`) est déjà réutilisable tel quel (web app + bot Discord) pour un futur module d'audit connecté.
 
 ## Structure
 
 ```
 ebay-dropship-bot/
-  index.html          Interface (tableau de bord, audit, générateur, sourcing, base de connaissances)
+  index.html          Interface web (tableau de bord, audit, générateur, sourcing, base de connaissances)
   css/style.css        Styles (clair/sombre automatique)
-  js/rules.js           Base de connaissances + seuils/règles
+  js/rules.js           Base de connaissances + seuils/règles (source unique, utilisée par le web et le bot)
   js/audit.js            Moteur d'audit d'annonce
   js/generator.js         Générateur de titres/description
   js/sourcing.js            Calculateur de marge + score de niche
-  js/main.js                 Navigation, formulaires, persistance locale
+  js/main.js                 Navigation, formulaires, persistance locale (web uniquement)
+  discord-bot/          Bot Discord (commandes slash) réutilisant js/* — voir discord-bot/README.md
 ```

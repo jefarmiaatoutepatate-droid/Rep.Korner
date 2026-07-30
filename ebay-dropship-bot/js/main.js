@@ -2,21 +2,8 @@
    MAIN.JS — Navigation, formulaires, persistance locale
    ========================================================================== */
 
-const CATEGORIES = [
-  "Jouets & jeux", "Électronique & électroménager", "Puériculture & bébé",
-  "Cosmétiques & beauté", "Sport & plein air", "Bricolage & outillage",
-  "Vêtements & mode enfant", "Bijoux & accessoires",
-  "Mode adulte", "Maison & jardin", "Auto & moto", "Informatique & accessoires", "Autre"
-];
-
-const CONDITIONS = [
-  { value: "neuf-etiquette", label: "Neuf avec étiquette" },
-  { value: "neuf-sans-etiquette", label: "Neuf sans étiquette" },
-  { value: "neuf-autre", label: "Neuf (autre)" },
-  { value: "reconditionne", label: "Reconditionné" },
-  { value: "occasion-bon-etat", label: "Occasion - bon état" },
-  { value: "occasion-satisfaisant", label: "Occasion - satisfaisant" }
-];
+const CATEGORIES = RULES.categories;
+const CONDITIONS = RULES.conditions;
 
 const STORAGE_KEY = "ebayDropshipCopilot.v1";
 
