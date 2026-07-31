@@ -87,6 +87,12 @@ h1{
   color:var(--muted); font-weight:500;
 }
 .rail-note{font-size:.76rem; color:var(--muted)}
+.rail-warn{
+  font-size:.76rem; color:var(--muted); margin:16px 0 0; padding-top:13px;
+  border-top:1px solid var(--line-2); line-height:1.55;
+}
+.rail-warn a{color:var(--fr)}
+.rail-warn strong{color:var(--ink)}
 .fields{display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:15px 18px}
 .f label{
   display:block; font-family:var(--mono); font-size:.65rem; letter-spacing:.075em;
@@ -255,7 +261,7 @@ footer a{color:var(--fr)}
     <div class="flagmark" aria-hidden="true"></div>
     <div>
       <h1>Assistant fiscal frontalier France&nbsp;–&nbsp;Suisse</h1>
-      <p class="sub">Genève &amp; Vaud · barèmes 2026 · profil personnalisé</p>
+      <p class="sub">Vivre en France ou en Suisse · Genève &amp; Vaud · barèmes 2026</p>
     </div>
   </div>
   <div class="stamp">Base légale citée · calculs en direct</div>
@@ -268,15 +274,22 @@ footer a{color:var(--fr)}
   </div>
   <div class="fields">
     <div class="f">
-      <label for="brut">Brut suisse (CHF / an)</label>
-      <input type="number" id="brut" value="84000" min="20000" max="400000" step="1000">
+      <label for="resid">Où vous vivez</label>
+      <div class="seg blue" id="resid" role="group">
+        <button type="button" data-v="FR" aria-pressed="true">France</button>
+        <button type="button" data-v="CH" aria-pressed="false">Suisse</button>
+      </div>
     </div>
     <div class="f">
-      <label for="canton">Canton de travail</label>
+      <label for="canton">Canton <span id="cantonLbl">de travail</span></label>
       <div class="seg" id="canton" role="group">
         <button type="button" data-v="GE" aria-pressed="true">Genève</button>
         <button type="button" data-v="VD" aria-pressed="false">Vaud</button>
       </div>
+    </div>
+    <div class="f">
+      <label for="brut">Brut suisse (CHF / an)</label>
+      <input type="number" id="brut" value="84000" min="20000" max="400000" step="1000">
     </div>
     <div class="f">
       <label for="fam">Situation familiale</label>
@@ -292,14 +305,31 @@ footer a{color:var(--fr)}
       <input type="number" id="enf" value="0" min="0" max="6" step="1">
     </div>
     <div class="f">
+      <label for="loyerFR">Loyer si France (€ / mois)</label>
+      <input type="number" id="loyerFR" value="1550" min="0" max="6000" step="50">
+    </div>
+    <div class="f">
+      <label for="loyerCH">Loyer si Suisse (CHF / mois)</label>
+      <input type="number" id="loyerCH" value="2382" min="0" max="9000" step="50">
+    </div>
+    <div class="f">
       <label for="autres">Autres revenus FR (€ / an)</label>
       <input type="number" id="autres" value="0" min="0" max="500000" step="500">
     </div>
     <div class="f">
-      <label for="tauxsrc">Taux source GE (%) <span title="Laisser vide pour l'estimation automatique">·&nbsp;auto</span></label>
+      <label for="fortune">Fortune nette (CHF)</label>
+      <input type="number" id="fortune" value="0" min="0" max="20000000" step="5000">
+    </div>
+    <div class="f">
+      <label for="tauxsrc">Taux source GE (%) · auto</label>
       <input type="number" id="tauxsrc" placeholder="auto" min="0" max="30" step="0.1">
     </div>
+    <div class="f">
+      <label for="tauxres">Taux résident CH (%) · auto</label>
+      <input type="number" id="tauxres" placeholder="auto" min="0" max="45" step="0.1">
+    </div>
   </div>
+  <p class="rail-warn">Les deux derniers champs sont des <strong>estimations</strong> issues de sources secondaires de qualité inégale. Avant toute décision, remplacez-les par vos taux réels — <a href="https://www.ge.ch/impot-source/calculette-baremes-perception-impot-source" target="_blank" rel="noopener">calculette ge.ch</a> pour le frontalier, <a href="https://swisstaxcalculator.estv.admin.ch/" target="_blank" rel="noopener">calculateur fédéral ESTV</a> pour le résident suisse.</p>
 </section>
 
 <section class="readout" id="readout" aria-label="Synthèse"></section>
@@ -320,7 +350,7 @@ footer a{color:var(--fr)}
 
 <div class="composer">
   <div class="composer-in">
-    <textarea id="q" rows="1" placeholder="Posez votre question — « Genève ou Vaud ? », « CMU ou LAMal ? », « quand partir ? »…"></textarea>
+    <textarea id="q" rows="1" placeholder="Posez votre question — « France ou Suisse ? », « Genève ou Vaud ? », « CMU ou LAMal ? »…"></textarea>
     <button id="send">Demander</button>
   </div>
 </div>
@@ -333,20 +363,31 @@ footer a{color:var(--fr)}
 
 var FX  = 1/0.928;   // 1 CHF -> EUR (cours ~fin juillet 2026)
 var COT = 0.115;     // AVS/AI/APG 5,3 + AC 1,1 + AANP ~0,8 + LPP ~4 %
-var LAMAL_DEFAUT = 393; // CHF / mois, prime moyenne adulte
+var LAMAL_DEFAUT   = 393;  // CHF / mois — prime moyenne adulte, tarif frontalier
+var LAMAL_RESIDENT = 450;  // CHF / mois — résident Genève/Vaud, prime plus élevée
+var TRAJET_FR      = 250;  // € / mois — carburant, péages, entretien, douane
+var TRAJET_CH      = 80;   // € / mois — abonnement transports publics
 
 var P = {};
 function readParams(){
   P.brut    = num("brut", 84000);
   P.canton  = document.querySelector('#canton [aria-pressed="true"]').dataset.v;
+  P.resid   = document.querySelector('#resid [aria-pressed="true"]').dataset.v;
   P.fam     = document.getElementById("fam").value;
   P.enf     = Math.max(0, Math.min(6, num("enf", 0)));
   P.autres  = num("autres", 0);
+  P.loyerFR = num("loyerFR", 1550);
+  P.loyerCH = num("loyerCH", 2382);
+  P.fortune = num("fortune", 0);
   var t     = document.getElementById("tauxsrc").value;
   P.tauxSrc = t === "" ? null : parseFloat(t)/100;
+  var r     = document.getElementById("tauxres").value;
+  P.tauxRes = r === "" ? null : parseFloat(r)/100;
   P.parts   = parts(P.fam, P.enf);
   P.base    = P.fam === "couple1" || P.fam === "couple2" ? 2 : 1;
   P.bareme  = baremeGE(P.fam);
+  document.getElementById("cantonLbl").textContent =
+    P.resid === "CH" ? "de résidence" : "de travail";
 }
 function num(id, d){ var v = parseFloat(document.getElementById(id).value); return isFinite(v) ? v : d; }
 
@@ -399,6 +440,40 @@ function tauxGE(brutAn){
   return t;
 }
 
+/* Impôt ordinaire du résident suisse — fédéral + cantonal + communal, en % du brut.
+   Courbe calée sur ~15-17 % à 80 000 CHF pour un célibataire à Genève (sources
+   secondaires concordantes dans cette bande). ESTIMATION : surchargeable. */
+function tauxResident(brutAn){
+  if (P.tauxRes !== null) return P.tauxRes;
+  var pts = [[40000,.075],[60000,.120],[80000,.155],[100000,.185],
+             [150000,.235],[200000,.272],[300000,.310]];
+  var t;
+  if (brutAn <= pts[0][0]) t = pts[0][1] * (brutAn/pts[0][0]);
+  else if (brutAn >= pts[pts.length-1][0]) t = pts[pts.length-1][1];
+  else {
+    for (var i = 0; i < pts.length-1; i++){
+      if (brutAn >= pts[i][0] && brutAn < pts[i+1][0]){
+        t = pts[i][1] + (brutAn-pts[i][0])*(pts[i+1][1]-pts[i][1])/(pts[i+1][0]-pts[i][0]);
+        break;
+      }
+    }
+  }
+  if (P.canton === "VD") t *= 0.97;                 // Vaud légèrement sous Genève à mi-revenu
+  if (P.fam === "couple1") t *= 0.68;
+  if (P.fam === "couple2") t *= 0.92;
+  if (P.fam === "mono")    t *= 0.78;
+  t *= Math.max(0.60, 1 - P.enf*0.075);
+  return t;
+}
+/* Impôt cantonal sur la fortune — seuils 2026 : GE ~82 200 CHF, VD ~50 000 CHF (doublés en couple) */
+function impotFortune(){
+  if (P.resid !== "CH" || P.fortune <= 0) return 0;
+  var seuil = (P.canton === "GE" ? 82200 : 50000) * (P.base === 2 ? 2 : 1);
+  var taxable = Math.max(0, P.fortune - seuil);
+  var taux = P.canton === "GE" ? 0.0055 : 0.0045;   // taux moyen tous multiplicateurs compris
+  return taxable * taux;
+}
+
 function calc(){
   var b = P.brut;
   var netSoc = b * (1 - COT);                       // net social CHF
@@ -436,12 +511,38 @@ function calc(){
   }
   var brutVDeq = (lo+hi)/2;
 
+  /* ---------- Scénario « résident suisse » (permis B) ---------- */
+  var tRes    = tauxResident(b);
+  var impRes  = b * tRes;                           // CHF, fédéral + cantonal + communal
+  var fortune = impotFortune();                     // CHF
+  var lamalCH = LAMAL_RESIDENT * 12 * FX;           // € — LAMal obligatoire, pas de droit d'option
+  var netCH   = netSoc - impRes - fortune;          // CHF
+  /* Les revenus français restent imposables en France (convention 1966, art. 6 et 15) */
+  var irAutresCH = irNet(P.autres, P.parts, P.base);
+  var netCHeur = netCH*FX - lamalCH - irAutresCH;
+
+  /* ---------- Logement et trajet : le poste qui décide ---------- */
+  var loyerFRan = P.loyerFR * 12;                   // €
+  var loyerCHan = P.loyerCH * 12 * FX;              // €
+  var trajetFR  = TRAJET_FR * 12;                   // € — carburant, péages, entretien
+  var trajetCH  = TRAJET_CH * 12;                   // € — abonnement transports publics
+
+  var netFRfrontalier = P.canton === "GE" ? netGEeur : netVDeur;
+  var resteFR = netFRfrontalier - loyerFRan - trajetFR;
+  var resteCH = netCHeur - loyerCHan - trajetCH;
+
   return {
     brut:b, netSoc:netSoc, tGE:tGE, impGE:impGE, irVD:irVD, rfr:rfr,
     netGE:netGE, netVD:netVD, netGEeur:netGEeur, netVDeur:netVDeur,
     cmu:cmu, lamal:lamal, sante:sante, santeLbl:santeLbl, surcoutTE:surcoutTE,
     brutVDeq:brutVDeq, prime:(brutVDeq/b - 1),
     ecart:netGEeur - netVDeur,
+    tRes:tRes, impRes:impRes, fortune:fortune, lamalCH:lamalCH,
+    netCHeur:netCHeur, netFRfrontalier:netFRfrontalier,
+    loyerFRan:loyerFRan, loyerCHan:loyerCHan, trajetFR:trajetFR, trajetCH:trajetCH,
+    resteFR:resteFR, resteCH:resteCH, ecartReste:resteFR - resteCH,
+    net: P.resid === "CH" ? netCHeur : netFRfrontalier,
+    reste: P.resid === "CH" ? resteCH : resteFR,
     actif: P.canton === "GE" ? netGEeur : netVDeur
   };
 }
@@ -480,10 +581,118 @@ var CHC = "var(--ch)", FRC = "var(--fr)";
 
 var KB = [
 {
+  id:"residence", t:"Vivre en France ou vivre en Suisse",
+  l:"art. 4 B CGI · art. 3 LIFD · Convention franco-suisse de 1966, art. 4",
+  k:["vivre en suisse","habiter en suisse","demenager en suisse","france ou suisse","suisse ou france",
+     "residence","résidence","ou vivre","ou habiter","cote francais","cote suisse","frontiere ou suisse",
+     "s'installer en suisse","expatriation","permis b ou g","rester en france","reste a vivre","reste à vivre"],
+  f:function(c){
+    var favFR = c.ecartReste >= 0;
+    return "<p>C'est une décision plus lourde que le choix du canton, et elle ne se joue pas sur l'impôt. Elle se joue sur le <strong>loyer</strong>.</p>" +
+    bars([
+      {k:"France",  v:Math.max(0,c.resteFR), t:mois(c.resteFR)+"/mois", c:FRC},
+      {k:"Suisse",  v:Math.max(0,c.resteCH), t:mois(c.resteCH)+"/mois", c:CHC}
+    ]) +
+    tbl(["Poste", "Résident France", "Résident Suisse"], [
+      ["Brut", chf(c.brut), chf(c.brut)],
+      ["Cotisations sociales CH", "−"+chf(c.brut*COT), "−"+chf(c.brut*COT)],
+      ["Impôt sur le revenu",
+       P.canton==="GE" ? "−"+chf(c.impGE)+" <span style='opacity:.6'>(source "+pct(c.tGE)+")</span>" : "−"+eur(c.irVD)+" <span style='opacity:.6'>(barème FR)</span>",
+       "−"+chf(c.impRes)+" <span style='opacity:.6'>(ordinaire "+pct(c.tRes)+")</span>"],
+      ["Impôt sur la fortune", "0 €", c.fortune>0 ? "−"+chf(c.fortune) : "0 CHF"],
+      ["Santé", "−"+eur(c.sante)+" <span style='opacity:.6'>("+c.santeLbl+")</span>", "−"+eur(c.lamalCH)+" <span style='opacity:.6'>(LAMal obligatoire)</span>"],
+      ["<strong>Net avant logement</strong>", "<strong>"+eur(c.netFRfrontalier)+"</strong>", "<strong>"+eur(c.netCHeur)+"</strong>"],
+      ["Loyer", "−"+eur(c.loyerFRan)+" <span style='opacity:.6'>("+f0(P.loyerFR)+" €/mois)</span>", "−"+eur(c.loyerCHan)+" <span style='opacity:.6'>("+f0(P.loyerCH)+" CHF/mois)</span>"],
+      ["Trajet domicile-travail", "−"+eur(c.trajetFR), "−"+eur(c.trajetCH)],
+      {c:["<strong>Reste à vivre</strong>", "<strong>"+eur(c.resteFR)+"</strong>", "<strong>"+eur(c.resteCH)+"</strong>"], hi:true},
+      ["Soit par mois", mois(c.resteFR), mois(c.resteCH)]
+    ]) +
+    "<p><strong>Écart : " + mois(Math.abs(c.ecartReste)) + " par mois</strong> en faveur de " +
+      (favFR ? "la <strong>zone frontalière française</strong>" : "la <strong>Suisse</strong>") + ".</p>" +
+    "<div class='callout'><strong>Le poste qui décide, c'est le loyer.</strong> Un 3 pièces se loue autour de " +
+      chf(2382) + "/mois à Genève contre environ 1 550 – 1 811 € côté français. Sur l'année, ce seul écart pèse plus lourd que toute la différence d'impôt entre les deux régimes. Ajustez les deux champs « loyer » dans votre profil avec des annonces réelles : c'est la variable qui fait basculer la réponse.</div>" +
+    "<div class='callout warn'><strong>Prudence sur les taux d'impôt.</strong> Le taux à la source frontalier et le taux ordinaire du résident suisse viennent de sources différentes et inégalement fiables. S'ils vous paraissent incohérents entre eux, c'est probablement le cas — récupérez vos vrais taux sur ge.ch et sur le calculateur fédéral ESTV, saisissez-les dans votre profil, et refaites tourner. Les conclusions structurelles ci-dessous, elles, ne dépendent pas de ces taux.</div>" +
+    "<p>Ce que le calcul ne chiffre pas et qui compte : entre une et deux heures de trajet quotidien côté français (la douane de Bardonnex aux heures de pointe), contre la proximité immédiate côté suisse. Sur dix ans, c'est plusieurs mois de vie.</p>";
+  }
+},
+{
+  id:"bascule-statut", t:"Ce que vous gagnez et perdez en devenant résident suisse",
+  l:"art. 16 al. 3 LIFD · art. 167 bis CGI · Règlement (CE) 883/2004",
+  k:["gagner perdre","avantages inconvenients","que je perds","que je gagne","changement de statut",
+     "devenir resident suisse","consequences","permis b consequences","perdre la cmu","perdre le pea",
+     "difference statut","pour et contre"],
+  f:function(){
+    return "<p>Franchir la frontière pour <em>habiter</em>, et non plus seulement pour travailler, change votre statut fiscal en profondeur (art. 4 B CGI d'un côté, art. 3 LIFD de l'autre).</p>" +
+    "<p><strong>Ce que vous gagnez</strong></p>" +
+    tbl(["Sujet", "Effet"], [
+      ["<strong>Le canton de travail cesse de compter</strong>", "Résident suisse, vous êtes imposé à votre <strong>domicile</strong>, pas à votre lieu de travail. La pénalité vaudoise de l'accord de 1983 disparaît entièrement."],
+      ["<strong>Plus-values mobilières privées</strong>", "<strong>Exonérées</strong> (art. 16 al. 3 LIFD). Sur un horizon long, c'est l'avantage le plus puissant du système suisse."],
+      ["<strong>3ᵉ pilier et rachats LPP</strong>", "Déductibles de plein droit, sans avoir à demander le statut de quasi-résident"],
+      ["<strong>Trajet</strong>", "Supprimé, ainsi que la douane et son imprévisibilité"],
+      ["<strong>Chômage</strong>", "Régime suisse : 70 à 80 % du salaire assuré, plafond élevé"]
+    ]) +
+    "<p><strong>Ce que vous perdez ou ce qui apparaît</strong></p>" +
+    tbl(["Sujet", "Effet"], [
+      ["<strong>Droit d'option santé</strong>", "Supprimé. La <strong>LAMal devient obligatoire</strong>, et la prime résidente est plus élevée que le tarif frontalier."],
+      ["<strong>Impôt sur la fortune</strong>", "Apparaît, sur la fortune mondiale nette. Seuils : environ 82 200 CHF à Genève, 50 000 CHF dans le Vaud (doublés en couple)."],
+      ["<strong>Loyer</strong>", "Le poste le plus lourd — voir la comparaison chiffrée"],
+      ["<strong>Exit tax</strong> (art. 167 bis CGI)", "Devient applicable, car il y a bien transfert du domicile fiscal. <strong>Ne se déclenche qu'au-delà de 800 000 € de participations</strong> ou 50 % des bénéfices d'une société : sans participation significative, vous n'êtes pas concerné."],
+      ["<strong>PEA</strong>", "Peut être conservé (la Suisse n'est pas un État non coopératif), mais son intérêt fiscal s'efface : les plus-values sont de toute façon exonérées en Suisse."],
+      ["<strong>Trimestres de retraite français</strong>", "Gelés. Vous accumulez de l'AVS suisse à la place ; les deux pensions se cumuleront."]
+    ]) +
+    "<div class='callout blue'><strong>Le point de bascule est patrimonial, pas salarial.</strong> Tant que vous vivez de votre salaire et louez votre logement, la zone frontalière française est presque toujours plus avantageuse. Le jour où vous investissez sérieusement en bourse, l'exonération suisse des plus-values privées (art. 16 al. 3 LIFD) renverse le calcul — mais ce jour n'est pas aujourd'hui.</div>";
+  }
+},
+{
+  id:"permis-b", t:"Permis B : ce que devenir résident implique",
+  l:"Accord sur la libre circulation des personnes (ALCP) · art. 83 et 89a LIFD",
+  k:["permis b","devenir resident","autorisation de sejour","séjour","s'etablir","installer","demarches suisse",
+     "permis c","naturalisation","logement suisse","trouver logement geneve"],
+  f:function(){
+    return "<p>Le permis B est une autorisation de séjour, pas seulement de travail. Il s'obtient sur présentation d'un contrat de travail et d'un justificatif de logement en Suisse.</p>" +
+    "<ul>" +
+    "<li><strong>Durée.</strong> 5 ans si le contrat est à durée indéterminée ou supérieure à un an, renouvelable. Le permis C (établissement) s'obtient généralement après 5 ou 10 ans selon la nationalité.</li>" +
+    "<li><strong>Fiscalité.</strong> Vous êtes d'abord imposé <strong>à la source</strong> comme un frontalier. Au-delà d'un seuil de revenu brut annuel, la <strong>taxation ordinaire ultérieure devient obligatoire</strong> (art. 89 LIFD) : vous déposez alors une déclaration complète, comme tout résident.</li>" +
+    "<li><strong>Le vrai obstacle est le logement.</strong> Le marché genevois est parmi les plus tendus d'Europe : taux de vacance très bas, dossiers en concurrence, exigence courante d'un revenu représentant trois fois le loyer. Beaucoup de candidats à l'installation renoncent à ce stade, pas au stade fiscal.</li>" +
+    "<li><strong>Ordre des opérations.</strong> Contrat de travail d'abord, logement ensuite, permis en dernier. Chercher un logement sans contrat signé est presque toujours vain.</li>" +
+    "</ul>" +
+    "<div class='callout'><strong>Une voie intermédiaire existe, et elle est souvent la bonne.</strong> Commencer frontalier depuis la zone française, puis basculer en résident suisse une fois le poste stabilisé et le réseau constitué. Vous gardez le meilleur reste à vivre au départ, vous vous laissez la porte ouverte, et vous cherchez un logement genevois sans urgence — donc en position de force.</div>";
+  }
+},
+{
+  id:"fortune", t:"L'impôt sur la fortune, si vous vivez en Suisse",
+  l:"art. 13 et 14 LHID · lois cantonales genevoise et vaudoise",
+  k:["impot fortune","impôt sur la fortune","patrimoine suisse","fortune nette","epargne imposee",
+     "taxe patrimoine","ifi suisse","riche","capital impose"],
+  f:function(c){
+    var seuil = (P.canton === "GE" ? 82200 : 50000) * (P.base === 2 ? 2 : 1);
+    return "<p>La Suisse n'impose pas les plus-values privées, mais elle impose le <strong>stock</strong> : votre fortune nette mondiale, chaque année, au niveau cantonal et communal. C'est le pendant de l'exonération des plus-values.</p>" +
+    tbl(["", "Genève", "Vaud"], [
+      ["Seuil d'exonération (personne seule)", "~82 200 CHF", "~50 000 CHF"],
+      ["Seuil en couple", "~164 400 CHF", "~100 000 CHF"],
+      ["Assiette", "Fortune mondiale nette", "Fortune mondiale nette"],
+      ["Ordre de grandeur du taux", "0,4 – 1 %", "0,3 – 0,8 %"]
+    ]) +
+    (P.resid === "CH"
+      ? "<p>Sur votre profil — fortune nette de <em>" + chf(P.fortune) + "</em>, seuil applicable <em>" + chf(seuil) + "</em> — l'impôt estimé s'élève à <strong>" + chf(c.fortune) + " par an</strong>.</p>"
+      : "<div class='callout blue'><strong>Vous ne le payez pas.</strong> En restant résident français, votre fortune échappe à l'impôt cantonal suisse. Seul l'IFI français s'appliquerait, et uniquement sur un patrimoine <em>immobilier</em> net supérieur à 1,3 M€. Basculez « Où vous vivez » sur Suisse pour voir l'effet.</div>") +
+    "<ul>" +
+    "<li>L'assiette comprend les comptes, titres, assurances-vie en valeur de rachat, véhicules et biens immobiliers — <strong>y compris ceux situés en France</strong>, retenus pour déterminer le taux.</li>" +
+    "<li>Les dettes sont déductibles, y compris un crédit immobilier français.</li>" +
+    "<li>L'avoir de 2ᵉ et de 3ᵉ pilier <strong>n'entre pas</strong> dans l'assiette tant qu'il est bloqué — un argument de plus pour les rachats LPP.</li>" +
+    "</ul>" +
+    "<div class='callout warn'>Les taux ci-dessus sont des <strong>ordres de grandeur</strong> : chaque commune applique son propre multiplicateur. À patrimoine modeste, l'enjeu reste faible ; il devient réel au-delà de quelques centaines de milliers de francs.</div>";
+  }
+},
+{
   id:"ge-vd", t:"Genève ou Vaud : l'écart structurel",
   l:"Convention franco-suisse du 9 sept. 1966, art. 17 et 25 A · Accord bilatéral du 11 avril 1983",
   k:["geneve vaud","ge vd","genève ou vaud","quel canton","choisir canton","canton","comparatif canton","difference canton","ou travailler","vaud ou geneve"],
   f:function(c){
+    if (P.resid === "CH")
+      return "<div class='callout'><strong>Cette question ne se pose plus dans votre configuration.</strong> Résident suisse, vous êtes imposé à votre <strong>domicile</strong> et non à votre lieu de travail (art. 3 LIFD, règles intercantonales). L'accord de 1983 ne s'applique qu'aux résidents de France : la pénalité vaudoise disparaît entièrement.</div>" +
+        "<p>Ce qui compte alors n'est plus le canton où vous travaillez, mais celui — et surtout la <strong>commune</strong> — où vous habitez. Vous pouvez parfaitement résider dans le Vaud et travailler à Genève sans pénalité fiscale.</p>" +
+        "<p>Le sélecteur « Canton » de votre profil désigne donc votre canton de <em>résidence</em>. Repassez « Où vous vivez » sur France pour retrouver la comparaison entre régimes de travail frontalier.</p>";
     return "<p>Ce ne sont pas deux options voisines mais <strong>deux régimes fiscaux opposés</strong>. Genève vous impose <strong>à la source sur son barème cantonal</strong>. Le Vaud relève de l'accord de 1983 : vous n'êtes pas imposé en Suisse, mais <strong>en France, au barème progressif plein</strong>, sur un salaire suisse converti en euros — qui vous propulse directement en tranche à 30 %.</p>" +
     bars([
       {k:"Genève", v:c.netGEeur, t:mois(c.netGEeur)+"/mois", c:CHC},
@@ -792,6 +1001,17 @@ var KB = [
   l:"art. 167 bis CGI · art. 4 B CGI",
   k:["exit tax","pea","assurance vie","assurance-vie","patrimoine","placements","epargne","épargne","livret a","perdre","garder","je perds"],
   f:function(){
+    if (P.resid === "CH")
+      return "<p>En vous installant <strong>en Suisse</strong>, vous transférez bien votre domicile fiscal — l'analyse est donc l'inverse de celle du frontalier.</p>" +
+      tbl(["Sujet", "Effet du transfert de domicile en Suisse"], [
+        ["<strong>Exit tax</strong> (art. 167 bis CGI)", "<strong>Applicable</strong> — mais uniquement au-delà de 800 000 € de participations ou 50 % des bénéfices d'une société. Sans participation significative, vous n'êtes pas concerné. Un sursis de paiement est possible, la Suisse disposant d'une convention d'assistance au recouvrement."],
+        ["<strong>PEA</strong>", "Conservable (la Suisse n'est pas un État non coopératif), mais son avantage s'efface : les plus-values privées sont déjà exonérées en Suisse"],
+        ["<strong>Assurance-vie</strong>", "Conservable ; la fiscalité de sortie change et la valeur de rachat entre dans l'assiette de l'impôt suisse sur la fortune"],
+        ["<strong>Livret A, LDDS</strong>", "À clôturer — réservés aux résidents fiscaux français"],
+        ["<strong>Immobilier français</strong>", "Reste imposable en France (art. 6 de la convention) ; IFI dû au-delà de 1,3 M€ de patrimoine immobilier net"],
+        ["<strong>Plus-values mobilières</strong>", "<strong>Exonérées</strong> en Suisse (art. 16 al. 3 LIFD) — le gain le plus significatif à long terme"]
+      ]) +
+      "<div class='callout warn'><strong>Ne partez pas sans avoir fait le point sur vos participations.</strong> L'exit tax est indolore pour un salarié sans société, mais brutale pour un dirigeant. Si vous détenez des parts d'une entreprise, faites-les valoriser avant de déménager, pas après.</div>";
     return "<p>Bonne nouvelle, et elle change beaucoup de choses : en devenant frontalier vous restez <strong>résident fiscal français</strong> (art. 4 B CGI). Vous ne transférez pas votre domicile fiscal — vous traversez simplement une frontière pour travailler.</p>" +
     tbl(["Sujet", "Effet du passage en frontalier"], [
       ["<strong>Exit tax</strong> (art. 167 bis CGI)", "Non applicable — elle ne vise que le transfert du domicile fiscal hors de France"],
@@ -925,13 +1145,18 @@ var history = [];   // { q, id }
 
 function renderReadout(){
   var c = calc();
-  var here = P.canton === "GE";
+  var ch = P.resid === "CH";
+  var favFR = c.ecartReste >= 0;
   document.getElementById("readout").innerHTML =
-    tile("Net-net mensuel", mois(c.actif), (here?"Genève":"Vaud")+" · santé et impôt déduits", here?"ch":"fr") +
-    tile("Sur l'année", eur(c.actif), "après tous prélèvements", "") +
-    tile(here?"Impôt à la source":"Impôt français", here?pct(c.tGE):eur(c.irVD), here?chf(c.impGE)+" par an":"barème progressif", here?"ch":"fr") +
-    tile("Écart GE / VD", eur(Math.abs(c.ecart)), c.ecart>=0?"en faveur de Genève":"en faveur de Vaud", "ok") +
-    tile("Santé", c.santeLbl, mois(c.sante)+" par mois", "");
+    tile("Reste à vivre", mois(c.reste), "après impôt, santé, loyer, trajet", ch?"ch":"fr") +
+    tile("Net mensuel", mois(c.net), "avant loyer et trajet", "") +
+    tile(ch ? "Impôt suisse ordinaire" : (P.canton==="GE" ? "Impôt à la source" : "Impôt français"),
+         ch ? pct(c.tRes) : (P.canton==="GE" ? pct(c.tGE) : eur(c.irVD)),
+         ch ? chf(c.impRes)+" par an" : (P.canton==="GE" ? chf(c.impGE)+" par an" : "barème progressif"),
+         ch?"ch":"fr") +
+    tile("Logement", mois(ch ? c.loyerCHan : c.loyerFRan), ch?"Suisse":"zone frontalière", "") +
+    tile("France vs Suisse", mois(Math.abs(c.ecartReste)),
+         favFR ? "en faveur de la France" : "en faveur de la Suisse", "ok");
 }
 function tile(k, v, d, cls){
   return "<div class='tile'><div class='k'>"+k+"</div><div class='v "+cls+"'>"+v+"</div><div class='d'>"+d+"</div></div>";
@@ -974,7 +1199,7 @@ function ask(q, forcedId){
 
 /* ============================== SUGGESTIONS ============================== */
 
-var SUGG = ["ge-vd","net","sante","timing","teletravail","prime-vd","checklist","quasi-resident","permis","taux-effectif","declaration","salaires","formation","lpp","exit-tax","chomage","immobilier","bareme-ge","accord83","pilier3","13e","pratique"];
+var SUGG = ["residence","bascule-statut","ge-vd","net","sante","timing","teletravail","prime-vd","checklist","permis-b","quasi-resident","permis","taux-effectif","fortune","declaration","salaires","formation","lpp","exit-tax","chomage","immobilier","bareme-ge","accord83","pilier3","13e","pratique"];
 document.getElementById("chips").innerHTML = SUGG.map(function(id){
   var e = KB.filter(function(x){ return x.id === id; })[0];
   return e ? "<button class='chip' data-id='"+id+"'>"+e.t+"</button>" : "";
@@ -991,14 +1216,16 @@ document.addEventListener("click", function(ev){
 
 /* ============================== ÉVÉNEMENTS ============================== */
 
-document.querySelectorAll("#canton button").forEach(function(b){
-  b.addEventListener("click", function(){
-    document.querySelectorAll("#canton button").forEach(function(x){ x.setAttribute("aria-pressed","false"); });
-    b.setAttribute("aria-pressed","true");
-    redraw();
+["#canton","#resid"].forEach(function(sel){
+  document.querySelectorAll(sel+" button").forEach(function(b){
+    b.addEventListener("click", function(){
+      document.querySelectorAll(sel+" button").forEach(function(x){ x.setAttribute("aria-pressed","false"); });
+      b.setAttribute("aria-pressed","true");
+      redraw();
+    });
   });
 });
-["brut","fam","enf","autres","tauxsrc"].forEach(function(id){
+["brut","fam","enf","autres","fortune","loyerFR","loyerCH","tauxsrc","tauxres"].forEach(function(id){
   document.getElementById(id).addEventListener("input", redraw);
   document.getElementById(id).addEventListener("change", redraw);
 });
@@ -1022,7 +1249,7 @@ function submit(){
 
 readParams();
 renderReadout();
-history.push({ q:null, id:"ge-vd" });
+history.push({ q:null, id:"residence" });
 redraw();
 
 })();
