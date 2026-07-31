@@ -1,0 +1,1029 @@
+<title>Assistant fiscal frontalier France–Suisse</title>
+
+<style>
+:root{
+  --paper:#F6F7F9; --card:#FFFFFF; --ink:#131820; --ink-2:#3A4350;
+  --muted:#667085; --line:#E1E5EB; --line-2:#EDF0F4;
+  --ch:#C4172B; --ch-soft:#FCEBED;
+  --fr:#2E4E8F; --fr-soft:#EBF0FA;
+  --ok:#1D7A5F; --warn:#9A6206; --warn-soft:#FDF4E3;
+  --shadow:0 1px 2px rgba(19,24,32,.05), 0 8px 24px -12px rgba(19,24,32,.16);
+  --r:10px;
+  --sans:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#0E1116; --card:#151A21; --ink:#E8ECF2; --ink-2:#B9C2CE;
+    --muted:#8A94A3; --line:#262D37; --line-2:#1D242C;
+    --ch:#E8626C; --ch-soft:#2A171B;
+    --fr:#7E9FE8; --fr-soft:#161D2C;
+    --ok:#4FBF97; --warn:#D4A24A; --warn-soft:#251E10;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1116; --card:#151A21; --ink:#E8ECF2; --ink-2:#B9C2CE;
+  --muted:#8A94A3; --line:#262D37; --line-2:#1D242C;
+  --ch:#E8626C; --ch-soft:#2A171B;
+  --fr:#7E9FE8; --fr-soft:#161D2C;
+  --ok:#4FBF97; --warn:#D4A24A; --warn-soft:#251E10;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+:root[data-theme="light"]{
+  --paper:#F6F7F9; --card:#FFFFFF; --ink:#131820; --ink-2:#3A4350;
+  --muted:#667085; --line:#E1E5EB; --line-2:#EDF0F4;
+  --ch:#C4172B; --ch-soft:#FCEBED;
+  --fr:#2E4E8F; --fr-soft:#EBF0FA;
+  --ok:#1D7A5F; --warn:#9A6206; --warn-soft:#FDF4E3;
+  --shadow:0 1px 2px rgba(19,24,32,.05), 0 8px 24px -12px rgba(19,24,32,.16);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1040px; margin:0 auto; padding:0 20px 140px}
+
+/* ---------- masthead ---------- */
+header.top{
+  border-bottom:1px solid var(--line); margin-bottom:26px;
+  padding:30px 0 22px;
+  display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:center; gap:14px}
+.flagmark{
+  width:38px; height:38px; border-radius:7px; flex:none; position:relative;
+  background:linear-gradient(100deg, var(--fr) 0 48%, var(--ch) 52% 100%);
+  overflow:hidden;
+}
+.flagmark::before,.flagmark::after{
+  content:""; position:absolute; background:#fff; border-radius:1px;
+}
+.flagmark::before{right:5px; top:16px; width:14px; height:5px}
+.flagmark::after{right:9.5px; top:11.5px; width:5px; height:14px}
+h1{
+  font-size:1.19rem; font-weight:640; letter-spacing:-.022em; margin:0; line-height:1.25;
+}
+.sub{font-size:.79rem; color:var(--muted); margin:2px 0 0; letter-spacing:.005em}
+.stamp{
+  font-family:var(--mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--muted); border:1px solid var(--line); border-radius:100px; padding:5px 11px; white-space:nowrap;
+}
+
+/* ---------- parameter rail ---------- */
+.rail{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); padding:18px 20px 20px; margin-bottom:22px;
+}
+.rail-head{
+  display:flex; align-items:baseline; justify-content:space-between; gap:14px;
+  margin-bottom:16px; flex-wrap:wrap;
+}
+.eyebrow{
+  font-family:var(--mono); font-size:.66rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--muted); font-weight:500;
+}
+.rail-note{font-size:.76rem; color:var(--muted)}
+.fields{display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:15px 18px}
+.f label{
+  display:block; font-family:var(--mono); font-size:.65rem; letter-spacing:.075em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-weight:500;
+}
+.f input[type=number], .f select{
+  width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:7px;
+  background:var(--paper); color:var(--ink); font-family:var(--mono);
+  font-size:.9rem; font-variant-numeric:tabular-nums;
+}
+.f input:focus-visible, .f select:focus-visible, button:focus-visible, textarea:focus-visible{
+  outline:2px solid var(--ch); outline-offset:2px;
+}
+.seg{display:flex; border:1px solid var(--line); border-radius:7px; overflow:hidden}
+.seg button{
+  flex:1; padding:8px 6px; border:0; background:var(--paper); color:var(--ink-2);
+  font-family:var(--sans); font-size:.82rem; font-weight:520; cursor:pointer;
+  transition:background .13s, color .13s;
+}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--ch); color:#fff}
+.seg.blue button[aria-pressed=true]{background:var(--fr); color:#fff}
+
+/* ---------- readout strip ---------- */
+.readout{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px; background:var(--line); border:1px solid var(--line);
+  border-radius:var(--r); overflow:hidden; margin-bottom:26px;
+}
+.tile{background:var(--card); padding:14px 16px 15px}
+.tile .k{
+  font-family:var(--mono); font-size:.63rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:5px;
+}
+.tile .v{
+  font-family:var(--mono); font-size:1.32rem; font-weight:600; letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums; line-height:1.15;
+}
+.tile .d{font-size:.72rem; color:var(--muted); margin-top:3px}
+.v.ch{color:var(--ch)} .v.fr{color:var(--fr)} .v.ok{color:var(--ok)}
+
+/* ---------- chat ---------- */
+#log{display:flex; flex-direction:column; gap:22px}
+.turn{display:flex}
+.turn.me{justify-content:flex-end}
+.bubble-me{
+  background:var(--fr); color:#fff; padding:10px 15px; border-radius:14px 14px 3px 14px;
+  max-width:min(560px,88%); font-size:.94rem; line-height:1.5;
+}
+.msg{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); padding:20px 22px 22px; width:100%;
+}
+.msg h2{
+  font-size:1.02rem; font-weight:640; letter-spacing:-.018em; margin:0 0 4px;
+  text-wrap:balance; line-height:1.3;
+}
+.msg .legal{
+  font-family:var(--mono); font-size:.66rem; letter-spacing:.04em; color:var(--muted);
+  margin:0 0 15px; padding-bottom:13px; border-bottom:1px solid var(--line-2);
+}
+.msg p{margin:0 0 12px; color:var(--ink-2); font-size:.93rem}
+.msg p:last-child{margin-bottom:0}
+.msg strong{color:var(--ink); font-weight:620}
+.msg ul{margin:0 0 12px; padding-left:19px; color:var(--ink-2); font-size:.93rem}
+.msg li{margin-bottom:5px}
+.msg li::marker{color:var(--ch)}
+.msg em{font-style:normal; font-family:var(--mono); font-size:.87em; color:var(--ink)}
+.msg .chips{margin-top:13px}
+
+.tw{overflow-x:auto; margin:0 0 14px; border:1px solid var(--line); border-radius:8px}
+table{border-collapse:collapse; width:100%; font-size:.86rem; min-width:400px}
+th,td{padding:8px 12px; text-align:left; border-bottom:1px solid var(--line-2)}
+thead th{
+  font-family:var(--mono); font-size:.63rem; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--muted); font-weight:500; background:var(--paper); white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+td.n, th.n{text-align:right; font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+tr.hi td{background:var(--ch-soft); font-weight:600}
+td.pos{color:var(--ok); font-weight:600}
+
+.callout{
+  border-left:2.5px solid var(--ch); background:var(--ch-soft);
+  padding:11px 15px; border-radius:0 7px 7px 0; margin:0 0 14px;
+  font-size:.88rem; color:var(--ink-2);
+}
+.callout.warn{border-left-color:var(--warn); background:var(--warn-soft)}
+.callout.blue{border-left-color:var(--fr); background:var(--fr-soft)}
+.callout strong{color:var(--ink)}
+
+/* comparison bars */
+.bars{display:flex; flex-direction:column; gap:9px; margin:0 0 15px}
+.bar-row{display:grid; grid-template-columns:74px 1fr auto; align-items:center; gap:11px}
+.bar-lab{
+  font-family:var(--mono); font-size:.7rem; letter-spacing:.05em; text-transform:uppercase; color:var(--muted);
+}
+.bar-track{height:22px; background:var(--line-2); border-radius:4px; overflow:hidden}
+.bar-fill{height:100%; border-radius:4px; transition:width .5s cubic-bezier(.4,0,.2,1)}
+.bar-val{
+  font-family:var(--mono); font-size:.83rem; font-weight:600; font-variant-numeric:tabular-nums;
+}
+
+/* topics + composer */
+.topics{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); padding:14px 18px 16px; margin-bottom:26px;
+}
+.topics summary{
+  cursor:pointer; list-style:none; display:flex; align-items:baseline;
+  justify-content:space-between; gap:12px;
+}
+.topics summary::-webkit-details-marker{display:none}
+.topics summary::after{
+  content:"▾"; color:var(--muted); font-size:.8rem; transition:transform .15s;
+}
+.topics[open] summary::after{transform:rotate(180deg)}
+.topics summary:focus-visible{outline:2px solid var(--ch); outline-offset:3px; border-radius:4px}
+.topics .count{font-size:.76rem; color:var(--muted); margin-left:auto; margin-right:4px}
+.topics .chips{margin-top:13px; padding-top:13px; border-top:1px solid var(--line-2)}
+.chips{display:flex; flex-wrap:wrap; gap:7px}
+.chip{
+  border:1px solid var(--line); background:var(--card); color:var(--ink-2);
+  border-radius:100px; padding:6px 13px; font-size:.79rem; cursor:pointer;
+  font-family:var(--sans); transition:border-color .13s, color .13s, background .13s;
+}
+.chip:hover{border-color:var(--ch); color:var(--ch)}
+.composer{
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
+  background:linear-gradient(to top, var(--paper) 68%, transparent);
+  padding:22px 20px 20px;
+}
+.composer-in{
+  max-width:1040px; margin:0 auto; display:flex; gap:9px;
+  background:var(--card); border:1px solid var(--line); border-radius:12px;
+  box-shadow:var(--shadow); padding:9px 9px 9px 15px; align-items:flex-end;
+}
+#q{
+  flex:1; border:0; background:transparent; color:var(--ink); resize:none;
+  font-family:var(--sans); font-size:.95rem; line-height:1.5; padding:6px 0; max-height:120px;
+}
+#q:focus{outline:none}
+#send{
+  border:0; background:var(--ch); color:#fff; border-radius:8px; padding:9px 17px;
+  font-family:var(--sans); font-size:.88rem; font-weight:600; cursor:pointer; flex:none;
+}
+#send:hover{filter:brightness(1.07)}
+
+footer{
+  margin-top:34px; padding-top:20px; border-top:1px solid var(--line);
+  font-size:.76rem; color:var(--muted); line-height:1.65;
+}
+footer a{color:var(--fr)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+@media (max-width:560px){
+  .wrap{padding:0 14px 150px}
+  .msg{padding:17px 16px 19px}
+  .bar-row{grid-template-columns:60px 1fr auto; gap:8px}
+}
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <div class="brand">
+    <div class="flagmark" aria-hidden="true"></div>
+    <div>
+      <h1>Assistant fiscal frontalier France&nbsp;–&nbsp;Suisse</h1>
+      <p class="sub">Genève &amp; Vaud · barèmes 2026 · profil personnalisé</p>
+    </div>
+  </div>
+  <div class="stamp">Base légale citée · calculs en direct</div>
+</header>
+
+<section class="rail" aria-label="Vos paramètres">
+  <div class="rail-head">
+    <span class="eyebrow">Votre profil</span>
+    <span class="rail-note">Chaque réponse est recalculée à partir de ces valeurs.</span>
+  </div>
+  <div class="fields">
+    <div class="f">
+      <label for="brut">Brut suisse (CHF / an)</label>
+      <input type="number" id="brut" value="84000" min="20000" max="400000" step="1000">
+    </div>
+    <div class="f">
+      <label for="canton">Canton de travail</label>
+      <div class="seg" id="canton" role="group">
+        <button type="button" data-v="GE" aria-pressed="true">Genève</button>
+        <button type="button" data-v="VD" aria-pressed="false">Vaud</button>
+      </div>
+    </div>
+    <div class="f">
+      <label for="fam">Situation familiale</label>
+      <select id="fam">
+        <option value="cel">Célibataire</option>
+        <option value="couple1">Couple, 1 seul revenu</option>
+        <option value="couple2">Couple, 2 revenus</option>
+        <option value="mono">Parent isolé</option>
+      </select>
+    </div>
+    <div class="f">
+      <label for="enf">Enfants à charge</label>
+      <input type="number" id="enf" value="0" min="0" max="6" step="1">
+    </div>
+    <div class="f">
+      <label for="autres">Autres revenus FR (€ / an)</label>
+      <input type="number" id="autres" value="0" min="0" max="500000" step="500">
+    </div>
+    <div class="f">
+      <label for="tauxsrc">Taux source GE (%) <span title="Laisser vide pour l'estimation automatique">·&nbsp;auto</span></label>
+      <input type="number" id="tauxsrc" placeholder="auto" min="0" max="30" step="0.1">
+    </div>
+  </div>
+</section>
+
+<section class="readout" id="readout" aria-label="Synthèse"></section>
+
+<details class="topics" open>
+  <summary><span class="eyebrow">Sujets couverts</span><span class="count" id="tcount"></span></summary>
+  <div class="chips" id="chips"></div>
+</details>
+
+<main id="log"></main>
+
+<footer>
+  <p><strong>Ce que c'est.</strong> Un moteur de calcul et une base de connaissances structurée sur la fiscalité du frontalier franco-suisse — pas un modèle de langage. Les réponses sont écrites et vérifiées à l'avance&nbsp;; les chiffres, eux, sont recalculés en direct depuis votre profil.</p>
+  <p><strong>Limites.</strong> Je ne suis ni avocat fiscaliste ni expert-comptable agréé. Les barèmes utilisés sont ceux de 2026 (loi de finances promulguée le 19&nbsp;février 2026)&nbsp;; les taux d'impôt à la source genevois sont <em>interpolés</em> et doivent être confirmés sur la <a href="https://www.ge.ch/impot-source/calculette-baremes-perception-impot-source" target="_blank" rel="noopener">calculette officielle ge.ch</a>. Cours de change retenu&nbsp;: 1&nbsp;CHF = 1,077&nbsp;€. Avant de signer un contrat suisse ou d'exercer votre droit d'option santé, faites valider par un conseiller frontalier (GTE, Frontaliers Grand Est) ou une fiduciaire suisse.</p>
+</footer>
+
+</div>
+
+<div class="composer">
+  <div class="composer-in">
+    <textarea id="q" rows="1" placeholder="Posez votre question — « Genève ou Vaud ? », « CMU ou LAMal ? », « quand partir ? »…"></textarea>
+    <button id="send">Demander</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================== MOTEUR DE CALCUL ============================== */
+
+var FX  = 1/0.928;   // 1 CHF -> EUR (cours ~fin juillet 2026)
+var COT = 0.115;     // AVS/AI/APG 5,3 + AC 1,1 + AANP ~0,8 + LPP ~4 %
+var LAMAL_DEFAUT = 393; // CHF / mois, prime moyenne adulte
+
+var P = {};
+function readParams(){
+  P.brut    = num("brut", 84000);
+  P.canton  = document.querySelector('#canton [aria-pressed="true"]').dataset.v;
+  P.fam     = document.getElementById("fam").value;
+  P.enf     = Math.max(0, Math.min(6, num("enf", 0)));
+  P.autres  = num("autres", 0);
+  var t     = document.getElementById("tauxsrc").value;
+  P.tauxSrc = t === "" ? null : parseFloat(t)/100;
+  P.parts   = parts(P.fam, P.enf);
+  P.base    = P.fam === "couple1" || P.fam === "couple2" ? 2 : 1;
+  P.bareme  = baremeGE(P.fam);
+}
+function num(id, d){ var v = parseFloat(document.getElementById(id).value); return isFinite(v) ? v : d; }
+
+function parts(fam, enf){
+  var p = (fam === "couple1" || fam === "couple2") ? 2 : 1;
+  for (var i = 1; i <= enf; i++) p += (i <= 2 ? 0.5 : 1);
+  if (fam === "mono" && enf > 0) p += 0.5;          // case T, parent isolé
+  return p;
+}
+function baremeGE(fam){
+  return fam === "couple1" ? "B" : fam === "couple2" ? "C" : fam === "mono" ? "H" : "A0";
+}
+
+/* Barème IR 2026 (revenus 2025) — LF 2026 du 19/02/2026, indexation +0,9 % */
+function ir2026(rni, pts){
+  var tr = [[11600,0],[29579,.11],[84577,.30],[181917,.41],[Infinity,.45]];
+  var q = rni/pts, imp = 0, prev = 0;
+  for (var i = 0; i < tr.length; i++){
+    if (q > prev){ imp += (Math.min(q, tr[i][0]) - prev) * tr[i][1]; prev = tr[i][0]; }
+    else break;
+  }
+  return imp * pts;
+}
+/* Plafonnement du quotient familial (art. 197-I-2 CGI) + décote (art. 197-I-4) */
+function irNet(rni, pts, base){
+  var brut = ir2026(rni, pts);
+  var sans = ir2026(rni, base);
+  var plaf = (pts - base) * 2 * 1807;              // ~1 807 € / demi-part, à confirmer
+  var imp  = (sans - brut) > plaf ? sans - plaf : brut;
+  var seuil = base <= 1 ? 1964 : 3248;
+  var forf  = base <= 1 ? 889  : 1470;
+  if (imp < seuil) imp = Math.max(0, imp - Math.max(0, forf - imp*0.4525));
+  return Math.max(0, imp);
+}
+
+/* Impôt à la source genevois — interpolation du barème A0. À CONFIRMER sur ge.ch. */
+function tauxGE(brutAn){
+  if (P.tauxSrc !== null) return P.tauxSrc;
+  var m = brutAn/13;
+  var t;
+  if (m < 3000)       t = 0.01;
+  else if (m < 5000)  t = 0.01  + (m-3000)*(0.055-0.01)/2000;
+  else if (m < 12000) t = 0.055 + (m-5000)*(0.16-0.055)/7000;
+  else                t = Math.min(0.19, 0.16 + (m-12000)*0.00001);
+  /* barèmes familiaux : abattement indicatif, à confirmer impérativement */
+  if (P.bareme === "B") t *= 0.62;
+  if (P.bareme === "H") t *= 0.70;
+  if (P.bareme === "C") t *= 0.94;
+  t *= Math.max(0.55, 1 - P.enf * 0.09);
+  return t;
+}
+
+function calc(){
+  var b = P.brut;
+  var netSoc = b * (1 - COT);                       // net social CHF
+  var niCH   = netSoc * FX * 0.90;                  // net imposable € après abattement 10 %
+  var rfr    = niCH + P.autres;
+
+  var tGE   = tauxGE(b);
+  var impGE = b * tGE;                              // CHF
+  var netGE = netSoc - impGE;                       // CHF
+
+  var irVD  = irNet(rfr, P.parts, P.base);          // € — accord 1983 : IR français plein
+  var netVD = netSoc - irVD/FX;                     // CHF
+
+  /* À Genève le salaire est neutralisé par crédit d'impôt, mais compte pour le taux
+     effectif appliqué aux autres revenus français (art. 25 A convention 1966). */
+  var irAutresSeuls   = irNet(P.autres, P.parts, P.base);
+  var irAutresEffectif= P.autres > 0 ? irNet(rfr, P.parts, P.base) * (P.autres/rfr) : 0;
+  var surcoutTE = Math.max(0, irAutresEffectif - irAutresSeuls);
+
+  var cmu   = Math.max(0, (rfr - 11775) * 0.08);    // € / an
+  var lamal = LAMAL_DEFAUT * 12 * FX;               // € / an
+  var sante = Math.min(cmu, lamal);
+  var santeLbl = lamal < cmu ? "LAMal" : "CMU";
+
+  var netGEeur = netGE*FX - sante - surcoutTE;
+  var netVDeur = netVD*FX - sante;
+
+  /* Prime vaudoise : brut VD qui égalise le net genevois */
+  var lo = b, hi = b*2.2;
+  for (var i = 0; i < 70; i++){
+    var mid = (lo+hi)/2;
+    var ns = mid*(1-COT);
+    var n  = ns - irNet(ns*FX*0.90 + P.autres, P.parts, P.base)/FX;
+    if (n < netGE) lo = mid; else hi = mid;
+  }
+  var brutVDeq = (lo+hi)/2;
+
+  return {
+    brut:b, netSoc:netSoc, tGE:tGE, impGE:impGE, irVD:irVD, rfr:rfr,
+    netGE:netGE, netVD:netVD, netGEeur:netGEeur, netVDeur:netVDeur,
+    cmu:cmu, lamal:lamal, sante:sante, santeLbl:santeLbl, surcoutTE:surcoutTE,
+    brutVDeq:brutVDeq, prime:(brutVDeq/b - 1),
+    ecart:netGEeur - netVDeur,
+    actif: P.canton === "GE" ? netGEeur : netVDeur
+  };
+}
+
+/* ============================== FORMATAGE ============================== */
+
+function f0(n){ return Math.round(n).toLocaleString("fr-FR"); }
+function eur(n){ return f0(n) + " €"; }
+function chf(n){ return f0(n) + " CHF"; }
+function pct(n, d){ return (n*100).toFixed(d===undefined?1:d).replace(".", ",") + " %"; }
+function mois(n){ return f0(n/12) + " €"; }
+
+function tbl(head, rows){
+  var h = "<div class='tw'><table><thead><tr>";
+  head.forEach(function(c, i){ h += "<th" + (i ? " class='n'" : "") + ">" + c + "</th>"; });
+  h += "</tr></thead><tbody>";
+  rows.forEach(function(r){
+    h += "<tr" + (r.hi ? " class='hi'" : "") + ">";
+    (r.c || r).forEach(function(c, i){ h += "<td" + (i ? " class='n'" : "") + ">" + c + "</td>"; });
+    h += "</tr>";
+  });
+  return h + "</tbody></table></div>";
+}
+function bars(items){
+  var max = Math.max.apply(null, items.map(function(i){ return i.v; })) || 1;
+  return "<div class='bars'>" + items.map(function(i){
+    return "<div class='bar-row'><span class='bar-lab'>" + i.k + "</span>" +
+      "<div class='bar-track'><div class='bar-fill' style='width:" + (i.v/max*100) +
+      "%;background:" + i.c + "'></div></div>" +
+      "<span class='bar-val' style='color:" + i.c + "'>" + i.t + "</span></div>";
+  }).join("") + "</div>";
+}
+var CHC = "var(--ch)", FRC = "var(--fr)";
+
+/* ============================== BASE DE CONNAISSANCES ============================== */
+
+var KB = [
+{
+  id:"ge-vd", t:"Genève ou Vaud : l'écart structurel",
+  l:"Convention franco-suisse du 9 sept. 1966, art. 17 et 25 A · Accord bilatéral du 11 avril 1983",
+  k:["geneve vaud","ge vd","genève ou vaud","quel canton","choisir canton","canton","comparatif canton","difference canton","ou travailler","vaud ou geneve"],
+  f:function(c){
+    return "<p>Ce ne sont pas deux options voisines mais <strong>deux régimes fiscaux opposés</strong>. Genève vous impose <strong>à la source sur son barème cantonal</strong>. Le Vaud relève de l'accord de 1983 : vous n'êtes pas imposé en Suisse, mais <strong>en France, au barème progressif plein</strong>, sur un salaire suisse converti en euros — qui vous propulse directement en tranche à 30 %.</p>" +
+    bars([
+      {k:"Genève", v:c.netGEeur, t:mois(c.netGEeur)+"/mois", c:CHC},
+      {k:"Vaud",   v:c.netVDeur, t:mois(c.netVDeur)+"/mois", c:FRC}
+    ]) +
+    tbl(["Poste", "Genève", "Vaud"], [
+      ["Brut annuel", chf(c.brut), chf(c.brut)],
+      ["Cotisations sociales CH (~11,5 %)", "−"+chf(c.brut*COT), "−"+chf(c.brut*COT)],
+      ["Impôt", "−"+chf(c.impGE)+" <span style='opacity:.6'>("+pct(c.tGE)+")</span>", "−"+eur(c.irVD)],
+      {c:["<strong>Net-net annuel</strong> (santé déduite)", "<strong>"+eur(c.netGEeur)+"</strong>", "<strong>"+eur(c.netVDeur)+"</strong>"], hi:true},
+      ["Soit par mois", mois(c.netGEeur), mois(c.netVDeur)]
+    ]) +
+    "<p><strong>Écart : " + eur(c.ecart) + " par an</strong> en faveur de Genève, soit " + mois(c.ecart) + " par mois — à salaire brut identique.</p>" +
+    "<div class='callout'><strong>Conséquence pratique.</strong> Priorisez Genève dans vos candidatures. Si un employeur vaudois vous intéresse (Nestlé Vevey, Philip Morris Lausanne, les fiduciaires de Nyon), demandez la prime de compensation — voir la question suivante.</div>";
+  }
+},
+{
+  id:"prime-vd", t:"Combien demander pour un poste vaudois",
+  l:"Accord du 11 avril 1983 · art. 197 CGI (barème progressif)",
+  k:["prime vaud","combien demander","negocier vaud","compensation vaud","14%","quatorze pour cent","salaire equivalent vaud","poste vaudois","offre vaud"],
+  f:function(c){
+    var rows = [6000,7000,8000,9000].map(function(m){
+      var b = m*13, save = P.brut, ok;
+      P.brut = b; var cc = calc(); P.brut = save;
+      ok = Math.abs(b - c.brut) < 6500;
+      return {c:[chf(b), chf(cc.brutVDeq), "<strong>+"+pct(cc.prime)+"</strong>"], hi:ok};
+    });
+    return "<p>À votre niveau de salaire, un poste vaudois doit payer <strong>" + pct(c.prime) +
+      " de plus</strong> qu'un poste genevois équivalent pour vous laisser le même net en poche.</p>" +
+    tbl(["Brut Genève", "Brut Vaud requis", "Prime"], rows) +
+    "<p>Sur votre profil : un poste à <em>" + chf(c.brut) + "</em> à Genève équivaut à <strong>" +
+      chf(c.brutVDeq) + "</strong> dans le canton de Vaud.</p>" +
+    "<div class='callout blue'><strong>En négociation.</strong> Vous ne demandez pas 14 % « parce que ». Vous compensez un différentiel fiscal documenté, opposable, issu d'un accord bilatéral. C'est un argument que le RH suisse comprend — beaucoup d'employeurs vaudois le connaissent déjà.</div>" +
+    "<p>Et non, la proximité de Nyon ou de La Côte ne compense pas : ces zones se rejoignent depuis les mêmes communes françaises que Genève.</p>";
+  }
+},
+{
+  id:"net", t:"Ce que vous toucherez réellement",
+  l:"Estimation nette après impôt, cotisations sociales suisses et couverture santé",
+  k:["combien je gagne","mon net","net en poche","salaire net","je toucherai","combien net","simulation","mon salaire","gagner"],
+  f:function(c){
+    var here = P.canton === "GE";
+    return "<p>Sur un brut de <em>" + chf(c.brut) + "</em> dans le canton " +
+      (here ? "de <strong>Genève</strong>" : "de <strong>Vaud</strong>") + " :</p>" +
+    tbl(["Poste", "CHF / an", "€ / an"], [
+      ["Brut", f0(c.brut), f0(c.brut*FX)],
+      ["Cotisations sociales (AVS/AI/APG, AC, AANP, LPP)", "−"+f0(c.brut*COT), "−"+f0(c.brut*COT*FX)],
+      ["Net social", f0(c.netSoc), f0(c.netSoc*FX)],
+      [here ? "Impôt à la source Genève ("+pct(c.tGE)+")" : "Impôt sur le revenu français",
+       "−"+f0(here ? c.impGE : c.irVD/FX), "−"+f0(here ? c.impGE*FX : c.irVD)],
+      ["Santé — option "+c.santeLbl, "−"+f0(c.sante/FX), "−"+f0(c.sante)],
+      (c.surcoutTE > 0 ? ["Surcoût taux effectif sur revenus FR", "−"+f0(c.surcoutTE/FX), "−"+f0(c.surcoutTE)] : ["Surcoût taux effectif", "0", "0"]),
+      {c:["<strong>Net-net</strong>", "<strong>"+f0(c.actif/FX)+"</strong>", "<strong>"+f0(c.actif)+"</strong>"], hi:true},
+      ["Soit par mois", f0(c.actif/FX/12), f0(c.actif/12)]
+    ]) +
+    "<p>Pour situer : un salarié parisien à 2 200 € net/mois touche environ <strong>2 103 €/mois</strong> après impôt. Vous seriez à <strong>×" +
+      (c.actif/12/2103).toFixed(2).replace(".", ",") + "</strong>.</p>" +
+    "<div class='callout warn'><strong>Ce que ce chiffre ne dit pas.</strong> Le coût de la vie en zone frontalière est nettement plus élevé qu'ailleurs en France — l'immobilier à Annemasse, Saint-Julien ou Ferney a absorbé une partie du différentiel. Comptez aussi le carburant, les péages et le temps de trajet.</div>";
+  }
+},
+{
+  id:"sante", t:"CMU ou LAMal : l'arbitrage à 3 mois",
+  l:"Droit d'option — accord sur la libre circulation, annexe II · art. L380-3-1 CSS",
+  k:["cmu","lamal","assurance maladie","mutuelle","sante","droit d'option","couverture sante","secu","securite sociale","assurance"],
+  f:function(c){
+    var pivot = 11775 + (LAMAL_DEFAUT*12*FX)/0.08;
+    return "<p>Dès votre prise de poste vous avez <strong>trois mois</strong> pour choisir — et le choix est <strong>irrévocable</strong>.</p>" +
+    tbl(["Critère", "CMU frontalière", "LAMal suisse"], [
+      ["Mode de calcul", "(RFR − 11 775 €) × 8 %", "Prime fixe par personne"],
+      ["Votre coût annuel", eur(c.cmu), eur(c.lamal)],
+      ["Par mois", mois(c.cmu), mois(c.lamal)],
+      ["Conjoint et enfants", "Couverts sans surcoût", "Une prime chacun"],
+      ["Soins en Suisse", "Remboursés au tarif français", "Accès direct"],
+      {c:["<strong>Le moins cher pour vous</strong>", c.santeLbl === "CMU" ? "<strong>✓</strong>" : "—", c.santeLbl === "LAMal" ? "<strong>✓</strong>" : "—"], hi:true}
+    ]) +
+    "<p><strong>Point de bascule : un RFR d'environ " + eur(pivot) + ".</strong> En dessous, la CMU l'emporte ; au-dessus, la LAMal. Votre RFR estimé est de <em>" + eur(c.rfr) + "</em>.</p>" +
+    (P.fam !== "cel" || P.enf > 0
+      ? "<div class='callout blue'><strong>Votre situation change la donne.</strong> Avec un conjoint ou des enfants, la CMU couvre tout le foyer pour une seule cotisation là où la LAMal facture une prime par tête. L'avantage bascule nettement vers la CMU — refaites le calcul avec le nombre réel de personnes à couvrir.</div>"
+      : "<div class='callout warn'><strong>Ne tranchez pas sur la moyenne.</strong> Les 393 CHF/mois utilisés ici sont la prime moyenne adulte. Un tarif frontalier négocié descend souvent à 250–330 CHF, ce qui abaisse le point de bascule. Demandez deux ou trois devis réels avant de signer.</div>");
+  }
+},
+{
+  id:"timing", t:"Quand basculer : visez le 1ᵉʳ janvier",
+  l:"Convention 1966, art. 25 A — crédit d'impôt égal à l'impôt français",
+  k:["quand partir","timing","quelle date","mois de depart","annee de bascule","quand demissionner","date de depart","quand commencer","transition"],
+  f:function(c){
+    var netFRmois = 2200*1.03;
+    var niCH = c.netSoc*FX*0.90;
+    var rows = [[1,"1ᵉʳ janvier"],[4,"1ᵉʳ avril"],[7,"1ᵉʳ juillet"],[10,"1ᵉʳ octobre"]].map(function(x){
+      var mFR = x[0]-1, mCH = 12-mFR;
+      var riFR = netFRmois*mFR*0.90, riCH = niCH*mCH/12, tot = riFR+riCH;
+      var irDu = tot > 0 ? irNet(tot, P.parts, P.base) * (riFR/tot) : 0;
+      var seul = irNet(riFR, P.parts, P.base);
+      return {c:[x[1], eur(riFR), eur(irDu), "<span class='"+(irDu-seul>50?"":"pos")+"'>"+(irDu-seul>50?"+"+eur(irDu-seul):"0 €")+"</span>"], hi:x[0]===1};
+    });
+    return "<p>À Genève, votre salaire suisse est neutralisé en France par un crédit d'impôt — mais il reste <strong>retenu pour calculer le taux applicable à vos revenus français</strong>. L'année où vous quittez un employeur français en cours d'année, votre salaire français se retrouve donc taxé au taux effectif d'un salaire suisse.</p>" +
+    tbl(["Bascule", "Revenu FR imposable", "IR dû", "Surcoût"], rows) +
+    "<div class='callout'><strong>Terminez le 31 décembre, démarrez en janvier.</strong> Aucune interruption de revenu, et le surcoût disparaît intégralement. Une bascule au 1ᵉʳ juillet coûte environ 2 000 € d'impôt que personne ne vous réclamera d'expliquer — ils sont simplement là.</div>" +
+    "<p>Négociez donc votre date d'entrée en même temps que votre salaire. C'est un point que les employeurs suisses accordent facilement.</p>";
+  }
+},
+{
+  id:"teletravail", t:"Télétravail : les deux seuils à ne pas confondre",
+  l:"Avenant du 27 juin 2023 à la convention de 1966, permanent depuis le 1ᵉʳ janvier 2026 · Règlement (CE) 883/2004",
+  k:["teletravail","télétravail","40%","home office","travail a distance","distanciel","jours a la maison","remote"],
+  f:function(){
+    return "<p>Deux seuils distincts, deux logiques différentes. Les confondre est l'erreur la plus fréquente.</p>" +
+    tbl(["Seuil", "Ce qu'il régit", "Si vous le dépassez"], [
+      ["<strong>40 %</strong> du temps annuel", "Fiscalité — l'imposition reste intégralement en Suisse", "La neutralité saute <strong>immédiatement</strong> : les jours excédentaires deviennent imposables en France dès le premier jour de dépassement"],
+      ["<strong>49,9 %</strong> du temps", "Sécurité sociale — maintien de l'affiliation au régime suisse", "Bascule vers le régime français : cotisations françaises pour vous et votre employeur"]
+    ]) +
+    "<ul>" +
+    "<li>Le seuil de 40 % englobe aussi <strong>jusqu'à 10 missions ponctuelles</strong> effectuées en France ou dans un pays tiers.</li>" +
+    "<li>Depuis 2026, l'employeur suisse doit pouvoir <strong>attester contractuellement</strong> le pourcentage de télétravail accordé à chaque frontalier.</li>" +
+    "<li>Le décompte est <strong>annuel</strong>, pas hebdomadaire : deux jours par semaine vous placent à 40 % pile — sans aucune marge pour un jour d'école fermée ou une semaine de garde d'enfant.</li>" +
+    "</ul>" +
+    "<div class='callout warn'><strong>Faites écrire « 1,5 jour » plutôt que « 2 jours ».</strong> À 2 jours/semaine vous êtes à la limite exacte, et c'est vous — pas l'employeur — qui portez le risque fiscal du dépassement.</div>";
+  }
+},
+{
+  id:"permis", t:"Permis G : ce qu'il exige vraiment",
+  l:"Accord sur la libre circulation des personnes (ALCP), en vigueur depuis 2002",
+  k:["permis g","permis","autorisation","frontalier statut","zone frontaliere","zone frontalière","30 km","habiter","ou habiter","demenager","résider"],
+  f:function(){
+    return "<p>Il faut distinguer deux choses que presque tout le monde mélange.</p>" +
+    tbl(["", "Permis G", "Statut fiscal de frontalier (accord 1983)"], [
+      ["Zone de résidence", "<strong>Aucune contrainte</strong> depuis le 1ᵉʳ juin 2007 — n'importe où dans l'UE/AELE", "Résidence <strong>dans la zone frontalière</strong> définie par décret"],
+      ["Retour au domicile", "<strong>Hebdomadaire</strong>", "<strong>Quotidien</strong>"],
+      ["Durée", "5 ans si CDI, sinon durée du contrat", "Attestation annuelle (formulaire 2041-AS)"],
+      ["Concerne", "Tous les cantons", "Uniquement BE, SO, BS, BL, VD, VS, NE, JU"]
+    ]) +
+    "<div class='callout blue'><strong>Conséquence souvent ignorée.</strong> Pour un poste à <strong>Genève</strong>, aucune condition de zone ne s'applique : Genève ne relève pas de l'accord de 1983, c'est la règle générale de la convention de 1966 (art. 17, imposition au lieu d'exercice). Vous pourriez donc théoriquement travailler à Genève en résidant loin de la frontière, avec un retour hebdomadaire.</div>" +
+    "<p>En revanche pour le canton de Vaud, la zone frontalière et le retour quotidien sont des conditions du régime fiscal — pas du permis.</p>";
+  }
+},
+{
+  id:"taux-effectif", t:"Le taux effectif : l'angle mort du frontalier genevois",
+  l:"Convention 1966, art. 25 A · art. 197 CGI",
+  k:["taux effectif","autres revenus","revenus fonciers","locatif","conjoint","credit d'impot","crédit d'impôt","exonere","exonéré","loyers","pel","livret"],
+  f:function(c){
+    var lignes = [];
+    if (P.autres > 0){
+      var seuls = irNet(P.autres, P.parts, P.base);
+      var eff   = irNet(c.rfr, P.parts, P.base) * (P.autres/c.rfr);
+      lignes = [
+        ["Vos autres revenus français", eur(P.autres)],
+        ["IR si vous n'aviez qu'eux", eur(seuls)],
+        ["IR réel, avec le salaire suisse au taux effectif", eur(eff)],
+        {c:["<strong>Surcoût provoqué par le salaire suisse</strong>", "<strong>+"+eur(eff-seuls)+"</strong>"], hi:true}
+      ];
+    }
+    return "<p>Même à Genève, votre salaire suisse entre dans votre <strong>revenu fiscal de référence</strong> et sert à calculer le taux applicable à vos <strong>autres</strong> revenus français. Le mécanisme n'est pas une exonération : la France calcule l'impôt sur le revenu mondial, puis accorde un crédit d'impôt égal à la part correspondant au revenu suisse.</p>" +
+    (P.autres > 0
+      ? tbl(["Poste", "Montant"], lignes) +
+        "<p>Autrement dit : ces " + eur(P.autres) + " de revenus français, qui isolément seraient peu ou pas imposés, sont taxés au taux d'un salaire suisse.</p>"
+      : "<div class='callout blue'><strong>Vous n'avez pas encore d'autres revenus français.</strong> Renseignez-en le montant dans votre profil ci-dessus pour voir le surcoût. C'est la question à se poser <em>avant</em> d'acheter un bien locatif ou de placer un capital : la rentabilité nette d'un investissement français chute nettement quand on devient frontalier genevois.</div>") +
+    "<ul>" +
+    "<li>Concerne : revenus fonciers, salaire du conjoint resté en France, plus-values, revenus de capitaux mobiliers.</li>" +
+    "<li>Ne concerne pas : ce qui est déjà exonéré ou soumis à prélèvement forfaitaire libératoire hors barème (PFU sur dividendes, PEA après 5 ans, assurance-vie sous abattement).</li>" +
+    "<li>Levier : en couple, l'arbitrage entre imposition commune et séparée mérite d'être simulé — mais le choix est encadré et rarement libre.</li>" +
+    "</ul>";
+  }
+},
+{
+  id:"declaration", t:"Ce que vous déclarez en France",
+  l:"art. 4 A et 4 B CGI · formulaires 2042, 2047, 3916",
+  k:["declaration","déclaration","2042","2047","3916","formulaire","declarer","déclarer","impots france","impôts france","case","8tk","1ac"],
+  f:function(){
+    return "<p>Vous restez <strong>résident fiscal français</strong> (art. 4 B CGI) : vous continuez à déclarer en France chaque année, quel que soit le canton.</p>" +
+    tbl(["Formulaire", "Ce qu'on y porte", "Qui est concerné"], [
+      ["<strong>2042</strong>", "Déclaration principale du foyer", "Tout le monde"],
+      ["<strong>2047</strong>", "Revenus encaissés à l'étranger — salaire suisse", "Tout le monde"],
+      ["<strong>2042 case 1AC</strong> + <strong>8TK</strong>", "Salaire suisse ouvrant droit au crédit d'impôt", "Genève"],
+      ["<strong>2042 case 1AF</strong>", "Salaire imposable en France", "Cantons de l'accord 1983"],
+      ["<strong>2041-AS</strong>", "Attestation de résidence fiscale à remettre à l'employeur", "Cantons de l'accord 1983"],
+      ["<strong>3916</strong>", "Comptes bancaires détenus à l'étranger", "Tout le monde ayant un compte suisse"]
+    ]) +
+    "<div class='callout warn'><strong>Le 3916 n'est pas optionnel.</strong> Vous aurez forcément un compte suisse — c'est là que le salaire est versé. L'omission de déclaration d'un compte à l'étranger est sanctionnée par une amende forfaitaire par compte et par an, et elle proroge le délai de reprise de l'administration. C'est l'oubli le plus banal et le plus coûteux du frontalier débutant.</div>" +
+    "<p>Le taux de change à retenir est celui publié par l'administration pour l'année considérée, ou le cours moyen annuel — pas le cours du jour de chaque virement.</p>";
+  }
+},
+{
+  id:"quasi-resident", t:"Quasi-résident et taxation ordinaire ultérieure",
+  l:"art. 99a et 89a LIFD",
+  k:["quasi resident","quasi-résident","tou","taxation ordinaire","deduire","déduire","frais reels","frais réels","deductions","rectification"],
+  f:function(){
+    return "<p>L'impôt à la source genevois est forfaitaire : il intègre des déductions moyennes, pas les vôtres. Si <strong>au moins 90 % des revenus mondiaux de votre foyer</strong> sont imposables en Suisse, vous pouvez demander une <strong>taxation ordinaire ultérieure</strong> et déduire vos charges réelles.</p>" +
+    "<ul>" +
+    "<li><strong>3ᵉ pilier A</strong> — la déduction la plus rentable, et elle n'existe <em>que</em> par ce canal</li>" +
+    "<li><strong>Rachats de 2ᵉ pilier (LPP)</strong> — intégralement déductibles</li>" +
+    "<li>Frais de transport et de repas</li>" +
+    "<li>Intérêts d'emprunt (y compris sur un bien situé en France)</li>" +
+    "<li>Pensions alimentaires versées</li>" +
+    "<li>Frais de garde d'enfants, frais de formation professionnelle</li>" +
+    "</ul>" +
+    "<div class='callout warn'><strong>Deux contraintes fermes.</strong> La demande se dépose au plus tard le <strong>31 mars</strong> de l'année suivante, et le choix est <strong>irrévocable pour l'année</strong> — y compris s'il vous est défavorable. Faites la simulation avant de la déposer : avec peu de charges déductibles, la TOU peut coûter plus cher que le forfait.</div>" +
+    "<p>Sans ce statut, ouvrir un 3ᵉ pilier A ne vous procure <strong>aucun avantage fiscal</strong>. C'est le point que les conseillers en assurance omettent le plus volontiers.</p>";
+  }
+},
+{
+  id:"pilier3", t:"3ᵉ pilier A : utile seulement sous condition",
+  l:"art. 33 al. 1 let. e LIFD · OPP 3",
+  k:["3eme pilier","3e pilier","troisieme pilier","pilier 3a","3a","epargne retraite suisse","prevoyance"],
+  f:function(){
+    return "<p>Le 3ᵉ pilier A est une épargne retraite <strong>intégralement déductible du revenu imposable</strong>, dans la limite d'un plafond annuel réindexé.</p>" +
+    "<div class='callout warn'><strong>Mais pour un frontalier imposé à la source, la déduction ne s'applique pas automatiquement.</strong> Elle suppose de demander la taxation ordinaire ultérieure comme quasi-résident (art. 99a LIFD). Sans cette démarche, vous versez sur un produit bloqué jusqu'à la retraite sans obtenir la contrepartie fiscale qui en fait tout l'intérêt.</div>" +
+    "<ul>" +
+    "<li>Capital bloqué jusqu'à cinq ans avant l'âge de la retraite, sauf motifs légaux (achat de la résidence principale, départ définitif de Suisse, mise à son compte).</li>" +
+    "<li>À la sortie, le capital est imposé séparément à un taux privilégié — l'échelonnement des retraits sur plusieurs années réduit ce taux.</li>" +
+    "<li>Le plafond annuel est réindexé : vérifiez la valeur de l'année en cours auprès de l'AFC avant de calibrer vos versements.</li>" +
+    "</ul>" +
+    "<p><strong>Ordre de priorité raisonnable :</strong> obtenir d'abord le statut de quasi-résident, puis ouvrir le 3ᵉ pilier — pas l'inverse.</p>";
+  }
+},
+{
+  id:"lpp", t:"Rachats de 2ᵉ pilier : le levier le plus puissant",
+  l:"art. 33 al. 1 let. d LIFD · art. 79b LPP",
+  k:["2eme pilier","2e pilier","lpp","rachat","caisse de pension","deuxieme pilier","prevoyance professionnelle","rachats"],
+  f:function(){
+    return "<p>Les rachats de lacunes de prévoyance sont <strong>intégralement déductibles du revenu imposable</strong> de l'année du versement. Sur un revenu élevé, c'est généralement la première optimisation à examiner — avant tout montage complexe.</p>" +
+    "<ul>" +
+    "<li>Le montant rachetable figure sur votre <strong>certificat de prévoyance</strong> annuel, remis par la caisse de pension.</li>" +
+    "<li>Il augmente mécaniquement avec le salaire et l'ancienneté — un frontalier arrivé tard en Suisse accumule vite une lacune importante.</li>" +
+    "<li><strong>Blocage de 3 ans</strong> avant tout retrait en capital (art. 79b al. 3 LPP) : un rachat suivi d'un retrait anticipé fait perdre la déduction rétroactivement.</li>" +
+    "<li>Échelonner les rachats sur plusieurs années écrête mieux les tranches hautes qu'un versement unique.</li>" +
+    "</ul>" +
+    "<div class='callout warn'><strong>Même condition que le 3ᵉ pilier.</strong> Imposé à la source, la déduction passe par la taxation ordinaire ultérieure. Un rachat effectué sans avoir demandé la TOU est fiscalement perdu pour l'année.</div>";
+  }
+},
+{
+  id:"accord83", t:"L'accord de 1983 : quels cantons, quel mécanisme",
+  l:"Accord entre le Gouvernement français et le Conseil fédéral suisse du 11 avril 1983",
+  k:["accord 1983","accord de 1983","quels cantons","huit cantons","8 cantons","bale","berne","jura","neuchatel","soleure","valais","imposition france"],
+  f:function(){
+    return "<p>Huit cantons ont signé un accord dérogatoire à la convention de 1966. Pour eux, le frontalier est imposé <strong>dans son État de résidence</strong> — la France — et la Suisse reverse à la France une compensation financière.</p>" +
+    tbl(["Régime", "Cantons", "Où vous êtes imposé"], [
+      ["<strong>Accord 1983</strong>", "Berne, Soleure, Bâle-Ville, Bâle-Campagne, Vaud, Valais, Neuchâtel, Jura", "<strong>En France</strong>, barème progressif plein"],
+      ["<strong>Convention 1966</strong>", "Genève et tous les autres cantons", "<strong>En Suisse</strong>, à la source, puis crédit d'impôt français"]
+    ]) +
+    "<ul>" +
+    "<li>Conditions cumulatives : résidence en <strong>zone frontalière</strong> définie par décret, et <strong>retour quotidien</strong> au domicile.</li>" +
+    "<li>Formalité annuelle : remettre à l'employeur suisse l'<strong>attestation de résidence fiscale</strong> (formulaire 2041-AS), faute de quoi il prélève l'impôt à la source — et vous êtes imposé deux fois le temps de régulariser.</li>" +
+    "<li>Aucune cotisation sociale française n'est due sur le salaire : vous cotisez au régime suisse.</li>" +
+    "</ul>" +
+    "<div class='callout'>Ce régime est structurellement défavorable dès que le salaire dépasse le seuil de la tranche à 30 % — c'est-à-dire à peu près tout salaire suisse à plein temps.</div>";
+  }
+},
+{
+  id:"salaires", t:"Ce que valent vos profils à Genève et dans le Vaud",
+  l:"Données déclaratives jobup.ch, jobs.ch et Glassdoor, 2026 — ordres de grandeur",
+  k:["salaire","combien gagne","remuneration","rémunération","rh paie","gestionnaire paie","conseiller bancaire","banque","marche du travail","metier","emploi","poste"],
+  f:function(){
+    return "<p>Bruts annuels observés, 13ᵉ salaire et bonus inclus :</p>" +
+    tbl(["Profil", "Genève", "Vaud"], [
+      ["Conseiller clientèle bancaire — médiane", "72 000 CHF", "—"],
+      ["Conseiller clientèle bancaire — moyenne", "87 000 CHF", "—"],
+      ["Gestionnaire de paie", "~84 000 CHF", "—"],
+      ["Gestionnaire RH", "96 700 CHF", "91 380 CHF"]
+    ]) +
+    "<p>Les deux pistes atterrissent dans <strong>la même fourchette, 72 000 – 97 000 CHF</strong>. Le salaire n'est donc pas le critère de choix entre RH-paie et banque : ce qui les sépare, c'est la <strong>barrière d'entrée</strong>.</p>" +
+    tbl(["", "RH / Paie", "Banque"], [
+      ["Profession réglementée", "Non", "Oui — enregistrement LSFin des conseillers"],
+      ["Expérience attendue", "Certificat suisse + pratique", "2–3 ans minimum en agence"],
+      ["Obstacle principal", "Le contenu technique ne se transfère pas", "Concurrence et réglementation"],
+      ["Délai d'entrée réaliste", "Court", "Plus long"]
+    ]) +
+    "<div class='callout'>La fourchette « gestionnaire de paie » à Genève est très large (33 000 à 161 000 CHF selon les relevés). L'écart tient au périmètre : paie pure d'un côté, responsable paie multi-sociétés avec dimension internationale de l'autre.</div>";
+  }
+},
+{
+  id:"formation", t:"Pourquoi la paie française ne se transfère pas",
+  l:"Profession non réglementée en Suisse — reconnaissance de diplôme non requise",
+  k:["formation","diplome","diplôme","equivalence","équivalence","titre professionnel","brevet federal","brevet fédéral","certificat","reconnu","valider","etudes"],
+  f:function(){
+    return "<p>La profession RH n'est <strong>pas réglementée</strong> en Suisse : aucune reconnaissance officielle de diplôme n'est exigée, vous pouvez être embauché avec un titre français. Mais le contenu technique n'a quasiment aucun recouvrement.</p>" +
+    tbl(["Paie française", "Paie suisse"], [
+      ["DSN, URSSAF, conventions collectives de branche", "AVS / AI / APG, LPP, LAA, LAAC, IJM"],
+      ["Prélèvement à la source français", "Impôt à la source avec barèmes cantonaux (A0 / B / C / H)"],
+      ["Mutuelle, prévoyance loi Évin", "Caisses de pension, primauté cotisations ou prestations"],
+      ["Congés payés, RTT", "CCT cantonales, 13ᵉ salaire"]
+    ]) +
+    "<p>Un titre français vous rend employable en <strong>RH généraliste</strong>, mais pas en <strong>paie</strong> sans remise à niveau.</p>" +
+    "<div class='callout'><strong>Là où votre profil devient rare : la paie de frontaliers.</strong> Les entreprises genevoises et vaudoises emploient des dizaines de milliers de frontaliers. Gérer cette paie demande exactement ce que vous accumulez — impôt à la source, seuil des 40 %, droit d'option CMU/LAMal, coordination de sécurité sociale (règlement CE 883/2004). Quelqu'un qui maîtrise les deux systèmes <em>et qui vit lui-même la situation</em> est différenciant, en particulier dans les fiduciaires genevoises.</div>" +
+    "<p><strong>Le complément à prévoir :</strong> le <em>Certificat d'assistant·e en gestion du personnel</em> (cours du soir à Genève ou Lausanne, environ un an), puis éventuellement le <em>Brevet fédéral de spécialiste en ressources humaines</em> ou en <em>assurances sociales</em>. Tout cela se fait <strong>en travaillant déjà comme frontalier</strong> — inutile de l'avoir avant de partir.</p>";
+  }
+},
+{
+  id:"bareme-ge", t:"Les barèmes genevois A0, B, C, H",
+  l:"art. 83 et suivants LIFD · barème cantonal genevois tar26GE",
+  k:["bareme","barème","a0","impot a la source","impôt à la source","tar26","taux source","retenue","prelevement suisse","quel bareme"],
+  f:function(c){
+    return "<p>Contrairement au système français par tranches sur le revenu net, Genève applique un <strong>taux effectif unique calculé sur le brut mensuel</strong>. La situation familiale détermine le barème.</p>" +
+    tbl(["Barème", "Qui", "Votre cas"], [
+      ["<strong>A0</strong>", "Célibataire, séparé, divorcé, sans enfant à charge", P.bareme === "A0" ? "<strong>✓</strong>" : "—"],
+      ["<strong>B</strong>", "Marié, conjoint sans activité lucrative", P.bareme === "B" ? "<strong>✓</strong>" : "—"],
+      ["<strong>C</strong>", "Marié, les deux conjoints exercent une activité", P.bareme === "C" ? "<strong>✓</strong>" : "—"],
+      ["<strong>H</strong>", "Famille monoparentale avec enfant à charge", P.bareme === "H" ? "<strong>✓</strong>" : "—"]
+    ]) +
+    "<p>Le taux appliqué à votre profil est estimé à <strong>" + pct(c.tGE) + "</strong>, soit <em>" + chf(c.impGE) + "</em> par an.</p>" +
+    "<div class='callout warn'><strong>Ce taux est une interpolation, pas un barème officiel.</strong> Les taux réels progressent d'environ 5,5 % à 5 000 CHF/mois jusqu'à 16 % à 12 000 CHF/mois sur le barème A0 ; les barèmes familiaux sont plus favorables mais leur structure exacte n'est pas reproduite ici. Dès que vous avez une offre chiffrée, passez par la calculette officielle ge.ch et saisissez le taux réel dans votre profil ci-dessus — tous les calculs s'ajusteront.</div>" +
+    "<p>Le barème C intègre un revenu théorique du conjoint plafonné, ce qui peut produire une retenue supérieure à l'impôt réellement dû : c'est un cas typique où la taxation ordinaire ultérieure permet de récupérer le trop-perçu.</p>";
+  }
+},
+{
+  id:"exit-tax", t:"Exit tax, PEA, assurance-vie : ce que vous ne perdez pas",
+  l:"art. 167 bis CGI · art. 4 B CGI",
+  k:["exit tax","pea","assurance vie","assurance-vie","patrimoine","placements","epargne","épargne","livret a","perdre","garder","je perds"],
+  f:function(){
+    return "<p>Bonne nouvelle, et elle change beaucoup de choses : en devenant frontalier vous restez <strong>résident fiscal français</strong> (art. 4 B CGI). Vous ne transférez pas votre domicile fiscal — vous traversez simplement une frontière pour travailler.</p>" +
+    tbl(["Sujet", "Effet du passage en frontalier"], [
+      ["<strong>Exit tax</strong> (art. 167 bis CGI)", "Non applicable — elle ne vise que le transfert du domicile fiscal hors de France"],
+      ["<strong>PEA</strong>", "Conservé, antériorité intacte, exonération d'IR après 5 ans maintenue"],
+      ["<strong>Assurance-vie</strong>", "Conservée, antériorité fiscale et abattements préservés"],
+      ["<strong>Livret A, LDDS, LEP</strong>", "Conservés (sous conditions de ressources pour le LEP)"],
+      ["<strong>PER</strong>", "Conservé, mais la déduction perd son intérêt : votre salaire suisse n'est pas imposé en France"],
+      ["<strong>Résidence principale</strong>", "Exonération de plus-value maintenue (art. 150 U-II-1° CGI)"]
+    ]) +
+    "<div class='callout blue'><strong>Le vrai changement est ailleurs.</strong> Ce n'est pas ce que vous perdez, c'est la rentabilité de ce que vous ajoutez : tout nouveau revenu français sera désormais taxé au taux effectif d'un salaire suisse. Voir la question sur le taux effectif.</div>" +
+    "<p>À l'inverse, si vous déménagiez <em>en Suisse</em> — et non en zone frontalière française — l'analyse serait entièrement différente : exit tax potentielle, sortie du PEA, imposition de la fortune. Ce n'est pas votre projet.</p>";
+  }
+},
+{
+  id:"chomage", t:"Chômage, retraite, allocations",
+  l:"Règlement (CE) 883/2004 · Convention de sécurité sociale France-Suisse",
+  k:["chomage","chômage","pole emploi","france travail","retraite","avs","allocations","caf","famille","droits sociaux","licenciement","perte emploi"],
+  f:function(){
+    return "<p>Vous cotisez au régime suisse, mais vos droits ne se liquident pas tous en Suisse.</p>" +
+    tbl(["Prestation", "Où", "Comment"], [
+      ["<strong>Chômage</strong>", "France", "Indemnisé par France Travail, mais <strong>calculé sur le salaire suisse</strong> (plafonné). La Suisse reverse une compensation à la France."],
+      ["<strong>Retraite</strong>", "Les deux", "Vous accumulez des droits AVS suisses <em>et</em> conservez vos trimestres français. Les deux pensions se cumulent, chacune liquidée dans son pays."],
+      ["<strong>2ᵉ pilier</strong>", "Suisse", "Capital ou rente à la retraite. En cas de départ définitif de Suisse, la part surobligatoire peut être retirée."],
+      ["<strong>Allocations familiales</strong>", "Suisse en priorité", "Le pays d'activité verse en premier ; la France complète si son montant est supérieur (différentiel)."],
+      ["<strong>Maladie / accident</strong>", "Selon votre droit d'option", "LAMal ou CMU — voir la question dédiée."]
+    ]) +
+    "<div class='callout'><strong>Le chômage est le point le plus favorable et le moins connu.</strong> Une indemnisation française assise sur un salaire suisse produit un taux de remplacement très supérieur à la moyenne — c'est un filet réel qui réduit le risque du saut.</div>" +
+    "<p>Attention toutefois : c'est bien le <strong>pays de résidence</strong> qui indemnise le frontalier complet. Un frontalier en chômage partiel, lui, relève du régime suisse.</p>";
+  }
+},
+{
+  id:"immobilier", t:"Acheter en zone frontalière : pas tout de suite",
+  l:"art. 150 U CGI · art. 33 al. 1 let. a LIFD (déduction des intérêts)",
+  k:["acheter","achat","immobilier","maison","appartement","credit","crédit","emprunt","louer","location","banque pret","prêt","annemasse","saint julien","ferney","gex"],
+  f:function(){
+    return "<p>Le réflexe naturel est d'acheter dès que le salaire suisse arrive. Trois raisons de temporiser au moins douze mois.</p>" +
+    "<ul>" +
+    "<li><strong>Le permis G n'est pas un CDI.</strong> Les banques françaises appliquent une décote au revenu suisse tant que l'ancienneté est faible, et exigent souvent un apport supérieur. Attendre un an améliore nettement les conditions.</li>" +
+    "<li><strong>Le risque de change est réel.</strong> Un crédit en euros remboursé avec un revenu en francs vous expose : une appréciation de l'euro réduit mécaniquement votre capacité de remboursement. Certains établissements proposent des prêts en CHF — arbitrage à faire lucidement, pas par défaut.</li>" +
+    "<li><strong>Les prix ont déjà absorbé le différentiel.</strong> Annemasse, Saint-Julien, Ferney-Voltaire et le Pays de Gex se sont alignés sur le pouvoir d'achat frontalier. Un an de location vous permet de calibrer le trajet réel — la douane aux heures de pointe change beaucoup l'équation.</li>" +
+    "</ul>" +
+    "<div class='callout blue'><strong>Levier fiscal à connaître.</strong> Si vous obtenez le statut de quasi-résident (TOU), les intérêts d'emprunt de votre résidence principale française deviennent déductibles de votre revenu imposable suisse. Ce point seul peut justifier la démarche.</div>";
+  }
+},
+{
+  id:"pratique", t:"Voiture, douane, compte bancaire : le quotidien",
+  l:"Code des douanes · Règlement (UE) 952/2013",
+  k:["voiture","douane","plaque","immatriculation","compte bancaire","banque suisse","virement","change","frais","carburant","essence","achats","quotidien","vignette"],
+  f:function(){
+    return "<ul>" +
+    "<li><strong>Voiture.</strong> Résidant en France, votre véhicule reste immatriculé en France. Un véhicule de fonction suisse utilisé pour rentrer chez vous demande une autorisation douanière (admission temporaire) — sinon vous risquez une taxation à l'importation.</li>" +
+    "<li><strong>Vignette autoroutière suisse.</strong> Obligatoire, annuelle, à apposer avant le premier trajet sur autoroute.</li>" +
+    "<li><strong>Compte bancaire.</strong> Le salaire est versé sur un compte suisse. Déclarez-le en France via le formulaire <strong>3916</strong> — chaque année, tant que le compte existe.</li>" +
+    "<li><strong>Change.</strong> Les banques traditionnelles prélèvent 1 à 2 % sur chaque conversion CHF→EUR. Sur un salaire annuel, l'écart entre un mauvais et un bon canal de change dépasse souvent mille euros. Comparez avant d'automatiser vos virements.</li>" +
+    "<li><strong>Achats en Suisse.</strong> Franchise de 150 CHF par personne et par jour pour les marchandises ; au-delà, TVA suisse due à l'entrée. Dans l'autre sens, le remboursement de la TVA française à l'export existe au-dessus d'un seuil.</li>" +
+    "</ul>" +
+    "<div class='callout warn'><strong>Le poste le plus sous-estimé : le trajet.</strong> La douane de Bardonnex ou de Thônex-Vallard aux heures de pointe transforme 15 km en 50 minutes. Testez votre trajet réel un mardi à 7 h avant de signer un bail — pas un dimanche.</div>";
+  }
+},
+{
+  id:"13e", t:"13ᵉ salaire, bonus et vacances",
+  l:"art. 322d CO · art. 329a CO",
+  k:["13eme","13e salaire","treizieme","bonus","gratification","vacances","conges","congés","heures","horaires","contrat suisse","droit du travail"],
+  f:function(){
+    return "<ul>" +
+    "<li><strong>13ᵉ salaire.</strong> Très répandu mais <strong>pas légalement obligatoire</strong> : il doit figurer au contrat ou dans la CCT. Vérifiez si l'offre annoncée est « ×12 » ou « ×13 » — c'est 8 % d'écart, et la formulation est souvent ambiguë.</li>" +
+    "<li><strong>Bonus.</strong> Distinguez la gratification discrétionnaire (art. 322d CO, révocable) du bonus contractuel (dû). Dans la banque genevoise, la part variable est significative mais rarement garantie.</li>" +
+    "<li><strong>Vacances.</strong> Minimum légal de 4 semaines (5 avant 20 ans). C'est moins qu'en France — pas de RTT, et les jours fériés cantonaux sont peu nombreux : Genève en compte 9.</li>" +
+    "<li><strong>Temps de travail.</strong> 40 à 42 heures hebdomadaires selon la branche, contre 35 en France. À salaire annoncé identique, le taux horaire réel est donc plus bas qu'il n'y paraît.</li>" +
+    "<li><strong>Délai de congé.</strong> Nettement plus court qu'en France : souvent 1 mois la première année, 2 ou 3 ensuite. La protection contre le licenciement est faible — c'est la contrepartie du niveau de salaire.</li>" +
+    "</ul>" +
+    "<div class='callout'>Quand vous comparez deux offres, ramenez toujours au <strong>brut annuel tout compris</strong> : ×12 ou ×13, bonus garanti ou non, heures hebdomadaires. Une offre à 7 500 CHF ×12 vaut moins qu'une offre à 7 000 CHF ×13.</div>";
+  }
+},
+{
+  id:"checklist", t:"Votre plan sur douze mois",
+  l:"Synthèse opérationnelle",
+  k:["plan","etapes","étapes","checklist","que faire","par ou commencer","commencer","calendrier","feuille de route","prochaines etapes","roadmap","conseils"],
+  f:function(c){
+    return "<p>Dans l'ordre, pour les douze mois qui viennent :</p>" +
+    tbl(["Quand", "Action", "Pourquoi"], [
+      ["Maintenant", "Cibler les offres <strong>genevoises</strong> en priorité", eur(c.ecart) + "/an d'écart, décidé à la signature"],
+      ["Maintenant", "Se renseigner sur le <em>Certificat d'assistant·e en gestion du personnel</em>", "Ce qui rend votre formation française exploitable côté suisse"],
+      ["Candidatures", "Se positionner sur la <strong>paie de frontaliers</strong>", "Votre avantage comparatif réel"],
+      ["Négociation", "Verrouiller un démarrage au <strong>1ᵉʳ janvier</strong>", "Supprime le surcoût de taux effectif"],
+      ["Négociation", "Faire écrire le <strong>% de télétravail</strong> au contrat", "Obligation de l'employeur depuis 2026"],
+      ["Avant le déménagement", "<strong>Louer</strong>, ne pas acheter", "Conditions bancaires et trajet réel à valider"],
+      ["Prise de poste", "<strong>Droit d'option santé sous 3 mois</strong>", "Irrévocable"],
+      ["Prise de poste", "Déclarer le compte suisse (formulaire <strong>3916</strong>)", "Amende forfaitaire en cas d'omission"],
+      ["Mars N+1", "Évaluer la <strong>TOU quasi-résident</strong>", "Condition d'accès au 3ᵉ pilier et aux rachats LPP"]
+    ]) +
+    "<div class='callout'><strong>La décision la plus lourde est aussi la plus précoce.</strong> Le canton se choisit au moment où vous signez, et il pèse plus que toutes les optimisations que vous ferez ensuite réunies.</div>";
+  }
+}
+];
+
+/* ============================== APPARIEMENT ============================== */
+
+function norm(s){
+  return s.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9%\s]/g, " ").replace(/\s+/g, " ").trim();
+}
+function match(q){
+  var n = norm(q);
+  if (!n) return null;
+  var words = n.split(" ").filter(function(w){ return w.length > 2; });
+  var best = null, bestScore = 0;
+  KB.forEach(function(e){
+    var s = 0;
+    e.k.forEach(function(kw){
+      var k = norm(kw);
+      if (n.indexOf(k) !== -1) s += k.indexOf(" ") !== -1 ? 12 : 6;
+      else {
+        var parts = k.split(" ");
+        if (parts.length > 1 && parts.every(function(p){ return n.indexOf(p) !== -1; })) s += 7;
+      }
+    });
+    words.forEach(function(w){
+      if (norm(e.t).indexOf(w) !== -1) s += 2.5;
+    });
+    if (s > bestScore){ bestScore = s; best = e; }
+  });
+  return bestScore >= 5 ? best : null;
+}
+
+/* ============================== RENDU ============================== */
+
+var log = document.getElementById("log");
+var history = [];   // { q, id }
+
+function renderReadout(){
+  var c = calc();
+  var here = P.canton === "GE";
+  document.getElementById("readout").innerHTML =
+    tile("Net-net mensuel", mois(c.actif), (here?"Genève":"Vaud")+" · santé et impôt déduits", here?"ch":"fr") +
+    tile("Sur l'année", eur(c.actif), "après tous prélèvements", "") +
+    tile(here?"Impôt à la source":"Impôt français", here?pct(c.tGE):eur(c.irVD), here?chf(c.impGE)+" par an":"barème progressif", here?"ch":"fr") +
+    tile("Écart GE / VD", eur(Math.abs(c.ecart)), c.ecart>=0?"en faveur de Genève":"en faveur de Vaud", "ok") +
+    tile("Santé", c.santeLbl, mois(c.sante)+" par mois", "");
+}
+function tile(k, v, d, cls){
+  return "<div class='tile'><div class='k'>"+k+"</div><div class='v "+cls+"'>"+v+"</div><div class='d'>"+d+"</div></div>";
+}
+
+function renderAnswer(entry){
+  var c = calc();
+  return "<div class='turn'><div class='msg'><h2>"+entry.t+"</h2><p class='legal'>"+entry.l+"</p>"+entry.f(c)+"</div></div>";
+}
+function redraw(){
+  readParams();
+  renderReadout();
+  log.innerHTML = history.map(function(h){
+    var e = KB.filter(function(x){ return x.id === h.id; })[0];
+    var head = h.q ? "<div class='turn me'><div class='bubble-me'>"+escapeHtml(h.q)+"</div></div>" : "";
+    return head + (e ? renderAnswer(e) : fallback());
+  }).join("");
+}
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, function(m){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];
+  });
+}
+function fallback(){
+  return "<div class='turn'><div class='msg'><h2>Je n'ai pas de réponse vérifiée sur ce point</h2>" +
+    "<p class='legal'>Base de connaissances limitée à la fiscalité du frontalier franco-suisse</p>" +
+    "<p>Plutôt que d'improviser une réponse sur un sujet où une erreur vous coûterait de l'argent, je préfère vous le dire. Voici ce que je couvre :</p>" +
+    "<div class='chips'>" + KB.map(function(e){
+      return "<button class='chip' data-id='"+e.id+"'>"+e.t+"</button>";
+    }).join("") + "</div></div></div>";
+}
+
+function ask(q, forcedId){
+  var e = forcedId ? KB.filter(function(x){ return x.id === forcedId; })[0] : match(q);
+  history.push({ q:q, id:e ? e.id : null });
+  redraw();
+  var turns = log.querySelectorAll(".turn");
+  if (turns.length) turns[turns.length-1].scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+/* ============================== SUGGESTIONS ============================== */
+
+var SUGG = ["ge-vd","net","sante","timing","teletravail","prime-vd","checklist","quasi-resident","permis","taux-effectif","declaration","salaires","formation","lpp","exit-tax","chomage","immobilier","bareme-ge","accord83","pilier3","13e","pratique"];
+document.getElementById("chips").innerHTML = SUGG.map(function(id){
+  var e = KB.filter(function(x){ return x.id === id; })[0];
+  return e ? "<button class='chip' data-id='"+id+"'>"+e.t+"</button>" : "";
+}).join("");
+document.getElementById("tcount").textContent = KB.length + " sujets — cliquez, ou écrivez votre question";
+
+document.addEventListener("click", function(ev){
+  if (!ev.target || !ev.target.closest) return;
+  var b = ev.target.closest("[data-id]");
+  if (!b) return;
+  var e = KB.filter(function(x){ return x.id === b.dataset.id; })[0];
+  ask(e ? e.t : "", b.dataset.id);
+});
+
+/* ============================== ÉVÉNEMENTS ============================== */
+
+document.querySelectorAll("#canton button").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll("#canton button").forEach(function(x){ x.setAttribute("aria-pressed","false"); });
+    b.setAttribute("aria-pressed","true");
+    redraw();
+  });
+});
+["brut","fam","enf","autres","tauxsrc"].forEach(function(id){
+  document.getElementById(id).addEventListener("input", redraw);
+  document.getElementById(id).addEventListener("change", redraw);
+});
+
+var q = document.getElementById("q");
+q.addEventListener("input", function(){
+  q.style.height = "auto"; q.style.height = Math.min(120, q.scrollHeight) + "px";
+});
+q.addEventListener("keydown", function(e){
+  if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); submit(); }
+});
+document.getElementById("send").addEventListener("click", submit);
+function submit(){
+  var v = q.value.trim();
+  if (!v) return;
+  q.value = ""; q.style.height = "auto";
+  ask(v);
+}
+
+/* ============================== DÉMARRAGE ============================== */
+
+readParams();
+renderReadout();
+history.push({ q:null, id:"ge-vd" });
+redraw();
+
+})();
+</script>
