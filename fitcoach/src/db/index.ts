@@ -1,17 +1,19 @@
 /**
- * Point d'entrée SQLite (expo-sqlite, API async v14+).
+ * Point d'entrée base de données. Le pilote dépend de la plateforme
+ * (expo-sqlite en natif, sql.js/WASM en web) — voir driver.ts / driver.web.ts.
  * Ouvre la base, applique le schéma multi-utilisateur et amorce les données.
  */
-import * as SQLite from 'expo-sqlite';
+import { openDB, type Database } from './driver';
 import { SCHEMA_SQL, USER_PROFILE_COLUMNS } from './schema';
 import { SEED_FOODS } from './seedFoods';
 
-let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
+let dbPromise: Promise<Database> | null = null;
 
-export function getDB(): Promise<SQLite.SQLiteDatabase> {
+export function getDB(): Promise<Database> {
   if (!dbPromise) {
     // v2 : schéma multi-utilisateur (données rattachées à un compte).
-    dbPromise = SQLite.openDatabaseAsync('fitcoach2.db');
+    // Le pilote est choisi par la plateforme : expo-sqlite en natif, sql.js en web.
+    dbPromise = openDB('fitcoach2.db');
   }
   return dbPromise;
 }
@@ -42,7 +44,7 @@ export async function initDatabase(): Promise<void> {
 }
 
 /** Ajoute les colonnes profil/cibles manquantes sur les bases déjà créées. */
-async function migrateUserColumns(db: SQLite.SQLiteDatabase): Promise<void> {
+async function migrateUserColumns(db: Database): Promise<void> {
   const cols = await db.getAllAsync<{ name: string }>('PRAGMA table_info(users)');
   const existing = new Set(cols.map((c) => c.name));
   for (const col of USER_PROFILE_COLUMNS) {
@@ -52,7 +54,7 @@ async function migrateUserColumns(db: SQLite.SQLiteDatabase): Promise<void> {
   }
 }
 
-async function seedIfNeeded(db: SQLite.SQLiteDatabase): Promise<void> {
+async function seedIfNeeded(db: Database): Promise<void> {
   const row = await db.getFirstAsync<{ value: string }>('SELECT value FROM meta WHERE key = ?', 'foods_seeded');
   if (row?.value === '1') return;
 

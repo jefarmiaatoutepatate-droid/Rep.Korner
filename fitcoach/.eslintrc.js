@@ -12,5 +12,10 @@ module.exports = {
       files: ['*.config.js', '.eslintrc.js'],
       env: { node: true },
     },
+    {
+      // Service worker : globals dédiés (self, caches, Response…).
+      files: ['public/sw.js'],
+      env: { serviceworker: true, browser: true },
+    },
   ],
 };

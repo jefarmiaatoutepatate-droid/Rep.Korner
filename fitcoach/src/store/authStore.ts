@@ -4,7 +4,7 @@
  * et informe la couche DB de l'utilisateur courant (setCurrentUserId).
  */
 import { create } from 'zustand';
-import * as SecureStore from 'expo-secure-store';
+import { getSession, setSession, clearSession as clearStoredSession } from '@/lib/sessionStorage';
 import { setCurrentUserId } from '@/db';
 import { createUser, verifyCredentials, getUserById, updateUserProfile, deleteAccount as dbDeleteAccount, type AccountUser } from '@/db/authRepository';
 import { normalizeEmail, validateSignup } from '@/lib/authValidation';
@@ -32,10 +32,10 @@ function syncActive(user: AccountUser | null): void {
 }
 
 async function persist(userId: string): Promise<void> {
-  await SecureStore.setItemAsync(SESSION_KEY, userId);
+  await setSession(SESSION_KEY, userId);
 }
 async function clearSession(): Promise<void> {
-  await SecureStore.deleteItemAsync(SESSION_KEY);
+  await clearStoredSession(SESSION_KEY);
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -44,7 +44,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   restore: async () => {
     try {
-      const id = await SecureStore.getItemAsync(SESSION_KEY);
+      const id = await getSession(SESSION_KEY);
       if (!id) { syncActive(null); set({ status: 'guest', user: null }); return; }
       const user = await getUserById(id);
       if (!user) { await clearSession(); syncActive(null); set({ status: 'guest', user: null }); return; }
