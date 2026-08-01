@@ -289,7 +289,14 @@ footer a{color:var(--fr)}
     </div>
     <div class="f">
       <label for="brut">Brut suisse (CHF / an)</label>
-      <input type="number" id="brut" value="84000" min="20000" max="400000" step="1000">
+      <input type="number" id="brut" value="57600" min="20000" max="400000" step="1200">
+    </div>
+    <div class="f">
+      <label for="mult">Salaire versé en</label>
+      <div class="seg blue" id="mult" role="group">
+        <button type="button" data-v="12" aria-pressed="true">12 mois</button>
+        <button type="button" data-v="13" aria-pressed="false">13 mois</button>
+      </div>
     </div>
     <div class="f">
       <label for="fam">Situation familiale</label>
@@ -306,11 +313,23 @@ footer a{color:var(--fr)}
     </div>
     <div class="f">
       <label for="loyerFR">Loyer si France (€ / mois)</label>
-      <input type="number" id="loyerFR" value="1550" min="0" max="6000" step="50">
+      <input type="number" id="loyerFR" value="750" min="0" max="6000" step="50">
     </div>
     <div class="f">
       <label for="loyerCH">Loyer si Suisse (CHF / mois)</label>
       <input type="number" id="loyerCH" value="2382" min="0" max="9000" step="50">
+    </div>
+    <div class="f">
+      <label for="depNourriture">Nourriture (€ / mois)</label>
+      <input type="number" id="depNourriture" value="400" min="0" max="3000" step="25">
+    </div>
+    <div class="f">
+      <label for="depEssence">Carburant, trajet (€ / mois)</label>
+      <input type="number" id="depEssence" value="120" min="0" max="1500" step="10">
+    </div>
+    <div class="f">
+      <label for="depAutres">Autres charges (€ / mois)</label>
+      <input type="number" id="depAutres" value="305" min="0" max="3000" step="5">
     </div>
     <div class="f">
       <label for="autres">Autres revenus FR (€ / an)</label>
@@ -370,13 +389,17 @@ var TRAJET_CH      = 80;   // € / mois — abonnement transports publics
 
 var P = {};
 function readParams(){
-  P.brut    = num("brut", 84000);
+  P.brut    = num("brut", 57600);
+  P.mult    = parseInt(document.querySelector('#mult [aria-pressed="true"]').dataset.v, 10);
   P.canton  = document.querySelector('#canton [aria-pressed="true"]').dataset.v;
   P.resid   = document.querySelector('#resid [aria-pressed="true"]').dataset.v;
   P.fam     = document.getElementById("fam").value;
   P.enf     = Math.max(0, Math.min(6, num("enf", 0)));
   P.autres  = num("autres", 0);
-  P.loyerFR = num("loyerFR", 1550);
+  P.loyerFR = num("loyerFR", 750);
+  P.nourri  = num("depNourriture", 400);
+  P.essence = num("depEssence", 120);
+  P.autresD = num("depAutres", 305);
   P.loyerCH = num("loyerCH", 2382);
   P.fortune = num("fortune", 0);
   var t     = document.getElementById("tauxsrc").value;
@@ -426,7 +449,7 @@ function irNet(rni, pts, base){
 /* Impôt à la source genevois — interpolation du barème A0. À CONFIRMER sur ge.ch. */
 function tauxGE(brutAn){
   if (P.tauxSrc !== null) return P.tauxSrc;
-  var m = brutAn/13;
+  var m = brutAn/P.mult;
   var t;
   if (m < 3000)       t = 0.01;
   else if (m < 5000)  t = 0.01  + (m-3000)*(0.055-0.01)/2000;
@@ -524,12 +547,13 @@ function calc(){
   /* ---------- Logement et trajet : le poste qui décide ---------- */
   var loyerFRan = P.loyerFR * 12;                   // €
   var loyerCHan = P.loyerCH * 12 * FX;              // €
-  var trajetFR  = TRAJET_FR * 12;                   // € — carburant, péages, entretien
+  var trajetFR  = P.essence * 12;                   // € — carburant et trajet, saisi
   var trajetCH  = TRAJET_CH * 12;                   // € — abonnement transports publics
+  var courantes = (P.nourri + P.autresD) * 12;      // € — nourriture + charges, identiques des deux côtés
 
   var netFRfrontalier = P.canton === "GE" ? netGEeur : netVDeur;
-  var resteFR = netFRfrontalier - loyerFRan - trajetFR;
-  var resteCH = netCHeur - loyerCHan - trajetCH;
+  var resteFR = netFRfrontalier - loyerFRan - trajetFR - courantes;
+  var resteCH = netCHeur - loyerCHan - trajetCH - courantes;
 
   return {
     brut:b, netSoc:netSoc, tGE:tGE, impGE:impGE, irVD:irVD, rfr:rfr,
@@ -540,6 +564,7 @@ function calc(){
     tRes:tRes, impRes:impRes, fortune:fortune, lamalCH:lamalCH,
     netCHeur:netCHeur, netFRfrontalier:netFRfrontalier,
     loyerFRan:loyerFRan, loyerCHan:loyerCHan, trajetFR:trajetFR, trajetCH:trajetCH,
+    courantes:courantes,
     resteFR:resteFR, resteCH:resteCH, ecartReste:resteFR - resteCH,
     net: P.resid === "CH" ? netCHeur : netFRfrontalier,
     reste: P.resid === "CH" ? resteCH : resteFR,
@@ -581,6 +606,45 @@ var CHC = "var(--ch)", FRC = "var(--fr)";
 
 var KB = [
 {
+  id:"budget", t:"Votre budget mois par mois",
+  l:"Simulation à partir des dépenses saisies dans votre profil",
+  k:["budget","mes depenses","depenses","dépenses","reste a vivre","reste à vivre","ce qui me reste",
+     "combien il me reste","epargne","épargne","economiser","je peux mettre de cote","train de vie",
+     "cout de la vie","coût de la vie","nourriture","courses","essence","carburant","loyer"],
+  f:function(c){
+    var ch = P.resid === "CH";
+    var net = c.net/12;
+    var loyer = (ch ? c.loyerCHan : c.loyerFRan)/12;
+    var traj  = (ch ? c.trajetCH  : c.trajetFR)/12;
+    var dep   = loyer + traj + P.nourri + P.autresD;
+    var reste = net - dep;
+    var tauxEpargne = net > 0 ? reste/net : 0;
+    return "<p>Sur un brut de <em>" + chf(P.brut) + "</em> par an — soit <em>" + chf(P.brut/P.mult) +
+      "</em> sur douze mois ou <em>" + chf(P.brut/13) + "</em> sur treize — en " +
+      (ch ? "résidant en Suisse" : "résidant en zone frontalière française") + " :</p>" +
+    tbl(["Poste", "€ / mois", "€ / an"], [
+      ["<strong>Net après impôt et santé</strong>", "<strong>"+f0(net)+"</strong>", "<strong>"+f0(c.net)+"</strong>"],
+      ["Loyer", "−"+f0(loyer), "−"+f0(loyer*12)],
+      ["Nourriture", "−"+f0(P.nourri), "−"+f0(P.nourri*12)],
+      [ch ? "Transports publics" : "Carburant et trajet", "−"+f0(traj), "−"+f0(traj*12)],
+      ["Autres charges", "−"+f0(P.autresD), "−"+f0(P.autresD*12)],
+      ["<em>Total des dépenses</em>", "−"+f0(dep), "−"+f0(dep*12)],
+      {c:["<strong>Reste à vivre</strong>", "<strong>"+f0(reste)+" €</strong>", "<strong>"+f0(reste*12)+" €</strong>"], hi:true}
+    ]) +
+    bars([
+      {k:"Dépenses", v:Math.max(0,dep),   t:f0(dep)+" €",   c:FRC},
+      {k:"Reste",    v:Math.max(0,reste), t:f0(reste)+" €", c:CHC}
+    ]) +
+    "<p>Votre taux d'épargne théorique atteint <strong>" + pct(tauxEpargne, 0) +
+      "</strong> du net. Mais attention à ce que « reste à vivre » veut dire : c'est ce qui finance <strong>tout le reste</strong> — loisirs, vêtements, vacances, cadeaux, imprévus — <em>et</em> l'épargne. Comptez 800 à 1 000 € par mois de train de vie normal là-dedans, ce qui laisse environ <strong>" +
+      f0(Math.max(0, reste-900)) + " € d'épargne réelle</strong> par mois.</p>" +
+    "<div class='callout warn'><strong>Postes que l'on oublie systématiquement.</strong> La cotisation CMU ne couvre que le <strong>régime de base</strong> : sans complémentaire santé, vous êtes remboursé à 70 % sur la plupart des soins. Pensez aussi à l'assurance auto (plus chère en usage frontalier), à l'entretien du véhicule amorti sur l'année, aux pneus, au contrôle technique et à la vignette autoroutière suisse. Bonne nouvelle en revanche : la taxe d'habitation sur la résidence principale est supprimée.</div>" +
+    (P.loyerFR < 900 && !ch
+      ? "<div class='callout'><strong>Votre hypothèse de loyer est optimiste.</strong> À " + f0(P.loyerFR) + " € en zone frontalière, vous visez un studio, une colocation ou un T2 dans la couronne extérieure — pas Annemasse centre, dont le loyer médian dépasse 1 800 €. Un logement plus éloigné rallonge le trajet, donc le poste carburant. Testez la sensibilité en montant le loyer de 200 €.</div>"
+      : "");
+  }
+},
+{
   id:"residence", t:"Vivre en France ou vivre en Suisse",
   l:"art. 4 B CGI · art. 3 LIFD · Convention franco-suisse de 1966, art. 4",
   k:["vivre en suisse","habiter en suisse","demenager en suisse","france ou suisse","suisse ou france",
@@ -604,6 +668,7 @@ var KB = [
       ["<strong>Net avant logement</strong>", "<strong>"+eur(c.netFRfrontalier)+"</strong>", "<strong>"+eur(c.netCHeur)+"</strong>"],
       ["Loyer", "−"+eur(c.loyerFRan)+" <span style='opacity:.6'>("+f0(P.loyerFR)+" €/mois)</span>", "−"+eur(c.loyerCHan)+" <span style='opacity:.6'>("+f0(P.loyerCH)+" CHF/mois)</span>"],
       ["Trajet domicile-travail", "−"+eur(c.trajetFR), "−"+eur(c.trajetCH)],
+      ["Nourriture et charges courantes", "−"+eur(c.courantes), "−"+eur(c.courantes)],
       {c:["<strong>Reste à vivre</strong>", "<strong>"+eur(c.resteFR)+"</strong>", "<strong>"+eur(c.resteCH)+"</strong>"], hi:true},
       ["Soit par mois", mois(c.resteFR), mois(c.resteCH)]
     ]) +
@@ -1148,13 +1213,13 @@ function renderReadout(){
   var ch = P.resid === "CH";
   var favFR = c.ecartReste >= 0;
   document.getElementById("readout").innerHTML =
-    tile("Reste à vivre", mois(c.reste), "après impôt, santé, loyer, trajet", ch?"ch":"fr") +
+    tile("Reste à vivre", mois(c.reste), "toutes dépenses courantes déduites", ch?"ch":"fr") +
     tile("Net mensuel", mois(c.net), "avant loyer et trajet", "") +
     tile(ch ? "Impôt suisse ordinaire" : (P.canton==="GE" ? "Impôt à la source" : "Impôt français"),
          ch ? pct(c.tRes) : (P.canton==="GE" ? pct(c.tGE) : eur(c.irVD)),
          ch ? chf(c.impRes)+" par an" : (P.canton==="GE" ? chf(c.impGE)+" par an" : "barème progressif"),
          ch?"ch":"fr") +
-    tile("Logement", mois(ch ? c.loyerCHan : c.loyerFRan), ch?"Suisse":"zone frontalière", "") +
+    tile("Dépenses", mois((ch?c.loyerCHan:c.loyerFRan)+(ch?c.trajetCH:c.trajetFR)+c.courantes), "loyer, trajet, vie courante", "") +
     tile("France vs Suisse", mois(Math.abs(c.ecartReste)),
          favFR ? "en faveur de la France" : "en faveur de la Suisse", "ok");
 }
@@ -1199,7 +1264,7 @@ function ask(q, forcedId){
 
 /* ============================== SUGGESTIONS ============================== */
 
-var SUGG = ["residence","bascule-statut","ge-vd","net","sante","timing","teletravail","prime-vd","checklist","permis-b","quasi-resident","permis","taux-effectif","fortune","declaration","salaires","formation","lpp","exit-tax","chomage","immobilier","bareme-ge","accord83","pilier3","13e","pratique"];
+var SUGG = ["budget","residence","bascule-statut","ge-vd","net","sante","timing","teletravail","prime-vd","checklist","permis-b","quasi-resident","permis","taux-effectif","fortune","declaration","salaires","formation","lpp","exit-tax","chomage","immobilier","bareme-ge","accord83","pilier3","13e","pratique"];
 document.getElementById("chips").innerHTML = SUGG.map(function(id){
   var e = KB.filter(function(x){ return x.id === id; })[0];
   return e ? "<button class='chip' data-id='"+id+"'>"+e.t+"</button>" : "";
@@ -1216,7 +1281,7 @@ document.addEventListener("click", function(ev){
 
 /* ============================== ÉVÉNEMENTS ============================== */
 
-["#canton","#resid"].forEach(function(sel){
+["#canton","#resid","#mult"].forEach(function(sel){
   document.querySelectorAll(sel+" button").forEach(function(b){
     b.addEventListener("click", function(){
       document.querySelectorAll(sel+" button").forEach(function(x){ x.setAttribute("aria-pressed","false"); });
@@ -1225,7 +1290,7 @@ document.addEventListener("click", function(ev){
     });
   });
 });
-["brut","fam","enf","autres","fortune","loyerFR","loyerCH","tauxsrc","tauxres"].forEach(function(id){
+["brut","fam","enf","autres","fortune","loyerFR","loyerCH","depNourriture","depEssence","depAutres","tauxsrc","tauxres"].forEach(function(id){
   document.getElementById(id).addEventListener("input", redraw);
   document.getElementById(id).addEventListener("change", redraw);
 });
@@ -1249,7 +1314,7 @@ function submit(){
 
 readParams();
 renderReadout();
-history.push({ q:null, id:"residence" });
+history.push({ q:null, id:"budget" });
 redraw();
 
 })();
