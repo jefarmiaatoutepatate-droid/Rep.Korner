@@ -239,6 +239,25 @@ Tant que ce n'est pas configuré, l'app fonctionne avec les niveaux 1 et 2.
 
 ---
 
+## 📲 Version PWA — l'app sur iPhone sans compte Apple
+
+L'app tourne aussi **dans le navigateur** et s'installe sur l'écran d'accueil d'un
+iPhone : icône, plein écran, hors ligne, **0 €** — sans PC allumé et sans les
+99 €/an du programme Apple Developer.
+
+```bash
+npm run deploy:web    # publie sur Cloudflare Pages (gratuit)
+```
+Puis, sur l'iPhone : ouvrir l'adresse dans **Safari** → Partager → **« Sur l'écran
+d'accueil »**.
+
+👉 Guide complet, limites et fonctionnement technique : **[`docs/PWA.md`](docs/PWA.md)**
+
+La couche base de données est scindée par plateforme (`src/db/driver.ts` /
+`driver.web.ts`) : **expo-sqlite** en natif, **sql.js** (SQLite en WebAssembly,
+persisté dans IndexedDB) en web. Le SQL des repositories est identique des deux
+côtés, et **le code natif est inchangé**.
+
 ## Publication sur les stores
 
 - **[`docs/PRIVACY.md`](docs/PRIVACY.md)** — politique de confidentialité, rédigée
