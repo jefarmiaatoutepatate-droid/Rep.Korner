@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "build:web": "expo export --platform web",
-    "deploy:web": "npm run build:web && npx wrangler pages deploy dist --project-name=fitcoach"
+    "deploy:web": "npm run build:web && npx wrangler pages deploy dist --project-name=fitcoach",
+    "setup": "node scripts/setup.mjs"
   },
   "dependencies": {
     "expo": "~51.0.0",
