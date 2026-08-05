@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "build:web": "expo export --platform web",
     "deploy:web": "npm run build:web && npx wrangler pages deploy dist --project-name=fitcoach",
-    "setup": "node scripts/setup.mjs"
+    "setup": "node scripts/setup.mjs",
+    "worker:js": "esbuild backend/cloudflare-worker/src/index.ts --format=esm --target=es2022 --platform=neutral --outfile=backend/cloudflare-worker/dist-paste/worker.js"
   },
   "dependencies": {
     "expo": "~51.0.0",

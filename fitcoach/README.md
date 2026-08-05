@@ -251,7 +251,9 @@ npm run deploy:web    # publie sur Cloudflare Pages (gratuit)
 Puis, sur l'iPhone : ouvrir l'adresse dans **Safari** → Partager → **« Sur l'écran
 d'accueil »**.
 
-👉 Guide complet, limites et fonctionnement technique : **[`docs/PWA.md`](docs/PWA.md)**
+👉 Guide complet : **[`docs/PWA.md`](docs/PWA.md)**
+> 🖱️ **Bloqué par les commandes ?** Tout est faisable depuis un navigateur, sans terminal :
+> **[`docs/SANS-TERMINAL.md`](docs/SANS-TERMINAL.md)**
 
 La couche base de données est scindée par plateforme (`src/db/driver.ts` /
 `driver.web.ts`) : **expo-sqlite** en natif, **sql.js** (SQLite en WebAssembly,
