@@ -13,6 +13,10 @@ import type { CoachMessage } from '@/types';
 
 const COACH = TAB_COLOR.coach;
 
+/** Hauteur de la bottom-nav flottante (voir app/(tabs)/_layout.tsx) + respiration. */
+const TAB_BAR_HEIGHT = 62;
+const TAB_BAR_GAP = 10;
+
 const SUGGESTIONS = [
   'Il me reste quoi à manger aujourd’hui ?',
   'Propose-moi un dîner riche en protéines',
@@ -32,6 +36,10 @@ export default function CoachScreen() {
   const scrollRef = useRef<ScrollView>(null);
 
   const scrollDown = () => setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 50);
+
+  // La bottom-nav est en position absolue AU-DESSUS du contenu : sans cette marge,
+  // la barre de saisie passe dessous et devient inutilisable.
+  const composerBottom = Math.max(insets.bottom, 12) + TAB_BAR_HEIGHT + TAB_BAR_GAP;
 
   const load = useCallback(async () => {
     let rows = await getCoachMessages();
@@ -121,7 +129,7 @@ export default function CoachScreen() {
         </ScrollView>
 
         {/* Barre de saisie */}
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 10, paddingHorizontal: 16, paddingTop: 8, paddingBottom: insets.bottom + 10, borderTopWidth: 1, borderTopColor: COLORS.border, backgroundColor: COLORS.bg }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 10, paddingHorizontal: 16, paddingTop: 8, paddingBottom: composerBottom, borderTopWidth: 1, borderTopColor: COLORS.border, backgroundColor: COLORS.bg }}>
           <TextInput
             value={input}
             onChangeText={setInput}
