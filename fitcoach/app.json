@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "FitCoach",
+    "slug": "fitcoach",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "fitcoach",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFFFFF",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fitcoach.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.fitcoach.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#5B6EF5"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "color": "#5B6EF5"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "FitCoach accède à tes photos pour illustrer ton suivi de progression.",
+          "cameraPermission": "FitCoach utilise l'appareil photo pour tes photos avant/après."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "claudeProxyUrl": "https://YOUR-WORKER.workers.dev",
+      "supabaseUrl": "",
+      "supabaseAnonKey": ""
+    }
+  }
+}

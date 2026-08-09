@@ -1,0 +1,4 @@
+# Copie ce fichier en `.dev.vars` (git-ignoré) pour le dev local avec `wrangler dev`.
+# En production, la clé est stockée via `wrangler secret put ANTHROPIC_API_KEY`
+# (JAMAIS dans un fichier commité).
+ANTHROPIC_API_KEY=sk-ant-...

@@ -1,0 +1,10 @@
+node_modules/
+.expo/
+dist/
+web-build/
+*.log
+.DS_Store
+# Secrets — ne jamais commiter
+.env
+.env.local
+backend/cloudflare-worker/.dev.vars
